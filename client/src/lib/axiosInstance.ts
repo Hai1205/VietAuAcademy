@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig, AxiosResponse } from "axios";
 import { SERVER_URL } from "../utils/services/constants";
 import { toast } from "react-toastify";
 
-export const MAX_RETRIES = 1;
+export const MAX_RETRIES = 0;
 
 const getCookie = (name: string): string | null => {
   const matches = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));

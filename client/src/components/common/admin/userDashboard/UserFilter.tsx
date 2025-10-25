@@ -22,10 +22,7 @@ export const UserFilter = ({
   applyFilters,
   closeMenuMenuFilters,
 }: UserFilterProps) => {
-  const handleToggleFilter = (
-    value: string,
-    type: "status"
-  ) => {
+  const handleToggleFilter = (value: string, type: "status") => {
     if (type === "status") {
       toggleFilter(value, "status");
     }
@@ -34,7 +31,7 @@ export const UserFilter = ({
   const filterOptions = {
     status: [
       { label: "Hoạt động", value: EUserStatus.ACTIVE },
-      { label: "Ngừng hoạt động", value: EUserStatus.INACTIVE },
+      { label: "Ngừng hoạt động", value: EUserStatus.BANNED },
       { label: "Đang chờ", value: EUserStatus.PENDING },
     ],
   };

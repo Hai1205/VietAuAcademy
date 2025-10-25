@@ -153,7 +153,7 @@ export default function ProgramDashboardPage() {
           benefits: "",
           imageUrl: "",
           featured: false,
-          status: EStatus.INACTIVE,
+          status: EStatus.DELETED,
         };
         return { ...defaultData, [field]: value } as ExtendedProgramData;
       }
@@ -264,7 +264,7 @@ export default function ProgramDashboardPage() {
             benefits: "",
             imageUrl: "",
             featured: false,
-            status: EStatus.INACTIVE,
+            status: EStatus.DELETED,
           };
           setData(defaultProgram);
           setIsCreateProgramOpen(true);

@@ -32,7 +32,7 @@ const schema: Schema<IProgramDocument> = new Schema(
     status: {
       type: String,
       enum: Object.values(EStatus),
-      default: EStatus.INACTIVE,
+      default: EStatus.ACTIVE,
     },
   },
   {

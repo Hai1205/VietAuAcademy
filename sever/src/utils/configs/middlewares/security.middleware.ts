@@ -78,7 +78,17 @@ const ALLOWED_METHODS: string[] = [
 
 const ALLOWED_HEADERS: string[] = [
     "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+    "Origin",
+    "Access-Control-Allow-Credentials",
 ];
+
+const EXPOSE_HEADER: string[] = [
+    "Authorization",
+    "Set-Cookie",
+]
 
 /**
  * Middleware bảo vệ CORS
@@ -93,5 +103,6 @@ export const CORSGuard = cors({
     },
     methods: ALLOWED_METHODS,
     allowedHeaders: ALLOWED_HEADERS,
+    exposedHeaders: EXPOSE_HEADER,
     credentials: true,
 });

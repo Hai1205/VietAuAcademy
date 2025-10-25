@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { COMPANY } from "@/utils/services/constants";
+import { COMPANY, EMAIL, PHONE } from "@/utils/services/constants";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -240,10 +240,10 @@ export default function PrivacyPolicyPageClient() {
                   Q.5, TP.HCM
                 </p>
                 <p className="mb-2 text-gray-700 dark:text-gray-300">
-                  Email: hainguyenhoang1205@gmail.com
+                  Email: {EMAIL}
                 </p>
                 <p className="text-gray-700 dark:text-gray-300">
-                  Hotline: 0782 748 863
+                  Hotline: {PHONE}
                 </p>
               </div>
             </section>

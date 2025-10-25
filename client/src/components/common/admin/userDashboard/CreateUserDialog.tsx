@@ -133,7 +133,7 @@ const CreateUserDialog = ({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="active">Hoạt động</SelectItem>
-                        <SelectItem value="inactive">Ngừng hoạt động</SelectItem>
+                        <SelectItem value="banned">Ngừng hoạt động</SelectItem>
                         <SelectItem value={EUserStatus.PENDING}>
                           Đang chờ
                         </SelectItem>

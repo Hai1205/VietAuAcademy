@@ -4,13 +4,13 @@ export enum ETheme {
 }
 
 export enum EStatus {
-    INACTIVE = "inactive",
+    DELETED = "deleted",
     ACTIVE = "active"
 }
 
 export enum EUserStatus {
     PENDING = "pending",
-    INACTIVE = "inactive",
+    BANNED = "banned",
     ACTIVE = "active"
 }
 

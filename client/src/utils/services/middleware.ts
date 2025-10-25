@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
     // Enable early hints for critical resources
     if (request.nextUrl.pathname === '/') {
         response.headers.set('Link', [
-            '</images/logo.png>; rel=preload; as=image',
+            '</images/logo1.png>; rel=preload; as=image',
             '<https://fonts.googleapis.com>; rel=preconnect',
             '<https://fonts.gstatic.com>; rel=preconnect; crossorigin',
         ].join(', '))

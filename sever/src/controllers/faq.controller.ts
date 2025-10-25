@@ -5,12 +5,13 @@ import { parseRequestData } from "../utils/configs/helper.js";
 export const getFAQs = RequestHandlerCustom(
   async (req, res) => {
     const category = req.query.category as string | undefined;
+    const status = req.query.status as string | undefined;
 
-    const faqs = await handleGetFAQs({ category });
+    const faqs = await handleGetFAQs({ category, status });
 
     res.status(200).json({
       success: true,
-      message: "Get faqs successfully",
+      message: "Lấy danh sách FAQ thành công",
       FAQs: faqs
     });
   }
@@ -38,7 +39,7 @@ export const createFAQ = RequestHandlerCustom(
 
     res.status(201).json({
       success: true,
-      message: "New FAQ created",
+      message: "Đã tạo FAQ mới",
       FAQ: faq
     });
   }
@@ -49,21 +50,21 @@ export const updateFAQ = RequestHandlerCustom(
     const id = req.params.id;
 
     if (!id) {
-      return next(new ErrorCustom(400, "FAQ ID is required"));
+      return next(new ErrorCustom(400, "ID FAQ là bắt buộc"));
     }
 
     const data: IUpdateFAQData = parseRequestData(req);
 
     // Kiểm tra xem có dữ liệu để cập nhật không
     if (Object.keys(data).length === 0) {
-      return next(new ErrorCustom(400, "No data provided for update"));
+      return next(new ErrorCustom(400, "Không có dữ liệu để cập nhật"));
     }
 
     const updatedFAQ = await handleUpdateFAQ({ id, ...data });
 
     res.status(200).json({
       success: true,
-      message: "FAQ updated successfully",
+      message: "Cập nhật FAQ thành công",
       FAQ: updatedFAQ
     });
   }
@@ -74,14 +75,14 @@ export const getFAQById = RequestHandlerCustom(
     const id = req.params.id;
 
     if (!id) {
-      return next(new ErrorCustom(400, "FAQ ID is required"));
+      return next(new ErrorCustom(400, "ID FAQ là bắt buộc"));
     }
 
     const faq = await handleGetFAQById({ id });
 
     res.status(200).json({
       success: true,
-      message: "FAQ retrieved successfully",
+      message: "Lấy FAQ thành công",
       FAQ: faq
     });
   }

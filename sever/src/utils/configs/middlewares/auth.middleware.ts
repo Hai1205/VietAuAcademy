@@ -17,7 +17,15 @@ export const isAuth = async (
     next: NextFunction
 ) => {
     try {
-        const token = req.cookies?.token;
+        // Accept token from cookie OR from Authorization header (Bearer)
+        let token = req.cookies?.token as string | undefined;
+        const authHeader = (req.headers?.authorization || req.headers?.Authorization) as
+            | string
+            | undefined;
+
+        if (!token && authHeader && authHeader.startsWith("Bearer ")) {
+            token = authHeader.slice(7).trim();
+        }
 
         if (!token) {
             res.status(403).json({
@@ -66,7 +74,8 @@ const PUBLIC_ROUTES = [
  */
 export const checkPublicRoute = (req: Request, res: Response, next: NextFunction) => {
     // Kiểm tra xem đường dẫn hiện tại có nằm trong danh sách công khai không
-    if (PUBLIC_ROUTES.some(route => req.path.startsWith(route))) {
+    const reqPath = (req.path || '').toLowerCase();
+    if (PUBLIC_ROUTES.some(route => reqPath.startsWith(route.toLowerCase()))) {
         return next();
     }
 

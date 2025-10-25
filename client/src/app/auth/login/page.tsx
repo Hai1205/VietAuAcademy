@@ -6,12 +6,15 @@ import { useAuthStore } from "@/utils/stores/authStore";
 import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginPage: React.FC = () => {
   const { isLoading, login, sendOTP } = useAuthStore();
 
   const router = useRouter();
 
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -100,21 +103,28 @@ const LoginPage: React.FC = () => {
         </div>
 
         <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-primary-500 mb-2"
-          >
-            Mật khẩu
-          </label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Nhập mật khẩu của bạn"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
-          />
+          <Label htmlFor="password">Mật khẩu</Label>
+          <div className="relative">
+            <Input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Nhập mật khẩu của bạn"
+              value={formData.password}
+              onChange={handleChange}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
           {errors.password && (
             <p className="mt-1 text-sm text-red-400">{errors.password}</p>
           )}

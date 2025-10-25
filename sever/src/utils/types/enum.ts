@@ -1,10 +1,10 @@
 export enum EStatus {
-    INACTIVE = "inactive",
+    DELETED = "deleted",
     ACTIVE = "active"
 }
 
 export enum EUserStatus {
-    INACTIVE = "inactive",
+    BANNED = "banned",
     ACTIVE = "active",
     PENDING = "pending"
 }

@@ -23,7 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 export const JobStatus = [
   { label: "Hoạt động", value: "active" },
-  { label: "Không hoạt động", value: "inactive" },
+  { label: "Đã xóa", value: "deleted" },
 ];
 
 interface CreateJobDialogProps {
@@ -174,9 +174,7 @@ const CreateJobDialog = ({
 
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="create-application-deadline">
-                  Hạn nộp đơn
-                </Label>
+                <Label htmlFor="create-application-deadline">Hạn nộp đơn</Label>
 
                 <Input
                   id="create-application-deadline"
@@ -213,13 +211,11 @@ const CreateJobDialog = ({
                 <Input
                   id="create-requirements"
                   value={data?.requirements}
-                  onChange={(e) =>
-                    onChange("requirements", e.target.value)
-                  }
+                  onChange={(e) => onChange("requirements", e.target.value)}
                 />
               </div>
             </div>
-           
+
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="create-benefits">
@@ -229,25 +225,19 @@ const CreateJobDialog = ({
                 <Input
                   id="create-benefits"
                   value={data?.benefits}
-                  onChange={(e) =>
-                    onChange("benefits", e.target.value)
-                  }
+                  onChange={(e) => onChange("benefits", e.target.value)}
                 />
               </div>
             </div>
-            
+
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="create-description">
-                  Mô tả
-                </Label>
+                <Label htmlFor="create-description">Mô tả</Label>
 
                 <Textarea
                   id="create-description"
                   value={data?.description}
-                  onChange={(e) =>
-                    onChange("description", e.target.value)
-                  }
+                  onChange={(e) => onChange("description", e.target.value)}
                 />
               </div>
             </div>
@@ -349,7 +339,9 @@ const CreateJobDialog = ({
 
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="create-training-period">Thời gian đào tạo</Label>
+                <Label htmlFor="create-training-period">
+                  Thời gian đào tạo
+                </Label>
 
                 <Input
                   id="create-training-period"

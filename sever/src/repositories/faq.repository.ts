@@ -2,11 +2,16 @@ import { ICreateFAQData, IUpdateFAQData } from "../controllers/faq.controller.js
 import { FAQ } from "../models/faq.model.js";
 import { ErrorCustom, HandlerCustom } from "../utils/configs/custom.js";
 
-export const handleGetFAQs = HandlerCustom(async (data: { category?: string }) => {
-    const filter: { category?: string } = {};
+export const handleGetFAQs = HandlerCustom(async (data: { category?: string; status?: string }) => {
+    const filter: { category?: string; status?: string } = {};
 
     if (data.category) {
         filter.category = data.category;
+    }
+
+    if (data.status) {
+        // Expect exact match on status (e.g., 'active').
+        filter.status = data.status;
     }
 
     const faqs = await FAQ.find(filter).exec();

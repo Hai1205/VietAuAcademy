@@ -9,7 +9,7 @@ export const getAllJobs = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Get jobs successfully",
+      message: "Lấy danh sách việc làm thành công",
       jobs: jobs
     });
   }
@@ -23,7 +23,7 @@ export const getJob = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Get job successfully",
+      message: "Lấy việc làm thành công",
       job: job
     });
   }
@@ -94,7 +94,7 @@ export const createJob = RequestHandlerCustom(
 
     res.status(201).json({
       success: true,
-      message: "New job created",
+      message: "Đã tạo việc làm mới",
       job: job
     });
   }
@@ -105,13 +105,13 @@ export const updateJob = RequestHandlerCustom(
     const id = req.params.id;
 
     if (!id) {
-      return next(new ErrorCustom(400, "Job ID is required"));
+      return next(new ErrorCustom(400, "ID việc làm là bắt buộc"));
     }
 
     const data: IUpdateJobData = parseRequestData(req);
 
     if (Object.keys(data).length === 0) {
-      return next(new ErrorCustom(400, "No data provided for update"));
+      return next(new ErrorCustom(400, "Không có dữ liệu để cập nhật"));
     }
 
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
@@ -131,7 +131,7 @@ export const updateJob = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Job updated successfully",
+      message: "Cập nhật việc làm thành công",
       job: updatedJob
     });
   }

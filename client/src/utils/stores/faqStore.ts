@@ -8,6 +8,9 @@ interface IFAQDataResponse {
 
 export interface IFAQStore extends IBaseStore {
 	getAllFAQs: () => Promise<IApiResponse<IFAQDataResponse>>;
+	getFAQsByStatus: (
+		status: string
+	) => Promise<IApiResponse<IFAQDataResponse>>;
 	getFAQsByCategory: (
 		category: string
 	) => Promise<IApiResponse<IFAQDataResponse>>;
@@ -36,6 +39,12 @@ export const useFAQStore = createStore<IFAQStore>(
 		getAllFAQs: async (): Promise<IApiResponse<IFAQDataResponse>> => {
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.GET, `/FAQs`);
+			});
+		},
+
+		getFAQsByStatus: async (status: string): Promise<IApiResponse<IFAQDataResponse>> => {
+			return await get().handleRequest(async () => {
+				return await handleRequest(EHttpType.GET, `/FAQs?status=${status}`);
 			});
 		},
 

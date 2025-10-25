@@ -14,7 +14,7 @@ export default function Footer() {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <Image
-                src={"/images/logo.png"}
+                src={"/images/logo1.png"}
                 alt={`Japan flag`}
                 width={40}
                 height={30}

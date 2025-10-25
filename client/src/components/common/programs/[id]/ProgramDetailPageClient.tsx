@@ -21,6 +21,7 @@ import { useProgramStore } from "@/utils/stores/programStore";
 import { stringToList } from "@/lib/utils";
 import { useContactStore } from "@/utils/stores/contactStore";
 import { initialContact } from "../../contact/ContactPageClient";
+import { EMAIL, PHONE } from "@/utils/services/constants";
 
 interface ProgramDetailPageClientProps {
   programId: string;
@@ -248,7 +249,7 @@ export default function ProgramDetailPageClient({
                   <Phone className="w-5 h-5 text-primary" />
                   <div>
                     <p className="text-sm text-gray-600">Hotline 24/7</p>
-                    <p className="font-semibold text-primary">0782 748 863</p>
+                    <p className="font-semibold text-primary">{PHONE}</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -256,7 +257,7 @@ export default function ProgramDetailPageClient({
                   <div>
                     <p className="text-sm text-gray-600">Email</p>
                     <p className="font-semibold">
-                      hainguyenhoang1205@gmail.com
+                      {EMAIL}
                     </p>
                   </div>
                 </div>

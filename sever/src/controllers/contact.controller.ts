@@ -8,7 +8,7 @@ export const getAllContacts = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Get all contacts successfully",
+      message: "Lấy tất cả liên hệ thành công",
       contacts: contacts
     });
   }
@@ -22,7 +22,7 @@ export const getContact = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Get contact successfully",
+      message: "Lấy liên hệ thành công",
       contact: contact
     });
   }
@@ -43,7 +43,7 @@ export const submitContact = RequestHandlerCustom(
 
     res.status(201).json({
       success: true,
-      message: "New contact created",
+      message: "Đã tạo liên hệ mới",
       contact: contact
     });
   }
@@ -58,7 +58,7 @@ export const resolveContact = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Contact resolved successfully",
+      message: "Giải quyết liên hệ thành công",
       contact: contact
     });
   }

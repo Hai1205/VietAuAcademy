@@ -8,7 +8,7 @@ export const getAllUsers = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Get users successfully",
+      message: "Lấy danh sách người dùng thành công",
       users: users
     });
   }
@@ -38,7 +38,7 @@ export const createUser = RequestHandlerCustom(
 
     res.status(201).json({
       success: true,
-      message: "New user created",
+      message: "Đã tạo người dùng mới",
       user: user
     });
   }
@@ -49,21 +49,21 @@ export const updateUser = RequestHandlerCustom(
     const id = req.params.id;
 
     if (!id) {
-      return next(new ErrorCustom(400, "User ID is required"));
+      return next(new ErrorCustom(400, "ID người dùng là bắt buộc"));
     }
 
     const data: IUpdateUserData = parseRequestData(req);
 
     // Kiểm tra xem có dữ liệu để cập nhật không
     if (Object.keys(data).length === 0) {
-      return next(new ErrorCustom(400, "No data provided for update"));
+      return next(new ErrorCustom(400, "Không có dữ liệu để cập nhật"));
     }
 
     const updatedUser = await handleUpdateUser({ id, ...data });
 
     res.status(200).json({
       success: true,
-      message: "User updated successfully",
+      message: "Cập nhật người dùng thành công",
       user: updatedUser
     });
   }
@@ -74,14 +74,14 @@ export const getUserById = RequestHandlerCustom(
     const id = req.params.id;
 
     if (!id) {
-      return next(new ErrorCustom(400, "User ID is required"));
+      return next(new ErrorCustom(400, "ID người dùng là bắt buộc"));
     }
 
     const user = await handleGetUserById({ id });
 
     res.status(200).json({
       success: true,
-      message: "User retrieved successfully",
+      message: "Lấy người dùng thành công",
       user: user
     });
   }

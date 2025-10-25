@@ -25,9 +25,9 @@ export const metadata: Metadata = {
   authors: [{ name: `${COMPANY} Team` }],
   metadataBase: new URL("https://thuytung.com"),
   icons: {
-    icon: "/images/logo.png",
-    shortcut: "/images/logo.png",
-    apple: "/images/logo.png",
+    icon: "/images/logo1.png",
+    shortcut: "/images/logo1.png",
+    apple: "/images/logo1.png",
   },
   openGraph: {
     title: `${COMPANY} - ${DESCRIPTION}`,
@@ -69,7 +69,7 @@ export default function RootLayout({
         {/* Preload critical images */}
         <link
           rel="preload"
-          href="/images/logo.png"
+          href="/images/logo1.png"
           as="image"
           type="image/png"
         />

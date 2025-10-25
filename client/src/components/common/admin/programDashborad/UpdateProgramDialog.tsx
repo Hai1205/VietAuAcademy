@@ -116,9 +116,7 @@ const UpdateProgramDialog = ({
 
                       <div className="grid gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="update-description">
-                            Mô tả
-                          </Label>
+                          <Label htmlFor="update-description">Mô tả</Label>
                           <Textarea
                             id="update-description"
                             value={data.description || ""}
@@ -170,9 +168,7 @@ const UpdateProgramDialog = ({
 
                       <div className="grid gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="create-opportunities">
-                            Cơ hội
-                          </Label>
+                          <Label htmlFor="create-opportunities">Cơ hội</Label>
                           <Textarea
                             id="create-opportunities"
                             value={data?.opportunities || ""}
@@ -249,7 +245,9 @@ const UpdateProgramDialog = ({
 
                       <div className="grid gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="update-benefits">Lợi ích (cách nhau bằng dấu phẩy)</Label>
+                          <Label htmlFor="update-benefits">
+                            Lợi ích (cách nhau bằng dấu phẩy)
+                          </Label>
                           <Input
                             id="update-benefits"
                             value={data?.benefits}
@@ -281,9 +279,9 @@ const UpdateProgramDialog = ({
                       <div className="grid gap-2 mt-3">
                         <Label htmlFor="update-status">Trạng thái</Label>
                         <Select
-                          value={data.status || "inactive"}
+                          value={data.status || "deleted"}
                           onValueChange={(value: string) =>
-                            onChange("status", value as "active" | "inactive")
+                            onChange("status", value as "active" | "deleted")
                           }
                         >
                           <SelectTrigger id="update-status">
@@ -291,7 +289,9 @@ const UpdateProgramDialog = ({
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="active">Hoạt động</SelectItem>
-                            <SelectItem value="inactive">Không hoạt động</SelectItem>
+                            <SelectItem value="deleted">
+                              Không hoạt động
+                            </SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

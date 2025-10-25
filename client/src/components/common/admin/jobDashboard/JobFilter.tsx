@@ -22,7 +22,7 @@ export const JobFilter = ({
   const filterOptions = {
     status: [
       { label: "Hoạt động", value: "active" },
-      { label: "Không hoạt động", value: "inactive" },
+      { label: "Đã xóa", value: "deleted" },
     ],
   };
 

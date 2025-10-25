@@ -11,7 +11,7 @@ const getStatusColor = (status: string) => {
   switch (status) {
     case "active":
       return "bg-green-500";
-    case "inactive":
+    case "banned":
       return "bg-red-500";
     case "pending":
       return "bg-yellow-500";
@@ -64,7 +64,7 @@ export const UserTable = ({
       onClick: onEdit,
     });
   }
-  
+
   if (onResetPassword) {
     actions.push({
       label: "Reset Password",

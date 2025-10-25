@@ -24,7 +24,7 @@ export const verifyOTP = RequestHandlerCustom(async (req, res, next) => {
     const user = await handleGetUserByEmail({ email });
 
     if (!user) {
-        return next(new ErrorCustom(404, "User not found"));
+        return next(new ErrorCustom(404, "Người dùng không tồn tại"));
     }
 
     await handleUpdateUserStatusByEmail({ email, status: EUserStatus.ACTIVE });
@@ -56,7 +56,7 @@ export const sendOTP = RequestHandlerCustom(async (req, res, next) => {
 
     // Chuẩn bị dữ liệu cho template email
     const templateData = {
-        logoUrl: "https://example.com/logo.png", // Thay thế bằng URL thực của logo
+        logoUrl: "https://example.com/logo1.png", // Thay thế bằng URL thực của logo
         title: "Xác thực tài khoản của bạn",
         greeting: "Xin chào",
         name: userName,
@@ -87,28 +87,28 @@ export const login = RequestHandlerCustom(async (req, res, next) => {
     const { email, password } = data;
 
     if (!email || !password) {
-        return next(new ErrorCustom(400, "Please input full information"));
+        return next(new ErrorCustom(400, "Vui lòng nhập đầy đủ thông tin"));
     }
 
     const user = await handleGetUserByEmail({ email });
 
     if (!user) {
-        return next(new ErrorCustom(404, "User not found"));
+        return next(new ErrorCustom(404, "Người dùng không tồn tại"));
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-        return next(new ErrorCustom(403, "Invalid credential"));
+        return next(new ErrorCustom(403, "Thông tin đăng nhập không hợp lệ"));
     }
 
-    const isInactive = await user.status === EUserStatus.INACTIVE;
+    const isInactive = await user.status === EUserStatus.BANNED;
     if (isInactive) {
-        return next(new ErrorCustom(402, "User is not active"));
+        return next(new ErrorCustom(402, "Người dùng bị vô hiệu hóa"));
     }
 
     const isPending = await user.status === EUserStatus.PENDING;
     if (isPending) {
-        return next(new ErrorCustom(401, "User is pending"));
+        return next(new ErrorCustom(401, "Người dùng đang chờ xác thức"));
     }
 
     const token = jwt.sign(
@@ -142,7 +142,7 @@ export const login = RequestHandlerCustom(async (req, res, next) => {
 
 export const logout = RequestHandlerCustom(async (req, res, next) => {
     if (!req.userId) {
-        return next(new ErrorCustom(403, "Not authenticated"));
+        return next(new ErrorCustom(403, "Người dùng chưa đăng nhập"));
     }
 
     // Clear cookie regardless of Redis status
@@ -154,7 +154,7 @@ export const logout = RequestHandlerCustom(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        message: "Logout successful"
+        message: "Đăng xuất thành công"
     });
 });
 
@@ -166,7 +166,7 @@ export const resetPassword = RequestHandlerCustom(async (req, res, next) => {
     const user = await handleGetUserByEmail({ email });
 
     if (!user) {
-        return next(new ErrorCustom(404, "User not found"));
+        return next(new ErrorCustom(404, "Người dùng không tồn tại"));
     }
 
     const newPassword = generateRandomPassword();
@@ -186,7 +186,7 @@ export const resetPassword = RequestHandlerCustom(async (req, res, next) => {
 
     // Chuẩn bị dữ liệu cho template email
     const templateData = {
-        logoUrl: "https://example.com/logo.png",
+        logoUrl: "https://example.com/logo1.png",
         name: userName,
         password: newPassword,
         contactEmail: "VietAuAcademy@gmail.com",
@@ -204,7 +204,7 @@ export const resetPassword = RequestHandlerCustom(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        message: "Password has been reset. New password sent to email."
+        message: "Mật khẩu mới đã được gửi đến email của bạn"
     });
 });
 
@@ -216,17 +216,17 @@ export const forgotPassword = RequestHandlerCustom(async (req, res, next) => {
     // Kiểm tra xem user có tồn tại không
     const user = await handleGetUserByEmail({ email });
     if (!user) {
-        return next(new ErrorCustom(404, "User not found"));
+        return next(new ErrorCustom(404, "Người dùng không tồn tại"));
     }
 
     // Kiểm tra mật khẩu và xác nhận mật khẩu có khớp không
     if (password !== confirmPassword) {
-        return next(new ErrorCustom(400, "Passwords do not match"));
+        return next(new ErrorCustom(400, "Mật khẩu xác nhận không khớp"));
     }
 
     // Kiểm tra độ mạnh của mật khẩu nếu cần
     if (password.length < 6) {
-        return next(new ErrorCustom(400, "Password must be at least 6 characters long"));
+        return next(new ErrorCustom(400, "Mật khẩu phải có ít nhất 6 ký tự"));
     }
 
     // Hash mật khẩu mới
@@ -238,7 +238,7 @@ export const forgotPassword = RequestHandlerCustom(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        message: "Password has been reset successfully"
+        message: "Mật khẩu đã được đặt lại thành công"
     });
 });
 
@@ -250,23 +250,23 @@ export const changePassword = RequestHandlerCustom(async (req, res, next) => {
     // Kiểm tra xem user có tồn tại không
     const user = await handleGetUserByEmail({ email });
     if (!user) {
-        return next(new ErrorCustom(404, "User not found"));
+        return next(new ErrorCustom(404, "Người dùng không tồn tại"));
     }
 
     // Kiểm tra oldPassword có khớp với mật khẩu hiện tại không
     const isMatch = await bcrypt.compare(oldPassword, user.password);
     if (!isMatch) {
-        return next(new ErrorCustom(400, "Current password is incorrect"));
+        return next(new ErrorCustom(400, "Mật khẩu hiện tại không chính xác"));
     }
 
     // Kiểm tra newPassword và confirmPassword có khớp không
     if (newPassword !== confirmPassword) {
-        return next(new ErrorCustom(400, "New passwords do not match"));
+        return next(new ErrorCustom(400, "Mật khẩu mới và xác nhận không khớp"));
     }
 
     // Kiểm tra độ mạnh của mật khẩu mới nếu cần
     if (newPassword.length < 6) {
-        return next(new ErrorCustom(400, "New password must be at least 6 characters long"));
+        return next(new ErrorCustom(400, "Mật khẩu mới phải có ít nhất 6 ký tự"));
     }
 
     // Hash mật khẩu mới
@@ -278,6 +278,6 @@ export const changePassword = RequestHandlerCustom(async (req, res, next) => {
 
     res.status(200).json({
         success: true,
-        message: "Password changed successfully"
+        message: "Mật khẩu đã được thay đổi thành công"
     });
 });

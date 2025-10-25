@@ -282,9 +282,7 @@ const UpdateJobDialog = ({
 
                       <div className="grid gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="update-description">
-                            Mô tả
-                          </Label>
+                          <Label htmlFor="update-description">Mô tả</Label>
                           <Textarea
                             id="update-description"
                             value={data?.description || ""}
@@ -311,7 +309,9 @@ const UpdateJobDialog = ({
 
                       <div className="grid gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="update-workType">Loại công việc</Label>
+                          <Label htmlFor="update-workType">
+                            Loại công việc
+                          </Label>
 
                           <Input
                             id="update-workType"
@@ -377,9 +377,7 @@ const UpdateJobDialog = ({
 
                       <div className="grid gap-4">
                         <div className="grid gap-2">
-                          <Label htmlFor="update-accommodation">
-                            Chỗ ở
-                          </Label>
+                          <Label htmlFor="update-accommodation">Chỗ ở</Label>
 
                           <Input
                             id="update-accommodation"
@@ -427,7 +425,7 @@ const UpdateJobDialog = ({
                         <Label htmlFor="update-country">Trạng thái</Label>
 
                         <Select
-                          value={data.status || EStatus.INACTIVE}
+                          value={data.status || EStatus.DELETED}
                           onValueChange={(value: string) =>
                             onChange("status", value)
                           }

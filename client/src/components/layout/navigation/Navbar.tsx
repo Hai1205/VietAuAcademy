@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { EMAIL, COMPANY, DESCRIPTION } from "@/utils/services/constants";
+import { EMAIL, COMPANY, DESCRIPTION, PHONE } from "@/utils/services/constants";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, Menu, X } from "lucide-react";
@@ -15,7 +15,6 @@ export const navigation = [
   { name: "Giới thiệu", href: "/about" },
   { name: "Chương trình", href: "/programs" },
   { name: "Việc làm", href: "/jobs" },
-  // { name: "Tin tức", href: "/blogs" },
   { name: "Hỏi đáp", href: "/faq" },
   { name: "Liên hệ", href: "/contact" },
 ];
@@ -34,7 +33,7 @@ export default function Navbar() {
               <div className="flex items-center space-x-4">
                 <div className="flex items-center space-x-1">
                   <Phone size={14} />
-                  <span>0782 748 863</span>
+                  <span>{PHONE}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Mail size={14} />
@@ -54,7 +53,7 @@ export default function Navbar() {
             {/* Logo - SSR */}
             <Link href="/" className="flex items-center space-x-2">
               <Image
-                src="/images/logo.png"
+                src="/images/logo1.png"
                 alt="VietAuAcademy Logo"
                 width={40}
                 height={30}

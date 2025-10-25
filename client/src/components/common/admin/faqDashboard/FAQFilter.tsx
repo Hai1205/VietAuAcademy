@@ -22,7 +22,7 @@ export const FAQFilter = ({
   const filterOptions = {
     status: [
       { label: "Hoạt động", value: "active" },
-      { label: "Không hoạt động", value: "inactive" },
+      { label: "Đã xóa", value: "deleted" },
     ],
     contentType: [
       { label: "Hồ sơ du học", value: "Hồ sơ du học" },

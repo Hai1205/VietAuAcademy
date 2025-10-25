@@ -11,7 +11,7 @@ const getStatusColor = (status: string) => {
   switch (status) {
     case "active":
       return "bg-green-500";
-    case "inactive":
+    case "deleted":
       return "bg-red-500";
     default:
       return "bg-gray-500";
@@ -53,7 +53,9 @@ export const ProgramTable = ({
               program.featured ? "bg-green-500" : "bg-red-500"
             }`}
           />
-          <span className="capitalize">{program.featured ? "Có" : "Không"}</span>
+          <span className="capitalize">
+            {program.featured ? "Có" : "Không"}
+          </span>
         </div>
       ),
     },

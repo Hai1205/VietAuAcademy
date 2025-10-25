@@ -22,10 +22,7 @@ export const ProgramFilter = ({
   applyFilters,
   closeMenuMenuFilters,
 }: ProgramFilterProps) => {
-  const handleToggleFilter = (
-    value: string,
-    type: "status"
-  ) => {
+  const handleToggleFilter = (value: string, type: "status") => {
     if (type === "status") {
       toggleFilter(value, "status");
     }
@@ -34,7 +31,7 @@ export const ProgramFilter = ({
   const filterOptions = {
     status: [
       { label: "Hoạt động", value: EStatus.ACTIVE },
-      { label: "Không hoạt động", value: EStatus.INACTIVE },
+      { label: "Đã xóa", value: EStatus.DELETED },
     ],
   };
 

@@ -12,7 +12,7 @@ export const getPrograms = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Get programs successfully",
+      message: "Lấy danh sách chương trình thành công",
       programs: programs
     });
   }
@@ -26,7 +26,7 @@ export const getProgram = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Get program successfully",
+      message: "Lấy chương trình thành công",
       program: program
     });
   }
@@ -82,7 +82,7 @@ export const createProgram = RequestHandlerCustom(
 
     res.status(201).json({
       success: true,
-      message: "New program created",
+      message: "Đã tạo chương trình mới",
       program: program
     });
   }
@@ -93,13 +93,13 @@ export const updateProgram = RequestHandlerCustom(
     const id = req.params.id;
 
     if (!id) {
-      return next(new ErrorCustom(400, "Program ID is required"));
+      return next(new ErrorCustom(400, "ID chương trình là bắt buộc"));
     }
 
     const data: IUpdateProgramData = parseRequestData(req);
 
     if (Object.keys(data).length === 0) {
-      return next(new ErrorCustom(400, "No data provided for update"));
+      return next(new ErrorCustom(400, "Không có dữ liệu để cập nhật"));
     }
 
     if (req.files && Array.isArray(req.files) && req.files.length > 0) {
@@ -118,7 +118,7 @@ export const updateProgram = RequestHandlerCustom(
 
     res.status(200).json({
       success: true,
-      message: "Program updated successfully",
+      message: "Cập nhật chương trình thành công",
       program: updatedProgram
     });
   }

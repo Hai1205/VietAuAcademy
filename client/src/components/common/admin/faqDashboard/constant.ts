@@ -1,6 +1,6 @@
 export const FAQStatus = [
     { value: "active", label: "Active" },
-    { value: "inactive", label: "Inactive" },
+    { value: "deleted", label: "Deleted" },
 ];
 
 export const FAQCategory = [

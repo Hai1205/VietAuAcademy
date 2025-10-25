@@ -105,7 +105,7 @@ const CreateProgramDialog = ({
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="create-title">Chương trình</Label>
-                     
+
                       <Input
                         id="create-title"
                         value={data?.title || ""}
@@ -117,7 +117,7 @@ const CreateProgramDialog = ({
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="create-description">Mô tả</Label>
-                    
+
                       <Textarea
                         id="create-description"
                         value={data?.description || ""}
@@ -131,7 +131,7 @@ const CreateProgramDialog = ({
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="create-country">Quốc gia</Label>
-                 
+
                       <Input
                         id="create-country"
                         value={data?.country || ""}
@@ -143,7 +143,7 @@ const CreateProgramDialog = ({
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="create-duration">Thời gian</Label>
-                  
+
                       <Input
                         id="create-duration"
                         value={data?.duration || ""}
@@ -155,7 +155,7 @@ const CreateProgramDialog = ({
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="create-tuition">Học phí</Label>
-                   
+
                       <Input
                         id="create-tuition"
                         value={data?.tuition || ""}
@@ -166,10 +166,8 @@ const CreateProgramDialog = ({
 
                   <div className="grid gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="create-opportunities">
-                        Cơ hội
-                      </Label>
-                   
+                      <Label htmlFor="create-opportunities">Cơ hội</Label>
+
                       <Textarea
                         id="create-opportunities"
                         value={data?.opportunities || ""}
@@ -183,7 +181,7 @@ const CreateProgramDialog = ({
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="create-about">Giới thiệu</Label>
-                  
+
                       <Textarea
                         id="create-about"
                         value={data?.about || ""}
@@ -195,7 +193,7 @@ const CreateProgramDialog = ({
                   <div className="grid gap-4">
                     <div className="grid gap-2">
                       <Label htmlFor="create-image">Hình ảnh</Label>
-                    
+
                       <div className="flex flex-col gap-2">
                         <input
                           type="file"
@@ -234,8 +232,10 @@ const CreateProgramDialog = ({
 
                   <div className="grid gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="create-requirements">Yêu cầu (cách nhau bằng dấu phẩy)</Label>
-                  
+                      <Label htmlFor="create-requirements">
+                        Yêu cầu (cách nhau bằng dấu phẩy)
+                      </Label>
+
                       <Input
                         id="update-requirements"
                         value={data?.requirements}
@@ -248,8 +248,10 @@ const CreateProgramDialog = ({
 
                   <div className="grid gap-4">
                     <div className="grid gap-2">
-                      <Label htmlFor="create-benefits">Lợi ích (cách nhau bằng dấu phẩy)</Label>
-                  
+                      <Label htmlFor="create-benefits">
+                        Lợi ích (cách nhau bằng dấu phẩy)
+                      </Label>
+
                       <Input
                         id="update-benefits"
                         value={data?.benefits}
@@ -260,7 +262,7 @@ const CreateProgramDialog = ({
 
                   <div className="grid gap-2 mt-3">
                     <Label htmlFor="create-featured">Nổi bật</Label>
-                 
+
                     <Select
                       value={data?.featured ? "true" : "false"}
                       onValueChange={(value) =>
@@ -280,7 +282,7 @@ const CreateProgramDialog = ({
                   <div className="grid gap-2 mt-3">
                     <Label htmlFor="create-status">Status</Label>
                     <Select
-                      value={data?.status || EStatus.INACTIVE}
+                      value={data?.status || EStatus.DELETED}
                       onValueChange={(value) =>
                         onChange("status", value as EStatus)
                       }
@@ -289,8 +291,10 @@ const CreateProgramDialog = ({
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value={EStatus.ACTIVE}>Hoạt động</SelectItem>
-                        <SelectItem value={EStatus.INACTIVE}>
+                        <SelectItem value={EStatus.ACTIVE}>
+                          Hoạt động
+                        </SelectItem>
+                        <SelectItem value={EStatus.DELETED}>
                           Không hoạt động
                         </SelectItem>
                       </SelectContent>
