@@ -42,7 +42,7 @@ export function DataTable<T>({
   columns,
   actions,
   onRowClick,
-  emptyMessage = "No data found",
+  emptyMessage = "Không có dữ liệu để hiển thị.",
 }: DataTableProps<T>) {
   return (
     <ScrollArea className="h-[calc(100vh-220px)] w-full rounded-xl bg-white dark:bg-gray-800">
@@ -59,7 +59,7 @@ export function DataTable<T>({
                 </TableHead>
               ))}
               {actions && actions.length > 0 && (
-                <TableHead className="text-right font-bold">Actions</TableHead>
+                <TableHead className="text-right font-bold">Hành động</TableHead>
               )}
             </TableRow>
           </TableHeader>

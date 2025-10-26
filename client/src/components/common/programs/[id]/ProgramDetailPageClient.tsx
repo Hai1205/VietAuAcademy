@@ -101,7 +101,7 @@ export default function ProgramDetailPageClient({
           <Button
             variant="ghost"
             onClick={() => router.back()}
-            className="mb-4"
+            className="mb-4 hover:text-primary"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Quay lại
@@ -110,8 +110,8 @@ export default function ProgramDetailPageClient({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div>
               <div className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
-                <MapPin className="w-4 h-4" />
-                <span>{program.country}</span>
+                <MapPin className="w-4 h-4 text-secondary" />
+                <span className="text-secondary">{program.country}</span>
                 {program.featured && (
                   <span className="bg-primary text-white px-2 py-1 rounded-full text-xs font-medium">
                     Nổi bật

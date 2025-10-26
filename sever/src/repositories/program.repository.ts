@@ -2,11 +2,15 @@ import { ICreateProgramData, IUpdateProgramData } from "../controllers/program.c
 import { Program } from "../models/program.model.js";
 import { ErrorCustom, HandlerCustom } from "../utils/configs/custom.js";
 
-export const handleGetPrograms = HandlerCustom(async (data: { featured?: boolean }) => {
-    const filter: { featured?: boolean } = {};
+export const handleGetPrograms = HandlerCustom(async (data: { featured?: boolean; status?: string }) => {
+    const filter: { featured?: boolean; status?: string } = {};
 
     if (data.featured === true) {
         filter.featured = true;
+    }
+
+    if (data.status) {
+        filter.status = data.status;
     }
 
     const programs = await Program

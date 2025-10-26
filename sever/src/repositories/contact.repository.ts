@@ -6,6 +6,7 @@ import { EContactStatus } from "../utils/types/enum.js";
 export const handleGetContacts = HandlerCustom(async () => {
     const contacts = await Contact
         .find()
+        .sort({ createdAt: -1 })
         .exec();
 
     return contacts;

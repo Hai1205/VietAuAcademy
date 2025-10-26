@@ -18,8 +18,9 @@ import { FAQCategory } from "@/components/common/admin/faqDashboard/constant";
 const initialFilters = { status: [] as string[], contentType: [] as string[] };
 
 export default function FAQDashboardPage() {
-  const { isLoading, getAllFAQs, updateFAQ, createFAQ } = useFAQStore();
+  const { getAllFAQs, updateFAQ, createFAQ, deleteFAQ } = useFAQStore();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateFAQOpen, setIsCreateFAQOpen] = useState(false);
   const [isUpdateFAQOpen, setIsUpdateFAQOpen] = useState(false);
@@ -29,10 +30,12 @@ export default function FAQDashboardPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const res = await getAllFAQs();
-      const data = res?.data?.FAQs || [];
+      const data = res?.data?.faqs || [];
       setAllFAQs(data);
       setFilteredFAQs(data);
+      setIsLoading(false);
     };
 
     fetchData();
@@ -122,7 +125,7 @@ export default function FAQDashboardPage() {
           question: "",
           answer: "",
           category: FAQCategory[0].value,
-          status: EStatus.ACTIVE,
+          status: EStatus.PUBLIC,
         };
         return { ...defaultData, [field]: value };
       }
@@ -141,9 +144,9 @@ export default function FAQDashboardPage() {
         data.status
       );
 
-      // Refresh the FAQs list after update
+      // Refresh the faqs list after update
       const res = await getAllFAQs();
-      const updatedData = res?.data?.FAQs || [];
+      const updatedData = res?.data?.faqs || [];
       setAllFAQs(updatedData);
 
       // Apply current filters
@@ -157,9 +160,9 @@ export default function FAQDashboardPage() {
     if (data) {
       await createFAQ(data.question, data.answer, data.category, data.status);
 
-      // Refresh the FAQs list after create
+      // Refresh the faqs list after create
       const res = await getAllFAQs();
-      const updatedData = res?.data?.FAQs || [];
+      const updatedData = res?.data?.faqs || [];
       setAllFAQs(updatedData);
 
       // Apply current filters
@@ -168,6 +171,15 @@ export default function FAQDashboardPage() {
       setIsCreateFAQOpen(false);
       setData(null);
     }
+  };
+
+  const onDelete = async (faq: IFAQ) => {
+    await deleteFAQ(faq._id);
+  };
+
+  const onUpdate = async (faq: IFAQ) => {
+    setData(faq);
+    setIsUpdateFAQOpen(true);
   };
 
   return (
@@ -205,7 +217,7 @@ export default function FAQDashboardPage() {
                   handleSearch={handleSearch}
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
-                  placeholder="Search FAQs..."
+                  placeholder="Search faqs..."
                 />
 
                 <Button
@@ -219,7 +231,7 @@ export default function FAQDashboardPage() {
 
                     // Refresh data from API
                     const res = await getAllFAQs();
-                    const data = res?.data?.FAQs || [];
+                    const data = res?.data?.faqs || [];
                     setAllFAQs(data);
                     setFilteredFAQs(data);
                   }}
@@ -242,12 +254,10 @@ export default function FAQDashboardPage() {
           </CardHeader>
 
           <FAQTable
-            FAQs={filteredFAQs}
+            faqs={filteredFAQs}
             isLoading={isLoading}
-            onEdit={(faq) => {
-              setData(faq);
-              setIsUpdateFAQOpen(true);
-            }}
+            onUpdate={onUpdate}
+            onDelete={onDelete}
           />
         </Card>
       </div>

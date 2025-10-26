@@ -34,11 +34,8 @@ const CreateFAQDialog = ({
 
   const handleCreate = async () => {
     setIsLoading(true);
-    try {
-      await Promise.resolve(onFAQCreated());
-    } finally {
-      setIsLoading(false);
-    }
+    onFAQCreated();
+    setIsLoading(false);
   };
 
   const footer = (
@@ -135,7 +132,7 @@ const CreateFAQDialog = ({
               Trạng thái
             </Label>
             <Select
-              value={data?.status || EStatus.ACTIVE}
+              value={data?.status || EStatus.PUBLIC}
               onValueChange={(value: string) => onChange("status", value)}
             >
               <SelectTrigger id="create-status" className="h-10">

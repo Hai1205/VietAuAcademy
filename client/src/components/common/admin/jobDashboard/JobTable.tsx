@@ -3,7 +3,8 @@ import { DataTable } from "@/components/common/admin/DataTable";
 interface IJobTableProps {
   Jobs: IJob[];
   isLoading: boolean;
-  onEdit?: (job: IJob) => void;
+  onUpdate?: (job: IJob) => void;
+  onDelete?: (job: IJob) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -17,7 +18,12 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export const JobTable = ({ Jobs, isLoading, onEdit }: IJobTableProps) => {
+export const JobTable = ({
+  Jobs,
+  isLoading,
+  onUpdate,
+  onDelete,
+}: IJobTableProps) => {
   const columns = [
     {
       header: "STT",
@@ -62,21 +68,28 @@ export const JobTable = ({ Jobs, isLoading, onEdit }: IJobTableProps) => {
     },
   ];
 
+  const actions = [];
+
+  if (onUpdate) {
+    actions.push({
+      label: "Chỉnh sửa",
+      onClick: onUpdate,
+    });
+  }
+
+  if (onDelete) {
+    actions.push({
+      label: "Xoá",
+      onClick: onDelete,
+    });
+  }
+
   return (
     <DataTable
       data={Jobs}
       isLoading={isLoading}
       columns={columns}
-      actions={
-        onEdit
-          ? [
-              {
-                label: "Edit",
-                onClick: onEdit,
-              },
-            ]
-          : []
-      }
+      actions={actions}
       emptyMessage="Không tìm thấy công việc nào"
     />
   );

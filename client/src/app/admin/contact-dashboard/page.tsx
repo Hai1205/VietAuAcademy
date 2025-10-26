@@ -17,8 +17,9 @@ const initialFilters = { status: [] as string[] };
 
 export default function ContactDashboardPage() {
   const { userAuth } = useAuthStore();
-  const { isLoading, getAllContacts, resolveContact } = useContactStore();
+  const { getAllContacts, resolveContact, deleteContact } = useContactStore();
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false);
   const [isResolving, setIsResolving] = useState(false);
@@ -31,10 +32,12 @@ export default function ContactDashboardPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const res = await getAllContacts();
       const data = res?.data?.contacts || [];
       setAllContacts(data);
       setFilteredContacts(data);
+      setIsLoading(false);
     };
 
     fetchData();
@@ -78,7 +81,7 @@ export default function ContactDashboardPage() {
     [searchQuery, activeFilters, filterData]
   );
 
-  const handleViewDetails = (contact: IContact) => {
+  const onViewDetails = (contact: IContact) => {
     setSelectedContact(contact);
     setIsViewDetailsOpen(true);
   };
@@ -94,10 +97,14 @@ export default function ContactDashboardPage() {
 
     setIsResolving(true);
     const response = await resolveContact(userAuth._id, selectedContact._id);
-    if (response.success) {
+    if (response.status === 200) {
       setIsViewDetailsOpen(false);
     }
     setIsResolving(false);
+  };
+  
+  const onDelete = async (contact: IContact) => {
+    await deleteContact(contact._id);
   };
 
   // Toggle filter without auto-filtering
@@ -192,7 +199,8 @@ export default function ContactDashboardPage() {
           <ContactTable
             contacts={filteredContacts}
             isLoading={isLoading}
-            onViewDetails={handleViewDetails}
+            onViewDetails={onViewDetails}
+            onDelete={onDelete}
           />
         </Card>
       </div>

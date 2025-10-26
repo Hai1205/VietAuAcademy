@@ -34,11 +34,8 @@ const UpdateFAQDialog = ({
 
   const handleUpdate = async () => {
     setIsLoading(true);
-    try {
-      await Promise.resolve(onFAQUpdated());
-    } finally {
-      setIsLoading(false);
-    }
+    onFAQUpdated();
+    setIsLoading(false);
   };
 
   const footer = (
@@ -120,7 +117,7 @@ const UpdateFAQDialog = ({
                 <SelectValue placeholder="Chọn danh mục" />
               </SelectTrigger>
               <SelectContent>
-                {FAQCategory.map((item: { value: string; label: string }) => (
+                {FAQCategory.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>
@@ -134,14 +131,14 @@ const UpdateFAQDialog = ({
               Trạng thái
             </Label>
             <Select
-              value={data?.status || EStatus.ACTIVE}
+              value={data?.status || EStatus.PUBLIC}
               onValueChange={(value: string) => onChange("status", value)}
             >
               <SelectTrigger id="update-status" className="h-10">
                 <SelectValue placeholder="Chọn trạng thái" />
               </SelectTrigger>
               <SelectContent>
-                {FAQStatus.map((item: { value: string; label: string }) => (
+                {FAQStatus.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>

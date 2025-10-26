@@ -14,17 +14,16 @@ import { TableSearch } from "@/components/common/admin/TableSearch";
 import { UserFilter } from "@/components/common/admin/userDashboard/UserFilter";
 import { UserTable } from "@/components/common/admin/userDashboard/UserTable";
 import { useAuthStore } from "@/utils/stores/authStore";
-import { toast } from "react-toastify";
 
 // Initialize empty filters
 const initialFilters = { status: [] as string[] };
 
 function UserDashboardPage() {
-  const { isLoading, getAllUsers, createUser, updateUser } = useUserStore();
+  const { getAllUsers, createUser, updateUser, deleteUser } = useUserStore();
   const { resetPassword } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState("");
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const [isUpdateUserOpen, setIsUpdateUserOpen] = useState(false);
   // const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
@@ -37,10 +36,12 @@ function UserDashboardPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const res = await getAllUsers();
       const data = res?.data?.users || [];
       setAllUsers(data);
       setFilteredUsers(data);
+      setIsLoading(false);
     };
 
     // Skip window check to avoid hydration error
@@ -170,17 +171,6 @@ function UserDashboardPage() {
     }
   };
 
-  const handleResetPassword = async (user: IUser) => {
-    if (user) {
-      const result = await resetPassword(user.email);
-      if (result?.data?.success) {
-        toast.success("Password reset email sent successfully");
-      } else {
-        toast.error("Failed to send password reset email");
-      }
-    }
-  };
-
   const handleCreate = async () => {
     if (data) {
       await createUser(
@@ -193,6 +183,23 @@ function UserDashboardPage() {
 
       setIsCreateUserOpen(false);
     }
+  };
+
+  const onDelete = async (user: IUser) => {
+    await deleteUser(user._id);
+  };
+
+  const onUpdate = async (user: IUser) => {
+    setData(user);
+    setIsUpdateUserOpen(true);
+  };
+
+  const onResetPassword = async (user: IUser) => {
+    if (!user) {
+      return;
+    }
+    
+    await resetPassword(user?.email);
   };
 
   return (
@@ -297,13 +304,9 @@ function UserDashboardPage() {
           <UserTable
             Users={filteredUsers}
             isLoading={isLoading}
-            onEdit={(user) => {
-              setData(user);
-              setIsUpdateUserOpen(true);
-            }}
-            onResetPassword={(user) => {
-              handleResetPassword(user);
-            }}
+            onUpdate={onUpdate}
+            onDelete={onDelete}
+            onResetPassword={onResetPassword}
           />
         </Card>
       </div>

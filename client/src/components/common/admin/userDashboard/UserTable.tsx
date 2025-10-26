@@ -3,8 +3,9 @@ import { DataTable } from "@/components/common/admin/DataTable";
 interface UserTableProps {
   Users: IUser[];
   isLoading: boolean;
-  onEdit?: (user: IUser) => void;
+  onUpdate?: (user: IUser) => void;
   onResetPassword?: (user: IUser) => void;
+  onDelete?: (user: IUser) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -23,8 +24,9 @@ const getStatusColor = (status: string) => {
 export const UserTable = ({
   Users,
   isLoading,
-  onEdit,
+  onUpdate,
   onResetPassword,
+  onDelete,
 }: UserTableProps) => {
   const columns = [
     {
@@ -58,16 +60,23 @@ export const UserTable = ({
 
   const actions = [];
 
-  if (onEdit) {
+  if (onUpdate) {
     actions.push({
-      label: "Edit",
-      onClick: onEdit,
+      label: "Chỉnh sửa",
+      onClick: onUpdate,
+    });
+  }
+
+  if (onDelete) {
+    actions.push({
+      label: "Xoá",
+      onClick: onDelete,
     });
   }
 
   if (onResetPassword) {
     actions.push({
-      label: "Reset Password",
+      label: "Đặt lại mật khẩu",
       onClick: onResetPassword,
     });
   }

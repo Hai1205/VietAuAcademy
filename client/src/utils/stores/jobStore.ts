@@ -60,6 +60,8 @@ export interface IJobStore extends IBaseStore {
 		status: EStatus,
 		question?: string,
 	) => Promise<IApiResponse<IJobDataResponse>>;
+	deleteJob: (jobId: string) => Promise<IApiResponse<IJobDataResponse>>;
+	getPublicJobs: () => Promise<IApiResponse<IJobDataResponse>>;
 }
 
 const storeName = "job";
@@ -189,6 +191,18 @@ export const useJobStore = createStore<IJobStore>(
 
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.PATCH, `/jobs/${jobId}`, formData);
+			});
+		},
+
+		deleteJob: async (jobId: string): Promise<IApiResponse<IJobDataResponse>> => {
+			return await get().handleRequest(async () => {
+				return await handleRequest(EHttpType.DELETE, `/jobs/${jobId}`);
+			});
+		},
+
+		getPublicJobs: async (): Promise<IApiResponse<IJobDataResponse>> => {
+			return await get().handleRequest(async () => {
+				return await handleRequest(EHttpType.GET, `/public/jobs?status=public`);
 			});
 		},
 

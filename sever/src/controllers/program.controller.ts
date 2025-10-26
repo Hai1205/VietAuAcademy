@@ -7,8 +7,9 @@ export const getPrograms = RequestHandlerCustom(
   async (req, res) => {
     const featured = req.query.featured as string | undefined;
     const featuredBool = featured === 'true' ? true : undefined;
+    const status = req.query.status as string | undefined;
 
-    const programs = await handleGetPrograms({ featured: featuredBool });
+    const programs = await handleGetPrograms({ featured: featuredBool, status });
 
     res.status(200).json({
       success: true,

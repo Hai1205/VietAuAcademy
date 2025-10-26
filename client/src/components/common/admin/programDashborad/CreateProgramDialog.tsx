@@ -16,8 +16,8 @@ import {
 import { Save, Image as ImageIcon, Plus, X, BookOpen } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { EStatus } from "@/utils/types/enum";
 import { EnhancedDialog } from "../EnhancedDialog";
+import { programFeatured, programStatus } from "./constant";
 
 interface CreateProgramDialogProps {
   isOpen: boolean;
@@ -430,8 +430,11 @@ const CreateProgramDialog = ({
                   <SelectValue placeholder="Chọn trạng thái nổi bật" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="true">Có</SelectItem>
-                  <SelectItem value="false">Không</SelectItem>
+                  {programFeatured.map((item) => (
+                    <SelectItem key={item.label} value={`${item.value}`}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -441,15 +444,18 @@ const CreateProgramDialog = ({
                 Trạng thái
               </Label>
               <Select
-                value={data?.status || EStatus.ACTIVE}
-                onValueChange={(value) => onChange("status", value as EStatus)}
+                value={data?.status ? data.status : programStatus[0].value}
+                onValueChange={(value) => onChange("status", value)}
               >
                 <SelectTrigger id="create-status" className="h-10">
                   <SelectValue placeholder="Chọn trạng thái" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value={EStatus.ACTIVE}>Hoạt động</SelectItem>
-                  <SelectItem value={EStatus.DELETED}>Xóa</SelectItem>
+                  {programStatus.map((item) => (
+                    <SelectItem key={item.value} value={item.value}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

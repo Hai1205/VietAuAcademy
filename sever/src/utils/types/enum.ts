@@ -1,6 +1,6 @@
 export enum EStatus {
-    DELETED = "deleted",
-    ACTIVE = "active"
+    PUBLIC = "public",
+    PRIVATE = "private"
 }
 
 export enum EUserStatus {

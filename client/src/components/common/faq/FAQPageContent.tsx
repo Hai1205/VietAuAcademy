@@ -15,19 +15,18 @@ const categories = [
 ];
 
 export default function FAQPageContent() {
-  const { getFAQsByStatus } = useFAQStore();
+  const { getPublicFAQs } = useFAQStore();
   const [faqs, setFaqs] = useState<IFAQ[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      // Fetch only active FAQs by default
-      const response = await getFAQsByStatus("active");
-      const data = response.data?.FAQs;
+      const response = await getPublicFAQs();
+      const data = response.data?.faqs;
       setFaqs(data || []);
     };
 
     fetchData();
-  }, [getFAQsByStatus]);
+  }, [getPublicFAQs]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">

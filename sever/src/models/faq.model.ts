@@ -16,7 +16,7 @@ const schema: Schema<IFAQDocument> = new Schema(
     status: {
       type: String,
       enum: Object.values(EStatus),
-      default: EStatus.ACTIVE,
+      default: EStatus.PUBLIC,
     },
   },
   {

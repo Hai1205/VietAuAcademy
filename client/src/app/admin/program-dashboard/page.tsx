@@ -18,7 +18,6 @@ const initialFilters = { status: [] as string[] };
 
 export default function ProgramDashboardPage() {
   const {
-    isLoading,
     getAllPrograms,
     createProgram,
     updateProgram,
@@ -26,7 +25,7 @@ export default function ProgramDashboardPage() {
   } = useProgramStore();
 
   const [searchQuery, setSearchQuery] = useState("");
-
+const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCreateProgramOpen, setIsCreateProgramOpen] = useState(false);
   const [isUpdateProgramOpen, setIsUpdateProgramOpen] = useState(false);
 
@@ -38,10 +37,12 @@ export default function ProgramDashboardPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const res = await getAllPrograms();
       const data = res?.data?.programs || [];
       setAllPrograms(data);
       setFilteredPrograms(data);
+      setIsLoading(false);
     };
 
     fetchData();
@@ -137,7 +138,7 @@ export default function ProgramDashboardPage() {
     benefits: [],
     imageUrl: "",
     featured: false,
-    status: EStatus.DELETED,
+    status: EStatus.PUBLIC,
   };
 
   // Use useState with consistent initialization for client and server
@@ -223,21 +224,13 @@ export default function ProgramDashboardPage() {
     }
   };
 
-  // Handle program deletion
-  const handleDelete = async (programId: string) => {
-    if (programId) {
-      await deleteProgram(programId);
+  const onDelete = async (program: IProgram) => {
+    await deleteProgram(program._id);
+  };
 
-      // Refresh data after deletion
-      const res = await getAllPrograms();
-      const updatedData = res?.data?.programs || [];
-
-      // Update both original and filtered data
-      setAllPrograms(updatedData);
-
-      // Re-apply current filters
-      filterData(searchQuery, activeFilters);
-    }
+  const onUpdate = async (program: IProgram) => {
+    setData(program);
+    setIsUpdateProgramOpen(true);
   };
 
   return (
@@ -259,7 +252,7 @@ export default function ProgramDashboardPage() {
             benefits: [],
             imageUrl: "",
             featured: true,
-            status: EStatus.ACTIVE,
+            status: EStatus.PUBLIC,
           };
           setData(defaultProgram);
           setIsCreateProgramOpen(true);
@@ -335,11 +328,8 @@ export default function ProgramDashboardPage() {
           <ProgramTable
             Programs={filteredPrograms}
             isLoading={isLoading}
-            onEdit={(program) => {
-              setData(program);
-              setIsUpdateProgramOpen(true);
-            }}
-            onDelete={handleDelete}
+            onUpdate={onUpdate}
+            onDelete={onDelete}
           />
         </Card>
       </div>

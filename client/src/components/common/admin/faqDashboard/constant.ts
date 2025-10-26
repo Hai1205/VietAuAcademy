@@ -1,6 +1,6 @@
 export const FAQStatus = [
-    { value: "active", label: "Active" },
-    { value: "deleted", label: "Deleted" },
+    { value: "public", label: "Công khai" },
+    { value: "private", label: "Riêng tư" },
 ];
 
 export const FAQCategory = [

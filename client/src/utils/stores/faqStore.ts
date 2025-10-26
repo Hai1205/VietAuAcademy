@@ -3,14 +3,11 @@ import { IBaseStore, createStore } from "../../lib/initialStore";
 import { EStatus } from "../types/enum";
 
 interface IFAQDataResponse {
-	FAQs?: IFAQ[];
+	faqs?: IFAQ[];
 }
 
 export interface IFAQStore extends IBaseStore {
 	getAllFAQs: () => Promise<IApiResponse<IFAQDataResponse>>;
-	getFAQsByStatus: (
-		status: string
-	) => Promise<IApiResponse<IFAQDataResponse>>;
 	getFAQsByCategory: (
 		category: string
 	) => Promise<IApiResponse<IFAQDataResponse>>;
@@ -27,6 +24,8 @@ export interface IFAQStore extends IBaseStore {
 		category: string,
 		status: EStatus,
 	) => Promise<IApiResponse<IFAQDataResponse>>;
+	deleteFAQ: (FAQId: string) => Promise<IApiResponse<IFAQDataResponse>>;
+	getPublicFAQs: () => Promise<IApiResponse<IFAQDataResponse>>;
 }
 
 const storeName = "faq";
@@ -38,19 +37,19 @@ export const useFAQStore = createStore<IFAQStore>(
 	(set, get) => ({
 		getAllFAQs: async (): Promise<IApiResponse<IFAQDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/FAQs`);
+				return await handleRequest(EHttpType.GET, `/faqs`);
 			});
 		},
 
 		getFAQsByStatus: async (status: string): Promise<IApiResponse<IFAQDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/FAQs?status=${status}`);
+				return await handleRequest(EHttpType.GET, `/faqs?status=${status}`);
 			});
 		},
 
 		getFAQsByCategory: async (category: string): Promise<IApiResponse<IFAQDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/FAQs?category=${category}`);
+				return await handleRequest(EHttpType.GET, `/faqs?category=${category}`);
 			});
 		},
 
@@ -67,7 +66,7 @@ export const useFAQStore = createStore<IFAQStore>(
 			formData.append("status", status);
 
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.POST, `/FAQs`, formData);
+				return await handleRequest(EHttpType.POST, `/faqs`, formData);
 			});
 		},
 
@@ -85,7 +84,19 @@ export const useFAQStore = createStore<IFAQStore>(
 			formData.append("status", status);
 
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.PATCH, `/FAQs/${FAQId}`, formData);
+				return await handleRequest(EHttpType.PATCH, `/faqs/${FAQId}`, formData);
+			});
+		},
+
+		deleteFAQ: async (FAQId: string): Promise<IApiResponse<IFAQDataResponse>> => {
+			return await get().handleRequest(async () => {
+				return await handleRequest(EHttpType.DELETE, `/faqs/${FAQId}`);
+			});
+		},
+
+		getPublicFAQs: async (): Promise<IApiResponse<IFAQDataResponse>> => {
+			return await get().handleRequest(async () => {
+				return await handleRequest(EHttpType.GET, `/public/faqs?status=public`);
 			});
 		},
 

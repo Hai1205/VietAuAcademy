@@ -48,7 +48,7 @@ const schema: Schema<IJobDocument> = new Schema(
     status: {
       type: String,
       enum: Object.values(EStatus),
-      default: EStatus.ACTIVE,
+      default: EStatus.PRIVATE,
     },
   },
   {

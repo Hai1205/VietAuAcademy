@@ -11,12 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { JobStatus } from "./CreateJobDialog";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
-import { EStatus } from "@/utils/types/enum";
 import { EnhancedDialog } from "../EnhancedDialog";
 import { Badge } from "@/components/ui/badge";
+import { jobFeatured, jobStatus } from "./constant";
 
 interface UpdateJobDialogProps {
   isOpen: boolean;
@@ -547,40 +546,43 @@ const UpdateJobDialog = ({
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label
-                  htmlFor="update-featured"
+                  htmlFor="create-featured"
                   className="text-sm font-medium"
                 >
                   Nổi bật
                 </Label>
                 <Select
                   value={data?.featured ? "true" : "false"}
-                  onValueChange={(value: string) =>
+                  onValueChange={(value) =>
                     onChange("featured", value === "true")
                   }
                 >
-                  <SelectTrigger id="update-featured" className="h-10">
+                  <SelectTrigger id="create-featured" className="h-10">
                     <SelectValue placeholder="Chọn trạng thái nổi bật" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="true">Có</SelectItem>
-                    <SelectItem value="false">Không</SelectItem>
+                    {jobFeatured.map((item) => (
+                      <SelectItem key={item.label} value={`${item.value}`}>
+                        {item.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="update-status" className="text-sm font-medium">
+                <Label htmlFor="create-status" className="text-sm font-medium">
                   Trạng thái
                 </Label>
                 <Select
-                  value={data.status || EStatus.DELETED}
-                  onValueChange={(value: string) => onChange("status", value)}
+                  value={data?.status ? data.status : jobStatus[0].value}
+                  onValueChange={(value) => onChange("status", value)}
                 >
-                  <SelectTrigger id="update-status" className="h-10">
+                  <SelectTrigger id="create-status" className="h-10">
                     <SelectValue placeholder="Chọn trạng thái" />
                   </SelectTrigger>
                   <SelectContent>
-                    {JobStatus.map((item: { value: string; label: string }) => (
+                    {jobStatus.map((item) => (
                       <SelectItem key={item.value} value={item.value}>
                         {item.label}
                       </SelectItem>

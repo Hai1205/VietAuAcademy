@@ -4,7 +4,8 @@ import { formatDateAgo } from "@/lib/utils";
 interface ContactTableProps {
   contacts: IContact[];
   isLoading: boolean;
-  onViewDetails: (contact: IContact) => void;
+  onViewDetails?: (contact: IContact) => void;
+  onDelete?: (contact: IContact) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -22,6 +23,7 @@ export function ContactTable({
   contacts,
   isLoading,
   onViewDetails,
+  onDelete,
 }: ContactTableProps) {
   const columns = [
     {
@@ -55,17 +57,28 @@ export function ContactTable({
     },
   ];
 
+  const actions = [];
+
+  if (onViewDetails) {
+    actions.push({
+      label: "Xem chi tiết",
+      onClick: onViewDetails,
+    });
+  }
+
+  if (onDelete) {
+    actions.push({
+      label: "Xoá",
+      onClick: onDelete,
+    });
+  }
+
   return (
     <DataTable
       data={contacts}
       isLoading={isLoading}
       columns={columns}
-      actions={[
-        {
-          label: "View",
-          onClick: onViewDetails,
-        },
-      ]}
+      actions={actions}
     />
   );
 }

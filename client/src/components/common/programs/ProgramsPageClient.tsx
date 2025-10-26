@@ -29,18 +29,18 @@ export default function ProgramsPageClient({
 }: {
   initialCountry?: string;
 }) {
-  const { getAllPrograms } = useProgramStore();
+  const { getPublicPrograms } = useProgramStore();
   const [programs, setPrograms] = useState<IProgram[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getAllPrograms();
+      const response = await getPublicPrograms();
       const data = response.data?.programs;
       setPrograms(data || []);
     };
 
     fetchData();
-  }, [getAllPrograms]);
+  }, [getPublicPrograms]);
 
   return (
     <>

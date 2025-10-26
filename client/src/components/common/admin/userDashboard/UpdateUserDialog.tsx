@@ -13,8 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Save, UserCog } from "lucide-react";
-import { EUserStatus } from "@/utils/types/enum";
 import { EnhancedDialog } from "../EnhancedDialog";
+import { userStatus } from "./constant";
 
 interface UpdateUserDialogProps {
   isOpen: boolean;
@@ -124,22 +124,22 @@ const UpdateUserDialog = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="update-status" className="text-sm font-medium">
+            <Label htmlFor="create-status" className="text-sm font-medium">
               Trạng thái
             </Label>
             <Select
-              value={data?.status || EUserStatus.PENDING}
-              onValueChange={(value) =>
-                onChange("status", value as EUserStatus)
-              }
+              value={data?.status ? data.status : userStatus[0].value}
+              onValueChange={(value) => onChange("status", value)}
             >
-              <SelectTrigger id="update-status" className="h-10">
+              <SelectTrigger id="create-status" className="h-10">
                 <SelectValue placeholder="Chọn trạng thái" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="active">Hoạt động</SelectItem>
-                <SelectItem value="banned">Ngừng hoạt động</SelectItem>
-                <SelectItem value={EUserStatus.PENDING}>Đang chờ</SelectItem>
+                {userStatus.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

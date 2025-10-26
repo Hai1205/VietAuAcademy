@@ -17,7 +17,9 @@ import { DashboardHeader } from "@/components/common/admin/DashboardHeader";
 const initialFilters = { status: [] as string[], contentType: [] as string[] };
 
 export default function JobDashboardPage() {
-  const { isLoading, getAllJobs, updateJob, createJob } = useJobStore();
+  const { getAllJobs, updateJob, createJob, deleteJob } = useJobStore();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateJobOpen, setIsCreateJobOpen] = useState(false);
   const [isUpdateJobOpen, setIsUpdateJobOpen] = useState(false);
@@ -27,11 +29,13 @@ export default function JobDashboardPage() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       const res = await getAllJobs();
       const data = res?.data?.jobs || [];
 
       setAllJobs(data);
       setFilteredJobs(data);
+      setIsLoading(false);
     };
 
     fetchData();
@@ -134,7 +138,7 @@ export default function JobDashboardPage() {
     accommodation: "",
     workEnvironment: "",
     trainingPeriod: "",
-    status: EStatus.ACTIVE,
+    status: EStatus.PUBLIC,
   };
 
   const handleChange = (
@@ -189,7 +193,7 @@ export default function JobDashboardPage() {
           data.accommodation || "",
           data.workEnvironment || "",
           data.trainingPeriod || "",
-          data.status || EStatus.ACTIVE,
+          data.status || EStatus.PUBLIC,
           data.description || "" // Optional question parameter
         );
 
@@ -246,7 +250,7 @@ export default function JobDashboardPage() {
           data.accommodation || "",
           data.workEnvironment || "",
           data.trainingPeriod || "",
-          data.status || EStatus.ACTIVE
+          data.status || EStatus.PUBLIC
         );
 
         // Refresh the jobs list after create
@@ -264,6 +268,15 @@ export default function JobDashboardPage() {
         console.error("Error creating job:", error);
       }
     }
+  };
+
+  const onDelete = async (job: IJob) => {
+    await deleteJob(job._id);
+  };
+
+  const onUpdate = async (job: IJob) => {
+    setData(job);
+    setIsUpdateJobOpen(true);
   };
 
   return (
@@ -340,10 +353,8 @@ export default function JobDashboardPage() {
           <JobTable
             Jobs={filteredJobs}
             isLoading={isLoading}
-            onEdit={(job) => {
-              setData(job);
-              setIsUpdateJobOpen(true);
-            }}
+            onUpdate={onUpdate}
+            onDelete={onDelete}
           />
         </Card>
       </div>

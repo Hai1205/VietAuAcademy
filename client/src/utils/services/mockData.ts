@@ -101,7 +101,7 @@ export const mockPrograms: IProgram[] = [
         featured: true,
         createdAt: "2025-01-01",
         updatedAt: "2025-06-01",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "program2",
@@ -118,7 +118,7 @@ export const mockPrograms: IProgram[] = [
         featured: false,
         createdAt: "2025-02-01",
         updatedAt: "2025-06-02",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "program3",
@@ -135,7 +135,7 @@ export const mockPrograms: IProgram[] = [
         featured: true,
         createdAt: "2025-03-01",
         updatedAt: "2025-06-03",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "program4",
@@ -152,7 +152,7 @@ export const mockPrograms: IProgram[] = [
         featured: false,
         createdAt: "2025-04-01",
         updatedAt: "2025-06-04",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "program5",
@@ -169,7 +169,7 @@ export const mockPrograms: IProgram[] = [
         featured: true,
         createdAt: "2025-05-01",
         updatedAt: "2025-06-05",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "program6",
@@ -186,7 +186,7 @@ export const mockPrograms: IProgram[] = [
         featured: false,
         createdAt: "2025-06-01",
         updatedAt: "2025-06-06",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "program7",
@@ -203,7 +203,7 @@ export const mockPrograms: IProgram[] = [
         featured: true,
         createdAt: "2025-07-01",
         updatedAt: "2025-07-07",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "program8",
@@ -220,7 +220,7 @@ export const mockPrograms: IProgram[] = [
         featured: false,
         createdAt: "2025-08-01",
         updatedAt: "2025-08-08",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "program9",
@@ -237,7 +237,7 @@ export const mockPrograms: IProgram[] = [
         featured: true,
         createdAt: "2025-09-01",
         updatedAt: "2025-09-09",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "program10",
@@ -254,7 +254,7 @@ export const mockPrograms: IProgram[] = [
         featured: false,
         createdAt: "2025-10-01",
         updatedAt: "2025-10-10",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
 ];
 
@@ -281,7 +281,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Văn phòng hiện đại",
         trainingPeriod: "1 tháng",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "job2",
@@ -304,7 +304,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Nhà hàng sang trọng",
         trainingPeriod: "2 tuần",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "job3",
@@ -327,7 +327,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Xưởng hiện đại",
         trainingPeriod: "2 tháng",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "job4",
@@ -350,7 +350,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Khách sạn 5 sao",
         trainingPeriod: "1 tháng",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "job5",
@@ -373,7 +373,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Nhà máy hiện đại",
         trainingPeriod: "2 tháng",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "job6",
@@ -396,7 +396,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Văn phòng hiện đại",
         trainingPeriod: "1 tháng",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "job7",
@@ -419,7 +419,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Nhà hàng sang trọng",
         trainingPeriod: "2 tuần",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "job8",
@@ -442,7 +442,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Khách sạn 5 sao",
         trainingPeriod: "1 tháng",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "job9",
@@ -465,7 +465,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Nhà máy hiện đại",
         trainingPeriod: "2 tháng",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "job10",
@@ -488,7 +488,7 @@ export const mockJobs: IJob[] = [
         accommodation: "Có hỗ trợ",
         workEnvironment: "Văn phòng hiện đại",
         trainingPeriod: "1 tháng",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
 ];
 
@@ -633,70 +633,70 @@ export const mockFaqs: IFAQ[] = [
         question: "Điều kiện du học Úc là gì?",
         answer: "Cần IELTS 6.0 và tốt nghiệp THPT.",
         category: "Úc",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "faq2",
         question: "Học phí du học Canada bao nhiêu?",
         answer: "Khoảng 625,000,000 VND/năm.",
         category: "Canada",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "faq3",
         question: "Du học Đức có miễn học phí không?",
         answer: "Có, nhiều trường miễn học phí.",
         category: "Đức",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "faq4",
         question: "Cần chứng chỉ gì để du học Nhật Bản?",
         answer: "Cần N3 tiếng Nhật.",
         category: "Nhật Bản",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "faq5",
         question: "Cơ hội việc làm sau du học Hàn Quốc?",
         answer: "Nhiều cơ hội việc làm và định cư.",
         category: "Hàn Quốc",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "faq6",
         question: "Du học Đài Loan cần chứng chỉ gì?",
         answer: "Cần TOCFL 3.",
         category: "Đài Loan",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "faq7",
         question: "Du học Mỹ cần chuẩn bị gì?",
         answer: "Cần SAT và tốt nghiệp THPT.",
         category: "Mỹ",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "faq8",
         question: "Học phí du học Pháp bao nhiêu?",
         answer: "Khoảng 550,000,000 VND/năm.",
         category: "Pháp",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "faq9",
         question: "Du học Singapore cần IELTS bao nhiêu?",
         answer: "Cần IELTS 6.0.",
         category: "Singapore",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
     {
         _id: "faq10",
         question: "Du học Thụy Sĩ cần chứng chỉ gì?",
         answer: "Cần B2 tiếng Anh.",
         category: "Thụy Sĩ",
-        status: EStatus.ACTIVE,
+        status: EStatus.PUBLIC,
     },
 ];
 

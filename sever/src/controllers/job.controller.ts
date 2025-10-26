@@ -5,7 +5,8 @@ import { uploadFiles } from "../utils/libs/cloudinary.js";
 
 export const getAllJobs = RequestHandlerCustom(
   async (req, res) => {
-    const jobs = await handleGetAllJobs();
+    const status = req.query.status as string | undefined;
+    const jobs = await handleGetAllJobs({status});
 
     res.status(200).json({
       success: true,

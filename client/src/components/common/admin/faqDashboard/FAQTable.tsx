@@ -1,9 +1,10 @@
 import { DataTable } from "@/components/common/admin/DataTable";
 
 interface IFAQTableProps {
-  FAQs: IFAQ[];
+  faqs: IFAQ[];
   isLoading: boolean;
-  onEdit?: (faq: IFAQ) => void;
+  onUpdate?: (faq: IFAQ) => void;
+  onDelete?: (faq: IFAQ) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -36,7 +37,7 @@ const getCategoryColor = (status: string) => {
   }
 };
 
-export const FAQTable = ({ FAQs, isLoading, onEdit }: IFAQTableProps) => {
+export const FAQTable = ({ faqs, isLoading, onUpdate, onDelete }: IFAQTableProps) => {
   const columns = [
     {
       header: "STT",
@@ -78,21 +79,28 @@ export const FAQTable = ({ FAQs, isLoading, onEdit }: IFAQTableProps) => {
     },
   ];
 
+  const actions = [];
+
+  if (onUpdate) {
+    actions.push({
+      label: "Chỉnh sửa",
+      onClick: onUpdate,
+    });
+  }
+
+  if (onDelete) {
+    actions.push({
+      label: "Xoá",
+      onClick: onDelete,
+    });
+  }
+
   return (
     <DataTable
-      data={FAQs}
+      data={faqs}
       isLoading={isLoading}
       columns={columns}
-      actions={
-        onEdit
-          ? [
-              {
-                label: "Chỉnh sửa",
-                onClick: onEdit,
-              },
-            ]
-          : []
-      }
+      actions={actions}
       emptyMessage="Không tìm thấy câu hỏi thường gặp nào"
     />
   );

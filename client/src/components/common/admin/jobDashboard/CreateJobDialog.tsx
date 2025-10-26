@@ -15,11 +15,7 @@ import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { EnhancedDialog } from "../EnhancedDialog";
 import { Badge } from "@/components/ui/badge";
-
-export const JobStatus = [
-  { label: "Hoạt động", value: "active" },
-  { label: "Đã xóa", value: "deleted" },
-];
+import { jobFeatured, jobStatus } from "./constant";
 
 interface CreateJobDialogProps {
   isOpen: boolean;
@@ -528,8 +524,11 @@ const CreateJobDialog = ({
                   <SelectValue placeholder="Chọn trạng thái nổi bật" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="true">Có</SelectItem>
-                  <SelectItem value="false">Không</SelectItem>
+                  {jobFeatured.map((item) => (
+                    <SelectItem key={item.label} value={`${item.value}`}>
+                      {item.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -539,14 +538,14 @@ const CreateJobDialog = ({
                 Trạng thái
               </Label>
               <Select
-                value={data?.status ? data.status : JobStatus[0].value}
+                value={data?.status ? data.status : jobStatus[0].value}
                 onValueChange={(value) => onChange("status", value)}
               >
                 <SelectTrigger id="create-status" className="h-10">
                   <SelectValue placeholder="Chọn trạng thái" />
                 </SelectTrigger>
                 <SelectContent>
-                  {JobStatus.map((item) => (
+                  {jobStatus.map((item) => (
                     <SelectItem key={item.value} value={item.value}>
                       {item.label}
                     </SelectItem>

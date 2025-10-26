@@ -2,9 +2,16 @@ import { ICreateJobData, IUpdateJobData } from "../controllers/job.controller.js
 import { Job } from "../models/job.model.js";
 import { ErrorCustom, HandlerCustom } from "../utils/configs/custom.js";
 
-export const handleGetAllJobs = HandlerCustom(async () => {
+export const handleGetAllJobs = HandlerCustom(async (data: { status?: string }) => {
+  const filter: { status?: string } = {};
+
+  if (data.status) {
+    filter.status = data.status;
+  }
+
   const jobs = await Job
-    .find()
+    .find(filter)
+    .sort({ createdAt: -1 })
     .exec();
 
   return jobs;

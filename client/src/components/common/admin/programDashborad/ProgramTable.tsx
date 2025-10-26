@@ -3,8 +3,8 @@ import { DataTable } from "@/components/common/admin/DataTable";
 interface ProgramTableProps {
   Programs: IProgram[];
   isLoading: boolean;
-  onEdit?: (program: IProgram) => void;
-  onDelete?: (programId: string) => void;
+  onUpdate?: (program: IProgram) => void;
+  onDelete?: (program: IProgram) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -21,7 +21,8 @@ const getStatusColor = (status: string) => {
 export const ProgramTable = ({
   Programs,
   isLoading,
-  onEdit,
+  onUpdate,
+  onDelete,
 }: ProgramTableProps) => {
   const columns = [
     {
@@ -72,14 +73,22 @@ export const ProgramTable = ({
     },
   ];
 
-  const actions = [];
+const actions = [];
 
-  if (onEdit) {
+  if (onUpdate) {
     actions.push({
       label: "Chỉnh sửa",
-      onClick: onEdit,
+      onClick: onUpdate,
     });
   }
+
+  if (onDelete) {
+    actions.push({
+      label: "Xoá",
+      onClick: onDelete,
+    });
+  }
+
 
   return (
     <DataTable

@@ -9,7 +9,7 @@ import ContactInfoSection from "@/components/common/about/ContactInfoSection";
 import { useInView } from "framer-motion";
 
 export default function JobsPageClient() {
-  const { getAllJobs } = useJobStore();
+  const { getPublicJobs } = useJobStore();
 
   const [jobs, setJobs] = useState<IJob[]>([]);
   const [selectedCountry, setSelectedCountry] = useState("Tất cả");
@@ -42,13 +42,13 @@ export default function JobsPageClient() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await getAllJobs();
+      const response = await getPublicJobs();
       const data = response.data?.jobs;
       setJobs(data || []);
     };
 
     fetchData();
-  }, [getAllJobs]);
+  }, [getPublicJobs]);
 
   const filteredJobs = jobs.filter((job) => {
     const matchesCountry =

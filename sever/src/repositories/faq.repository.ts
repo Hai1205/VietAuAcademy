@@ -10,11 +10,10 @@ export const handleGetFAQs = HandlerCustom(async (data: { category?: string; sta
     }
 
     if (data.status) {
-        // Expect exact match on status (e.g., 'active').
         filter.status = data.status;
     }
 
-    const faqs = await FAQ.find(filter).exec();
+    const faqs = await FAQ.find(filter).sort({ createdAt: -1 }).exec();
 
     return faqs;
 });
