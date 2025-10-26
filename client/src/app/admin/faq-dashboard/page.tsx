@@ -18,15 +18,15 @@ import { FAQCategory } from "@/components/common/admin/faqDashboard/constant";
 const initialFilters = { status: [] as string[], contentType: [] as string[] };
 
 export default function FAQDashboardPage() {
-  const { getAllFAQs, updateFAQ, createFAQ, deleteFAQ } = useFAQStore();
+  const { faqsTable, getAllFAQs, updateFAQ, createFAQ, deleteFAQ } = useFAQStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateFAQOpen, setIsCreateFAQOpen] = useState(false);
   const [isUpdateFAQOpen, setIsUpdateFAQOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(initialFilters);
-  const [allFAQs, setAllFAQs] = useState<IFAQ[] | []>([]);
-  const [filteredFAQs, setFilteredFAQs] = useState<IFAQ[] | []>([]);
+  const [allFAQs, setAllFAQs] = useState<IFaq[] | []>(faqsTable);
+  const [filteredFAQs, setFilteredFAQs] = useState<IFaq[] | []>(faqsTable);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -114,9 +114,9 @@ export default function FAQDashboardPage() {
   const [openMenuFilters, setOpenMenuFilters] = useState(false);
   const closeMenuMenuFilters = () => setOpenMenuFilters(false);
 
-  const [data, setData] = useState<IFAQ | null>(null);
+  const [data, setData] = useState<IFaq | null>(null);
 
-  const handleChange = (field: keyof IFAQ, value: string) => {
+  const handleChange = (field: keyof IFaq, value: string) => {
     setData((prev) => {
       // If prev is null, create a new object with default values
       if (!prev) {
@@ -144,14 +144,6 @@ export default function FAQDashboardPage() {
         data.status
       );
 
-      // Refresh the faqs list after update
-      const res = await getAllFAQs();
-      const updatedData = res?.data?.faqs || [];
-      setAllFAQs(updatedData);
-
-      // Apply current filters
-      filterData(searchQuery, activeFilters);
-
       setIsUpdateFAQOpen(false);
     }
   };
@@ -173,11 +165,11 @@ export default function FAQDashboardPage() {
     }
   };
 
-  const onDelete = async (faq: IFAQ) => {
+  const onDelete = async (faq: IFaq) => {
     await deleteFAQ(faq._id);
   };
 
-  const onUpdate = async (faq: IFAQ) => {
+  const onUpdate = async (faq: IFaq) => {
     setData(faq);
     setIsUpdateFAQOpen(true);
   };

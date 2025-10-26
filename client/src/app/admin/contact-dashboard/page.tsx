@@ -17,7 +17,7 @@ const initialFilters = { status: [] as string[] };
 
 export default function ContactDashboardPage() {
   const { userAuth } = useAuthStore();
-  const { getAllContacts, resolveContact, deleteContact } = useContactStore();
+  const { contactTable, getAllContacts, resolveContact, deleteContact } = useContactStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,8 +27,8 @@ export default function ContactDashboardPage() {
   const [activeFilters, setActiveFilters] = useState<{ status: string[] }>(
     initialFilters
   );
-  const [allContacts, setAllContacts] = useState<IContact[] | []>([]);
-  const [filteredContacts, setFilteredContacts] = useState<IContact[] | []>([]);
+  const [allContacts, setAllContacts] = useState<IContact[] | []>(contactTable);
+  const [filteredContacts, setFilteredContacts] = useState<IContact[] | []>(contactTable);
 
   useEffect(() => {
     const fetchData = async () => {

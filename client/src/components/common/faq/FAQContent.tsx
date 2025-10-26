@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { ChevronDown, ChevronUp, Search } from "lucide-react";
 
 interface FAQContentProps {
-  initialFAQs: IFAQ[];
+  initialFAQs: IFaq[];
   categories: string[];
 }
 

@@ -18,6 +18,7 @@ const initialFilters = { status: [] as string[] };
 
 export default function ProgramDashboardPage() {
   const {
+    programsTable,
     getAllPrograms,
     createProgram,
     updateProgram,
@@ -32,8 +33,8 @@ const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeFilters, setActiveFilters] = useState<{
     status: string[];
   }>(initialFilters);
-  const [allPrograms, setAllPrograms] = useState<IProgram[] | []>([]);
-  const [filteredPrograms, setFilteredPrograms] = useState<IProgram[] | []>([]);
+  const [allPrograms, setAllPrograms] = useState<IProgram[] | []>(programsTable);
+  const [filteredPrograms, setFilteredPrograms] = useState<IProgram[] | []>(programsTable);
 
   useEffect(() => {
     const fetchData = async () => {

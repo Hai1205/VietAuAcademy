@@ -88,7 +88,7 @@ The frontend will run at http://localhost:3000
 
 - Guidance on application process
 - Scholarship information
-- Frequently Asked Questions (FAQ)
+- Frequently Asked Questions (faq)
 
 ### 3. Contact & Support
 

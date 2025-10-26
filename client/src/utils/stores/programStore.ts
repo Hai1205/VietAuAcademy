@@ -9,6 +9,8 @@ interface IProgramDataResponse {
 }
 
 export interface IProgramStore extends IBaseStore {
+	programsTable: IProgram[];
+
 	getAllPrograms: () => Promise<IApiResponse<IProgramDataResponse>>;
 	getProgram: (
 		programId: string
@@ -47,10 +49,16 @@ export interface IProgramStore extends IBaseStore {
 		programId: string
 	) => Promise<IApiResponse<IProgramDataResponse>>;
 	getPublicPrograms: () => Promise<IApiResponse<IProgramDataResponse>>;
+
+	handleRemoveProgramFromTable: (programId: string) => Promise<void>;
+	handleAddProgramToTable: (program: IProgram) => Promise<void>;
+	handleUpdateProgramInTable: (program: IProgram) => Promise<void>;
 }
 
 const storeName = "program";
-const initialState = {};
+const initialState = {
+	programsTable: [],
+};
 
 export const useProgramStore = createStore<IProgramStore>(
 	storeName,
@@ -160,6 +168,24 @@ export const useProgramStore = createStore<IProgramStore>(
 		getPublicPrograms: async (): Promise<IApiResponse<IProgramDataResponse>> => {
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.GET, `/public/programs?status=public`);
+			});
+		},
+
+		handleRemoveProgramFromTable: async (programId: string) => {
+			set({
+				programsTable: get().programsTable.filter((program) => program._id !== programId),
+			});
+		},
+
+		handleAddProgramToTable: async (program: IProgram) => {
+			set({ programsTable: [program, ...get().programsTable] });
+		},
+
+		handleUpdateProgramInTable: async (program: IProgram) => {
+			set({
+				programsTable: get().programsTable.map((p) =>
+					p._id === program._id ? program : p
+				),
 			});
 		},
 

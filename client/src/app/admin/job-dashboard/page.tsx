@@ -17,15 +17,15 @@ import { DashboardHeader } from "@/components/common/admin/DashboardHeader";
 const initialFilters = { status: [] as string[], contentType: [] as string[] };
 
 export default function JobDashboardPage() {
-  const { getAllJobs, updateJob, createJob, deleteJob } = useJobStore();
+  const { jobsTable, getAllJobs, updateJob, createJob, deleteJob } = useJobStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateJobOpen, setIsCreateJobOpen] = useState(false);
   const [isUpdateJobOpen, setIsUpdateJobOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(initialFilters);
-  const [allJobs, setAllJobs] = useState<IJob[] | []>([]);
-  const [filteredJobs, setFilteredJobs] = useState<IJob[] | []>([]);
+  const [allJobs, setAllJobs] = useState<IJob[] | []>(jobsTable);
+  const [filteredJobs, setFilteredJobs] = useState<IJob[] | []>(jobsTable);
 
   useEffect(() => {
     const fetchData = async () => {

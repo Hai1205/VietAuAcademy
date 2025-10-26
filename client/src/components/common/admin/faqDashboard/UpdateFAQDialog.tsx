@@ -18,8 +18,8 @@ import { EnhancedDialog } from "../EnhancedDialog";
 interface UpdateFAQDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onChange: (field: keyof IFAQ, value: string) => void;
-  data: IFAQ | null;
+  onChange: (field: keyof IFaq, value: string) => void;
+  data: IFaq | null;
   onFAQUpdated: () => void;
 }
 

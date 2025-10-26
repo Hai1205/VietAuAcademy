@@ -3,10 +3,12 @@ import { IBaseStore, createStore } from "../../lib/initialStore";
 import { EStatus } from "../types/enum";
 
 interface IFAQDataResponse {
-	faqs?: IFAQ[];
+	faqs?: IFaq[];
 }
 
 export interface IFAQStore extends IBaseStore {
+	faqsTable: IFaq[];
+
 	getAllFAQs: () => Promise<IApiResponse<IFAQDataResponse>>;
 	getFAQsByCategory: (
 		category: string
@@ -26,10 +28,16 @@ export interface IFAQStore extends IBaseStore {
 	) => Promise<IApiResponse<IFAQDataResponse>>;
 	deleteFAQ: (FAQId: string) => Promise<IApiResponse<IFAQDataResponse>>;
 	getPublicFAQs: () => Promise<IApiResponse<IFAQDataResponse>>;
+
+	handleRemoveFaqFromTable: (faqId: string) => Promise<void>;
+	handleAddFaqToTable: (faq: IFaq) => Promise<void>;
+	handleUpdateFaqInTable: (faq: IFaq) => Promise<void>;
 }
 
 const storeName = "faq";
-const initialState = {};
+const initialState = {
+	faqsTable: [],
+};
 
 export const useFAQStore = createStore<IFAQStore>(
 	storeName,
@@ -97,6 +105,24 @@ export const useFAQStore = createStore<IFAQStore>(
 		getPublicFAQs: async (): Promise<IApiResponse<IFAQDataResponse>> => {
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.GET, `/public/faqs?status=public`);
+			});
+		},
+
+		handleRemoveFaqFromTable: async (faqId: string) => {
+			set({
+				faqsTable: get().faqsTable.filter((faq) => faq._id !== faqId),
+			});
+		},
+
+		handleAddFaqToTable: async (faq: IFaq) => {
+			set({ faqsTable: [faq, ...get().faqsTable] });
+		},
+
+		handleUpdateFaqInTable: async (faq: IFaq) => {
+			set({
+				faqsTable: get().faqsTable.map((f) =>
+					f._id === faq._id ? faq : f
+				),
 			});
 		},
 

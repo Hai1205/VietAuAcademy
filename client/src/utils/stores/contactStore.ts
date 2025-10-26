@@ -7,6 +7,8 @@ interface IContactDataResponse {
 }
 
 export interface IContactStore extends IBaseStore {
+	contactTable: IContact[];
+
 	getAllContacts: () => Promise<IApiResponse<IContactDataResponse>>;
 	getContact: (
 		contactId: string
@@ -25,10 +27,16 @@ export interface IContactStore extends IBaseStore {
 		adminId: string,
 		contactId: string,
 	) => Promise<IApiResponse<IContactDataResponse>>;
+
+	handleRemoveContactFromTable: (contactId: string) => Promise<void>;
+	handleAddContactToTable: (contact: IContact) => Promise<void>;
+	handleUpdateContactInTable: (contact: IContact) => Promise<void>;
 }
 
 const storeName = "contact";
-const initialState = {};
+const initialState = {
+	contactTable: [],
+};
 
 export const useContactStore = createStore<IContactStore>(
 	storeName,
@@ -46,9 +54,15 @@ export const useContactStore = createStore<IContactStore>(
 			});
 		},
 
-		deleteContact: async (contactId: string): Promise<IApiResponse<IContactDataResponse>> => {
+		deleteContact: async (contactId: string): Promise<IApiResponse> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.DELETE, `/contacts/${contactId}`);
+				const res =  await handleRequest(EHttpType.DELETE, `/contacts/${contactId}`);
+
+				if (res.status === 200) {
+					get().handleRemoveContactFromTable(contactId);
+				}
+
+				return res;
 			});
 		},
 
@@ -67,7 +81,13 @@ export const useContactStore = createStore<IContactStore>(
 			formData.append("message", message);
 
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.POST, `/contacts`, formData);
+				const res = await handleRequest<IContactDataResponse>(EHttpType.POST, `/contacts`, formData);
+
+				if (res.status === 201 && res.data && res.data.contact) {
+					get().handleAddContactToTable(res.data.contact);
+				}
+
+				return res;
 			});
 		},
 
@@ -76,7 +96,31 @@ export const useContactStore = createStore<IContactStore>(
 			contactId: string,
 		): Promise<IApiResponse<IContactDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.POST, `/contacts/${contactId}/resolve/${adminId}`);
+				const res = await handleRequest<IContactDataResponse>(EHttpType.POST, `/contacts/${contactId}/resolve/${adminId}`);
+
+				if (res.status === 200 && res.data && res.data.contact) {
+					get().handleUpdateContactInTable(res.data.contact);
+				}
+
+				return res;
+			});
+		},
+
+		handleRemoveContactFromTable: async (contactId: string) => {
+			set({
+				contactTable: get().contactTable.filter((contact) => contact._id !== contactId),
+			});
+		},
+
+		handleAddContactToTable: async (contact: IContact) => {
+			set({ contactTable: [contact, ...get().contactTable] });
+		},
+
+		handleUpdateContactInTable: async (contact: IContact) => {
+			set({
+				contactTable: get().contactTable.map((c) =>
+					c._id === contact._id ? contact : c
+				),
 			});
 		},
 

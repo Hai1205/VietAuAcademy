@@ -18,9 +18,9 @@ import { EnhancedDialog } from "../EnhancedDialog";
 interface CreateFAQDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onChange: (field: keyof IFAQ, value: string) => void;
+  onChange: (field: keyof IFaq, value: string) => void;
   onFAQCreated: () => void;
-  data: IFAQ | null;
+  data: IFaq | null;
 }
 
 const CreateFAQDialog = ({

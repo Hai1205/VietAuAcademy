@@ -40,7 +40,7 @@ export const createFAQ = RequestHandlerCustom(
     res.status(201).json({
       success: true,
       message: "Đã tạo FAQ mới",
-      FAQ: faq
+      faq: faq
     });
   }
 );
@@ -65,7 +65,7 @@ export const updateFAQ = RequestHandlerCustom(
     res.status(200).json({
       success: true,
       message: "Cập nhật FAQ thành công",
-      FAQ: updatedFAQ
+      faq: updatedFAQ
     });
   }
 );
@@ -83,7 +83,7 @@ export const getFAQById = RequestHandlerCustom(
     res.status(200).json({
       success: true,
       message: "Lấy FAQ thành công",
-      FAQ: faq
+      faq: faq
     });
   }
 );

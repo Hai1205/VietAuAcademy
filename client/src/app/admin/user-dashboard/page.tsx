@@ -19,7 +19,7 @@ import { useAuthStore } from "@/utils/stores/authStore";
 const initialFilters = { status: [] as string[] };
 
 function UserDashboardPage() {
-  const { getAllUsers, createUser, updateUser, deleteUser } = useUserStore();
+  const { usersTable, getAllUsers, createUser, updateUser, deleteUser } = useUserStore();
   const { resetPassword } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,8 +31,8 @@ function UserDashboardPage() {
   const [activeFilters, setActiveFilters] = useState<{
     status: string[];
   }>(initialFilters);
-  const [allUsers, setAllUsers] = useState<IUser[] | []>([]);
-  const [filteredUsers, setFilteredUsers] = useState<IUser[] | []>([]);
+  const [allUsers, setAllUsers] = useState<IUser[] | []>(usersTable);
+  const [filteredUsers, setFilteredUsers] = useState<IUser[] | []>(usersTable);
 
   useEffect(() => {
     const fetchData = async () => {

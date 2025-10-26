@@ -627,7 +627,7 @@ export const mockContacts: IContact[] = [
 ];
 
 // FAQ mock data
-export const mockFaqs: IFAQ[] = [
+export const mockFaqs: IFaq[] = [
     {
         _id: "faq1",
         question: "Điều kiện du học Úc là gì?",

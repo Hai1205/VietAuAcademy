@@ -9,6 +9,8 @@ interface IJobDataResponse {
 }
 
 export interface IJobStore extends IBaseStore {
+	jobsTable: IJob[];
+
 	getAllJobs: () => Promise<IApiResponse<IJobDataResponse>>;
 	getJob: (
 		jobId: string
@@ -62,10 +64,16 @@ export interface IJobStore extends IBaseStore {
 	) => Promise<IApiResponse<IJobDataResponse>>;
 	deleteJob: (jobId: string) => Promise<IApiResponse<IJobDataResponse>>;
 	getPublicJobs: () => Promise<IApiResponse<IJobDataResponse>>;
+
+	handleRemoveJobFromTable: (jobId: string) => Promise<void>;
+	handleAddJobToTable: (job: IJob) => Promise<void>;
+	handleUpdateJobInTable: (job: IJob) => Promise<void>;
 }
 
 const storeName = "job";
-const initialState = {};
+const initialState = {
+	jobsTable: [],
+};
 
 export const useJobStore = createStore<IJobStore>(
 	storeName,
@@ -203,6 +211,24 @@ export const useJobStore = createStore<IJobStore>(
 		getPublicJobs: async (): Promise<IApiResponse<IJobDataResponse>> => {
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.GET, `/public/jobs?status=public`);
+			});
+		},
+
+		handleRemoveJobFromTable: async (jobId: string) => {
+			set({
+				jobsTable: get().jobsTable.filter((job) => job._id !== jobId),
+			});
+		},
+
+		handleAddJobToTable: async (job: IJob) => {
+			set({ jobsTable: [job, ...get().jobsTable] });
+		},
+
+		handleUpdateJobInTable: async (job: IJob) => {
+			set({
+				jobsTable: get().jobsTable.map((j) =>
+					j._id === job._id ? job : j
+				),
 			});
 		},
 

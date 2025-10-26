@@ -1,10 +1,10 @@
 import { DataTable } from "@/components/common/admin/DataTable";
 
 interface IFAQTableProps {
-  faqs: IFAQ[];
+  faqs: IFaq[];
   isLoading: boolean;
-  onUpdate?: (faq: IFAQ) => void;
-  onDelete?: (faq: IFAQ) => void;
+  onUpdate?: (faq: IFaq) => void;
+  onDelete?: (faq: IFaq) => void;
 }
 
 const getStatusColor = (status: string) => {
@@ -37,23 +37,28 @@ const getCategoryColor = (status: string) => {
   }
 };
 
-export const FAQTable = ({ faqs, isLoading, onUpdate, onDelete }: IFAQTableProps) => {
+export const FAQTable = ({
+  faqs,
+  isLoading,
+  onUpdate,
+  onDelete,
+}: IFAQTableProps) => {
   const columns = [
     {
       header: "STT",
-      accessor: (_: IFAQ, index: number) => index + 1,
+      accessor: (_: IFaq, index: number) => index + 1,
     },
     {
       header: "Câu hỏi",
-      accessor: (faq: IFAQ) => faq.question,
+      accessor: (faq: IFaq) => faq.question,
     },
     {
       header: "Câu trả lời",
-      accessor: (faq: IFAQ) => faq.answer,
+      accessor: (faq: IFaq) => faq.answer,
     },
     {
       header: "Danh mục",
-      accessor: (faq: IFAQ) => (
+      accessor: (faq: IFaq) => (
         <div className="inline-flex items-center justify-center gap-2">
           <span
             className={`h-2 w-2 rounded-full ${getCategoryColor(
@@ -66,7 +71,7 @@ export const FAQTable = ({ faqs, isLoading, onUpdate, onDelete }: IFAQTableProps
     },
     {
       header: "Trạng thái",
-      accessor: (faq: IFAQ) => (
+      accessor: (faq: IFaq) => (
         <div className="inline-flex items-center justify-center gap-2">
           <span
             className={`h-2 w-2 rounded-full ${getStatusColor(

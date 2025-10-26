@@ -16,7 +16,7 @@ const categories = [
 
 export default function FAQPageContent() {
   const { getPublicFAQs } = useFAQStore();
-  const [faqs, setFaqs] = useState<IFAQ[]>([]);
+  const [faqs, setFaqs] = useState<IFaq[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {

@@ -32,6 +32,10 @@ export interface IUserStore extends IBaseStore {
 	deleteUser: (
 		userId: string
 	) => Promise<IApiResponse<IUserDataResponse>>;
+
+	handleRemoveUserFromTable: (userId: string) => Promise<void>;
+	handleAddUserToTable: (user: IUser) => Promise<void>;
+	handleUpdateUserInTable: (user: IUser) => Promise<void>;
 }
 
 const storeName = "user";
@@ -62,15 +66,21 @@ export const useUserStore = createStore<IUserStore>(
 			phone: string,
 			status: EUserStatus
 		): Promise<IApiResponse<IUserDataResponse>> => {
+			const formData = new FormData();
+			formData.append("email", email);
+			formData.append("password", password);
+			formData.append("name", name);
+			formData.append("phone", phone);
+			formData.append("status", status);
+			
 			return await get().handleRequest(async () => {
-				const formData = new FormData();
-				formData.append("email", email);
-				formData.append("password", password);
-				formData.append("name", name);
-				formData.append("phone", phone);
-				formData.append("status", status);
-
-				return await handleRequest(EHttpType.POST, `/users`, formData);
+				const res = await handleRequest<IUserDataResponse>(EHttpType.POST, `/users`, formData);
+				
+				if (res.status === 201 && res.data && res.data.user) {
+					get().handleAddUserToTable(res.data.user);
+				}
+				
+				return res;
 			});
 		},
 
@@ -82,21 +92,51 @@ export const useUserStore = createStore<IUserStore>(
 			phone: string,
 			status: EUserStatus
 		): Promise<IApiResponse<IUserDataResponse>> => {
-			return await get().handleRequest(async () => {
-				const formData = new FormData();
-				formData.append("email", email);
-				formData.append("password", password);
-				formData.append("name", name);
-				formData.append("phone", phone);
-				formData.append("status", status);
+			const formData = new FormData();
+			formData.append("email", email);
+			formData.append("password", password);
+			formData.append("name", name);
+			formData.append("phone", phone);
+			formData.append("status", status);
 
-				return await handleRequest(EHttpType.PATCH, `/users/${userId}`, formData);
+			return await get().handleRequest(async () => {
+				const res = await handleRequest<IUserDataResponse>(EHttpType.PATCH, `/users/${userId}`, formData);
+			
+				if (res.status === 200 && res.data && res.data.user) {
+					get().handleUpdateUserInTable(res.data.user);
+				}
+				
+				return res;
 			});
 		},
 
-		deleteUser: async (userId: string): Promise<IApiResponse<IUserDataResponse>> => {
+		deleteUser: async (userId: string): Promise<IApiResponse> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.DELETE, `/users/${userId}`);
+				const res = await handleRequest(EHttpType.DELETE, `/users/${userId}`);
+
+				if (res.status === 200) {
+					get().handleRemoveUserFromTable(userId);
+				}
+
+				return res;
+			});
+		},
+
+		handleRemoveUserFromTable: async (userId: string) => {
+			set({
+				usersTable: get().usersTable.filter((user) => user._id !== userId),
+			});
+		},
+
+		handleAddUserToTable: async (user: IUser) => {
+			set({ usersTable: [user, ...get().usersTable] });
+		},
+
+		handleUpdateUserInTable: async (user: IUser) => {
+			set({
+				usersTable: get().usersTable.map((u) =>
+					u._id === user._id ? user : u
+				),
 			});
 		},
 	})

@@ -70,7 +70,7 @@ declare global {
         status?: EContactStatus;
     }
 
-    interface IFAQ {
+    interface IFaq {
         _id: string;
         question: string;
         answer: string;
