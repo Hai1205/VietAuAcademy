@@ -62,21 +62,21 @@ export function middleware(request: NextRequest) {
 
     // If on mobile, redirect to home page for both admin and auth routes
     if (isMobile && (pathname.startsWith('/admin') || pathname.startsWith('/auth'))) {
-        return NextResponse.redirect(new URL('/', request.url))
+        // return NextResponse.redirect(new URL('/', request.url))
     }
 
     // Check if user is accessing admin routes
     if (pathname.startsWith('/admin')) {
         // If not authenticated, redirect to login page
         if (!isAuthenticated) {
-            return NextResponse.redirect(new URL('/auth/login', request.url))
+            // return NextResponse.redirect(new URL('/auth/login', request.url))
         }
     }
 
     // Check if authenticated user is trying to access auth pages
     if (isAuthenticated && pathname.startsWith('/auth')) {
         // Redirect authenticated users away from auth pages to admin
-        return NextResponse.redirect(new URL('/admin', request.url))
+        // return NextResponse.redirect(new URL('/admin', request.url))
     }
 
     return response

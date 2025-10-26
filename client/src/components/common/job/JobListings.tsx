@@ -2,20 +2,10 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, DollarSign, Calendar, Clock } from "lucide-react";
-import { stringToList } from "@/lib/utils";
 
 interface JobListingsProps {
   filteredJobs: IJob[];
 }
-
-// Helper function to convert string or array to array
-const getBenefitsArray = (
-  benefits: string | string[] | undefined
-): string[] => {
-  if (!benefits) return [];
-  if (Array.isArray(benefits)) return benefits;
-  return stringToList(benefits);
-};
 
 export default function JobListings({ filteredJobs }: JobListingsProps) {
   return (
@@ -71,7 +61,7 @@ export default function JobListings({ filteredJobs }: JobListingsProps) {
               </div>
 
               <div className="flex gap-2 mb-4">
-                {getBenefitsArray(job?.benefits).map((benefit, index) => (
+                {job?.benefits.map((benefit, index) => (
                   <span
                     key={index}
                     className="inline-block bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary text-xs px-2 py-1 rounded-full"

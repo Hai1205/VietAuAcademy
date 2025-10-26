@@ -9,8 +9,8 @@ interface IProgramDocument extends Document {
   tuition?: string;
   opportunities: string;
   about: string;
-  requirements?: string;
-  benefits?: string;
+  requirements?: string[];
+  benefits?: string[];
   imageUrl?: string;
   featured?: boolean;
   status?: EStatus;
@@ -23,8 +23,8 @@ const schema: Schema<IProgramDocument> = new Schema(
     country: String,
     duration: String,
     tuition: String,
-    requirements: String,
-    benefits: String,
+    requirements: [String],
+    benefits: [String],
     imageUrl: String,
     featured: Boolean,
     opportunities: String,

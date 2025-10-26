@@ -2,16 +2,20 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/utils/stores/authStore";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import Link from "next/link";
+import { Loader2, Mail, ArrowLeft, Send } from "lucide-react";
+import { useAuthStore } from "@/utils/stores/authStore";
 
 const ForgotPasswordPage: React.FC = () => {
-  const router = useRouter();
-
   const { isLoading, sendOTP } = useAuthStore();
+  
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
 
@@ -25,7 +29,7 @@ const ForgotPasswordPage: React.FC = () => {
       setError("Email is required");
       return false;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Email is invalid");
+      setError("Please enter a valid email");
       return false;
     }
     return true;
@@ -47,62 +51,68 @@ const ForgotPasswordPage: React.FC = () => {
     toast.success("Đã gửi mã OTP về email của bạn");
 
     router.push(
-      `/auth/verification?email=${encodeURIComponent(email)}&isPasswordReset=true`
+      `/auth/verification?email=${encodeURIComponent(
+        email
+      )}&isActivation=false`
     );
   };
 
   return (
-    <div>
-      <h1 className="text-primary text-2xl font-bold text-center mb-8">
-        Quên mật khẩu
-      </h1>
+    <div className="space-y-6">
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl font-bold tracking-tight">Quên mật khẩu</h1>
+        <p className="text-muted-foreground">
+          Nhập email của bạn và chúng tôi sẽ gửi mã OTP để giúp bạn cài lại mật
+          khẩu mới
+        </p>
+      </div>
 
-      <p className="text-primary-400 text-sm mb-6 text-center">
-        Nhập email của bạn và chúng tôi sẽ gửi mã OTP để giúp bạn tiến hành cài lại mật khẩu mới.
-      </p>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-primary-500 mb-2"
-          >
-            Email
-          </label>
-          <Input
-            id="email"
-            type="email"
-            name="email"
-            placeholder="Nhập email của bạn"
-            value={email}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
-          />
-          {error && <p className="mt-1 text-sm text-red-400">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="Nhập email của bạn"
+              value={email}
+              onChange={handleChange}
+              className="pl-10"
+            />
+          </div>
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
         </div>
 
-        <Button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200"
-          disabled={isLoading}
-        >
-          {isLoading ? "Đang gửi..." : "Gửi mã"}
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Đang gửi...
+            </>
+          ) : (
+            <>
+              <Send className="mr-2 h-4 w-4" />
+              Gửi mã OTP
+            </>
+          )}
         </Button>
-
-        <div className="mt-6 text-center">
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              if (!isLoading) router.push("/auth/login");
-            }}
-            className={`text-primary-500 hover:text-primary-700 text-sm underline cursor-pointer ${
-              isLoading ? "pointer-events-none opacity-70" : ""
-            }`}
-          >
-            Quay lại trang đăng nhập
-          </button>
-        </div>
       </form>
+
+      <div className="text-center">
+        <Link
+          href="/auth/login"
+          className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+        >
+          <ArrowLeft className="h-3 w-3" />
+          Quay lại trang đăng nhập
+        </Link>
+      </div>
     </div>
   );
 };

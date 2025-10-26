@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Clock, DollarSign, Award } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { stringToList } from "@/lib/utils";
 
 interface ProgramCardProps {
   program: IProgram;
@@ -64,7 +63,7 @@ export default function ProgramCard({ program }: ProgramCardProps) {
         </div>
 
         <div className="flex flex-wrap gap-1">
-          {stringToList(program.benefits).map((benefit, index) => (
+          {program.benefits.map((benefit, index) => (
             <span
               key={`${program._id}-benefit-${index}`}
               className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 dark:bg-primary/20 text-primary"

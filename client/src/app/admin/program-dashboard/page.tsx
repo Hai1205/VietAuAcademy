@@ -44,7 +44,6 @@ export default function ProgramDashboardPage() {
       setFilteredPrograms(data);
     };
 
-    // Skip window check to avoid hydration error
     fetchData();
   }, [getAllPrograms]);
 
@@ -121,13 +120,24 @@ export default function ProgramDashboardPage() {
   const [openMenuFilters, setOpenMenuFilters] = useState(false);
   const closeMenuMenuFilters = () => setOpenMenuFilters(false);
 
-  // Use a key to reset the dialog data completely between opens
-  const [dialogKey, setDialogKey] = useState(0);
-  // Use extended type for program data to include image field
-  // Ensure correct typing to avoid hydration error
   type ExtendedProgramData = Omit<IProgram, "status"> & {
     status: EStatus;
     image?: File | null;
+  };
+  const defaultData: ExtendedProgramData = {
+    _id: "",
+    title: "",
+    description: "",
+    country: "",
+    duration: "",
+    tuition: "",
+    opportunities: "",
+    about: "",
+    requirements: [],
+    benefits: [],
+    imageUrl: "",
+    featured: false,
+    status: EStatus.DELETED,
   };
 
   // Use useState with consistent initialization for client and server
@@ -140,22 +150,7 @@ export default function ProgramDashboardPage() {
     setData((prev) => {
       // If prev is null, create a new object with default values
       if (!prev) {
-        const defaultData = {
-          _id: "",
-          title: "",
-          description: "",
-          country: "",
-          duration: "",
-          tuition: "",
-          opportunities: "",
-          about: "",
-          requirements: "",
-          benefits: "",
-          imageUrl: "",
-          featured: false,
-          status: EStatus.DELETED,
-        };
-        return { ...defaultData, [field]: value } as ExtendedProgramData;
+        return { ...defaultData, [field]: value };
       }
       // If prev is not null, update the current value
       return { ...prev, [field]: value };
@@ -260,11 +255,11 @@ export default function ProgramDashboardPage() {
             tuition: "",
             opportunities: "",
             about: "",
-            requirements: "",
-            benefits: "",
+            requirements: [],
+            benefits: [],
             imageUrl: "",
-            featured: false,
-            status: EStatus.DELETED,
+            featured: true,
+            status: EStatus.ACTIVE,
           };
           setData(defaultProgram);
           setIsCreateProgramOpen(true);
@@ -274,16 +269,8 @@ export default function ProgramDashboardPage() {
 
       {/* Use consistent key to avoid hydration issues */}
       <CreateProgramDialog
-        key={`create-${dialogKey}-${isCreateProgramOpen ? "open" : "closed"}`}
         isOpen={isCreateProgramOpen}
-        onOpenChange={(open) => {
-          setIsCreateProgramOpen(open);
-          if (!open) {
-            // Reset data to null when closing dialog
-            setData(null);
-            setDialogKey((prev) => prev + 1);
-          }
-        }}
+        onOpenChange={setIsCreateProgramOpen}
         onChange={handleChange}
         onProgramCreated={handleCreate}
         data={data}
@@ -291,19 +278,11 @@ export default function ProgramDashboardPage() {
       />
 
       <UpdateProgramDialog
-        key={`update-${dialogKey}-${isUpdateProgramOpen ? "open" : "closed"}`}
         isOpen={isUpdateProgramOpen}
-        onOpenChange={(open) => {
-          setIsUpdateProgramOpen(open);
-          if (!open) {
-            setData(null);
-            setDialogKey((prev) => prev + 1);
-          }
-        }}
+        onOpenChange={setIsUpdateProgramOpen}
         onChange={handleChange}
         data={data}
         onProgramUpdated={handleUpdate}
-        isLoading={isLoading}
       />
 
       <div className="space-y-4">

@@ -42,8 +42,8 @@ export interface ICreateProgramData {
   image?: Express.Multer.File;
   about: string,
   opportunities: string,
-  requirements: string;
-  benefits: string;
+  requirements: string[];
+  benefits: string[];
   featured: boolean;
   status?: string;
 }
@@ -56,8 +56,8 @@ export interface IUpdateProgramData {
   tuition?: string;
   imageUrl?: string;
   image?: Express.Multer.File;
-  requirements?: string;
-  benefits?: string;
+  requirements?: string[];
+  benefits?: string[];
   featured?: boolean;
   status?: string;
 }

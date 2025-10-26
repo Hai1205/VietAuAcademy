@@ -1,4 +1,4 @@
-import { cleanString } from "@/lib/utils";
+import { testFormData } from "@/lib/utils";
 import { EHttpType, handleRequest, IApiResponse } from "../../lib/axiosInstance";
 import { IBaseStore, createStore } from "../../lib/initialStore";
 import { EStatus } from "../types/enum";
@@ -23,8 +23,8 @@ export interface IProgramStore extends IBaseStore {
 		opportunities: string,
 		about: string,
 		image: File | null,
-		requirements: string,
-		benefits: string,
+		requirements: string[],
+		benefits: string[],
 		featured: boolean,
 		status: EStatus
 	) => Promise<IApiResponse<IProgramDataResponse>>;
@@ -38,8 +38,8 @@ export interface IProgramStore extends IBaseStore {
 		opportunities: string,
 		about: string,
 		image: File | null,
-		requirements: string,
-		benefits: string,
+		requirements: string[],
+		benefits: string[],
 		featured: boolean,
 		status: EStatus
 	) => Promise<IApiResponse<IProgramDataResponse>>;
@@ -82,8 +82,8 @@ export const useProgramStore = createStore<IProgramStore>(
 			opportunities: string,
 			about: string,
 			image: File | null,
-			requirements: string,
-			benefits: string,
+			requirements: string[],
+			benefits: string[],
 			featured: boolean,
 			status: EStatus
 		): Promise<IApiResponse<IProgramDataResponse>> => {
@@ -101,10 +101,12 @@ export const useProgramStore = createStore<IProgramStore>(
 					formData.append("image", image);
 				}
 
-				formData.append("requirements", cleanString(requirements));
-				formData.append("benefits", cleanString(benefits));
+				// send arrays as JSON strings
+				formData.append("requirements", JSON.stringify(requirements || []));
+				formData.append("benefits", JSON.stringify(benefits || []));
 				formData.append("featured", featured.toString());
 				formData.append("status", status);
+				testFormData(formData);
 
 				return await handleRequest(EHttpType.POST, `/programs`, formData);
 			});
@@ -120,8 +122,8 @@ export const useProgramStore = createStore<IProgramStore>(
 			opportunities: string,
 			about: string,
 			image: File | null | string,
-			requirements: string,
-			benefits: string,
+			requirements: string[],
+			benefits: string[],
 			featured: boolean,
 			status: EStatus
 		): Promise<IApiResponse<IProgramDataResponse>> => {
@@ -134,16 +136,15 @@ export const useProgramStore = createStore<IProgramStore>(
 				formData.append("tuition", tuition);
 				formData.append("opportunities", opportunities);
 				formData.append("about", about);
-
 				if (image instanceof File && image.size > 0) {
 					formData.append("image", image);
 				}
-
 				console.log(programId)
-				formData.append("requirements", cleanString(requirements));
-				formData.append("benefits", cleanString(benefits));
+				formData.append("requirements", JSON.stringify(requirements || []));
+				formData.append("benefits", JSON.stringify(benefits || []));
 				formData.append("featured", featured.toString());
 				formData.append("status", status);
+				testFormData(formData);
 
 				return await handleRequest(EHttpType.PATCH, `/programs/${programId}`, formData);
 			});

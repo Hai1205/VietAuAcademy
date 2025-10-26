@@ -117,13 +117,6 @@ export const validatePhone = (phone: string): boolean => {
   );
 }
 
-export const stringToList = (str: string): string[] => {
-  return str
-    .split(",")
-    .map(item => item.trim())
-    .filter(Boolean);
-}
-
 export const cleanString = (input: string): string => {
   return input
     .split(",")

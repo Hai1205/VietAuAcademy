@@ -39,8 +39,8 @@ export interface ICreateJobData {
   salary: string;
   applicationDeadline: string;
   estimatedDeparture: string;
-  requirements: string;
-  benefits: string;
+  requirements: string[];
+  benefits: string[];
   description: string;
   company: string;
   workType: string;
@@ -62,8 +62,8 @@ export interface IUpdateJobData {
   salary?: string;
   applicationDeadline?: string;
   estimatedDeparture?: string;
-  requirements?: string;
-  benefits?: string;
+  requirements?: string[];
+  benefits?: string[];
   description?: string;
   company?: string;
   workType?: string;

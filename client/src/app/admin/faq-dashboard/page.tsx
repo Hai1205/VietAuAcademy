@@ -184,7 +184,6 @@ export default function FAQDashboardPage() {
         onChange={handleChange}
         onFAQCreated={handleCreate}
         data={data}
-        isLoading={isLoading}
       />
 
       <UpdateFAQDialog
@@ -193,7 +192,6 @@ export default function FAQDashboardPage() {
         onChange={handleChange}
         data={data}
         onFAQUpdated={handleUpdate}
-        isLoading={isLoading}
       />
 
       <div className="space-y-4">

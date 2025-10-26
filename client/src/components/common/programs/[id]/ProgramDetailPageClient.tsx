@@ -18,7 +18,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { useProgramStore } from "@/utils/stores/programStore";
-import { stringToList } from "@/lib/utils";
 import { useContactStore } from "@/utils/stores/contactStore";
 import { initialContact } from "../../contact/ContactPageClient";
 import { EMAIL, PHONE } from "@/utils/services/constants";
@@ -171,7 +170,7 @@ export default function ProgramDetailPageClient({
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3">
-                  {stringToList(program.requirements).map((requirement, index) => (
+                  {program.requirements.map((requirement, index) => (
                     <li key={index} className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
                       <span className="text-gray-600 dark:text-gray-300">
@@ -193,7 +192,7 @@ export default function ProgramDetailPageClient({
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {stringToList(program.benefits).map((benefit, index) => (
+                  {program.benefits.map((benefit, index) => (
                     <div
                       key={index}
                       className="flex items-center space-x-3 p-3 bg-primary/5 rounded-lg"

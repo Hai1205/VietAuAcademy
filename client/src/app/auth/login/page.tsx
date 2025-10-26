@@ -2,12 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/utils/stores/authStore";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import type React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Label } from "@/components/ui/label";
-import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { Loader2, Mail, Lock, EyeOff, Eye } from "lucide-react";
+import { useAuthStore } from "@/utils/stores/authStore";
 
 const LoginPage: React.FC = () => {
   const { isLoading, login, sendOTP } = useAuthStore();
@@ -35,6 +37,8 @@ const LoginPage: React.FC = () => {
 
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Please enter a valid email";
     }
 
     if (!formData.password) {
@@ -53,17 +57,17 @@ const LoginPage: React.FC = () => {
       return;
     }
 
+    console.log("🔐 Starting login process...");
+
     const response = await login(formData.email, formData.password);
 
-    if (response?.status && response.status > 401) {
-      return;
-    }
+    console.log("📥 Login response:", response);
 
-    if (response?.status && response.status === 401) {
+    if (response?.status === 403) {
       router.push(
         `/auth/verification?email=${encodeURIComponent(
           formData.email
-        )}&isPasswordReset=false`
+        )}&isActivation=true`
       );
 
       await sendOTP(formData.email);
@@ -71,40 +75,54 @@ const LoginPage: React.FC = () => {
       return;
     }
 
-    router.push("/admin");
+    if (response?.status && response?.status > 403 && response?.status < 500) {
+      router.push(`/auth/banned`);
+
+      return;
+    }
+
+    if (response?.status && response?.status === 200) {
+      router.push(`/`);
+
+      return;
+    }
   };
 
   return (
-    <div>
-      <h1 className="text-primary text-2xl font-bold text-center mb-8">
-        Đăng nhập
-      </h1>
+    <div className="space-y-6">
+      <div className="space-y-2 text-center">
+        <h1 className="text-2xl font-bold tracking-tight">Đăng nhập</h1>
+        <p className="text-muted-foreground">
+          Nhập thông tin để truy cập tài khoản của bạn
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-primary-500 mb-2"
-          >
-            Email
-          </label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="Nhập email của bạn"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-white placeholder-gray-400"
-          />
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Nhập email của bạn"
+              value={formData.email}
+              onChange={handleChange}
+              className="pl-10"
+            />
+          </div>
           {errors.email && (
-            <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+            <Alert variant="destructive">
+              <AlertDescription>{errors.email}</AlertDescription>
+            </Alert>
           )}
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Label htmlFor="password">Mật khẩu</Label>
           <div className="relative">
+            <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               id="password"
               name="password"
@@ -112,6 +130,7 @@ const LoginPage: React.FC = () => {
               placeholder="Nhập mật khẩu của bạn"
               value={formData.password}
               onChange={handleChange}
+              className="pl-10"
             />
             <button
               type="button"
@@ -126,31 +145,30 @@ const LoginPage: React.FC = () => {
             </button>
           </div>
           {errors.password && (
-            <p className="mt-1 text-sm text-red-400">{errors.password}</p>
+            <Alert variant="destructive">
+              <AlertDescription>{errors.password}</AlertDescription>
+            </Alert>
           )}
         </div>
 
-        <div className="mb-6">
-          <a
-            onClick={(e) => {
-              e.preventDefault();
-
-              if (!isLoading) router.push("/auth/forgot-password");
-            }}
-            className={`text-primary-500 hover:text-primary-700 text-sm underline cursor-pointer ${
-              isLoading ? "pointer-events-none opacity-70" : ""
-            }`}
+        <div className="flex items-center justify-end">
+          <Link
+            href="/auth/forgot-password"
+            className="text-sm text-primary hover:underline"
           >
             Quên mật khẩu?
-          </a>
+          </Link>
         </div>
 
-        <Button
-          type="submit"
-          className="w-full bg-secondary hover:bg-secondary-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200"
-          disabled={isLoading}
-        >
-          {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Đang đăng nhập...
+            </>
+          ) : (
+            "Đăng nhập"
+          )}
         </Button>
       </form>
     </div>

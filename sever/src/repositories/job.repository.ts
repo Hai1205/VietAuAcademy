@@ -29,8 +29,8 @@ export const handleCreateJob = HandlerCustom(async (data: ICreateJobData) => {
     salary: data.salary,
     applicationDeadline: data.applicationDeadline,
     estimatedDeparture: data.estimatedDeparture,
-    requirements: data.requirements,
-    benefits: data.benefits,
+    requirements: Array.isArray(data.requirements) ? data.requirements : (data.requirements ? String(data.requirements).split(',').map(s => s.trim()).filter(Boolean) : []),
+    benefits: Array.isArray(data.benefits) ? data.benefits : (data.benefits ? String(data.benefits).split(',').map(s => s.trim()).filter(Boolean) : []),
     description: data.description,
     company: data.company,
     workType: data.workType,
@@ -61,8 +61,8 @@ export const handleUpdateJob = HandlerCustom(async (data: { id: string } & Parti
   if (data.salary !== undefined) job.salary = data.salary;
   if (data.applicationDeadline !== undefined) job.applicationDeadline = data.applicationDeadline;
   if (data.estimatedDeparture !== undefined) job.estimatedDeparture = data.estimatedDeparture;
-  if (data.requirements !== undefined) job.requirements = data.requirements;
-  if (data.benefits !== undefined) job.benefits = data.benefits;
+  if (data.requirements !== undefined) job.requirements = Array.isArray(data.requirements) ? data.requirements : (data.requirements ? String(data.requirements).split(',').map(s => s.trim()).filter(Boolean) : []);
+  if (data.benefits !== undefined) job.benefits = Array.isArray(data.benefits) ? data.benefits : (data.benefits ? String(data.benefits).split(',').map(s => s.trim()).filter(Boolean) : []);
   if (data.description !== undefined) job.description = data.description;
   if (data.company !== undefined) job.company = data.company;
   if (data.workType !== undefined) job.workType = data.workType;

@@ -230,7 +230,6 @@ function UserDashboardPage() {
         onChange={handleChange}
         onUserCreated={handleCreate}
         data={data}
-        isLoading={isLoading}
       />
 
       <UpdateUserDialog
@@ -246,7 +245,6 @@ function UserDashboardPage() {
         onChange={handleChange}
         data={data}
         onUserUpdated={handleUpdate}
-        isLoading={isLoading}
       />
 
       <div className="space-y-4">

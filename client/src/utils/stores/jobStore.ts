@@ -1,4 +1,4 @@
-import { cleanString } from "@/lib/utils";
+import { testFormData } from "@/lib/utils";
 import { EHttpType, handleRequest, IApiResponse } from "../../lib/axiosInstance";
 import { IBaseStore, createStore } from "../../lib/initialStore";
 import { EStatus } from "../types/enum";
@@ -23,8 +23,8 @@ export interface IJobStore extends IBaseStore {
 		salary: string,
 		applicationDeadline: string,
 		estimatedDeparture: string,
-		requirements: string,
-		benefits: string,
+		requirements: string[],
+		benefits: string[],
 		description: string,
 		company: string,
 		workType: string,
@@ -46,8 +46,8 @@ export interface IJobStore extends IBaseStore {
 		salary: string,
 		applicationDeadline: string,
 		estimatedDeparture: string,
-		requirements: string,
-		benefits: string,
+		requirements: string[],
+		benefits: string[],
 		description: string,
 		company: string,
 		workType: string,
@@ -91,8 +91,8 @@ export const useJobStore = createStore<IJobStore>(
 			salary: string,
 			applicationDeadline: string,
 			estimatedDeparture: string,
-			requirements: string,
-			benefits: string,
+			requirements: string[],
+			benefits: string[],
 			description: string,
 			company: string,
 			workType: string,
@@ -116,8 +116,8 @@ export const useJobStore = createStore<IJobStore>(
 			formData.append("salary", salary)
 			formData.append("applicationDeadline", applicationDeadline)
 			formData.append("estimatedDeparture", estimatedDeparture)
-			formData.append("requirements", cleanString(requirements))
-			formData.append("benefits", cleanString(benefits))
+			formData.append("requirements", JSON.stringify(requirements || []))
+			formData.append("benefits", JSON.stringify(benefits || []))
 			formData.append("description", description)
 			formData.append("company", company)
 			formData.append("workType", workType)
@@ -128,6 +128,7 @@ export const useJobStore = createStore<IJobStore>(
 			formData.append("workEnvironment", workEnvironment)
 			formData.append("trainingPeriod", trainingPeriod)
 			formData.append("status", status)
+			testFormData(formData);
 
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.POST, `/jobs`, formData);
@@ -144,8 +145,8 @@ export const useJobStore = createStore<IJobStore>(
 			salary: string,
 			applicationDeadline: string,
 			estimatedDeparture: string,
-			requirements: string,
-			benefits: string,
+			requirements: string[],
+			benefits: string[],
 			description: string,
 			company: string,
 			workType: string,
@@ -159,31 +160,32 @@ export const useJobStore = createStore<IJobStore>(
 			question?: string,
 		): Promise<IApiResponse<IJobDataResponse>> => {
 			const formData = new FormData();
-			formData.append("title", title)
-			formData.append("country", country)
+			formData.append("title", title);
+			formData.append("country", country);
 			if (image instanceof File && image.size > 0) {
-				formData.append("image", image)
+				formData.append("image", image);
 			}
 			if (question) {
-				formData.append("question", question)
+				formData.append("question", question);
 			}
-			formData.append("positions", `${positions}`)
-			formData.append("location", location)
-			formData.append("salary", salary)
-			formData.append("applicationDeadline", applicationDeadline)
-			formData.append("estimatedDeparture", estimatedDeparture)
-			formData.append("requirements", cleanString(requirements))
-			formData.append("benefits", cleanString(benefits))
-			formData.append("description", description)
-			formData.append("company", company)
-			formData.append("workType", workType)
-			formData.append("featured", `${featured}`)
-			formData.append("workingHours", workingHours)
-			formData.append("overtime", overtime)
-			formData.append("accommodation", accommodation)
-			formData.append("workEnvironment", workEnvironment)
-			formData.append("trainingPeriod", trainingPeriod)
-			formData.append("status", status)
+			formData.append("positions", `${positions}`);
+			formData.append("location", location);
+			formData.append("salary", salary);
+			formData.append("applicationDeadline", applicationDeadline);
+			formData.append("estimatedDeparture", estimatedDeparture);
+			formData.append("requirements", JSON.stringify(requirements || []));
+			formData.append("benefits", JSON.stringify(benefits || []));
+			formData.append("description", description);
+			formData.append("company", company);
+			formData.append("workType", workType);
+			formData.append("featured", `${featured}`);
+			formData.append("workingHours", workingHours);
+			formData.append("overtime", overtime);
+			formData.append("accommodation", accommodation);
+			formData.append("workEnvironment", workEnvironment);
+			formData.append("trainingPeriod", trainingPeriod);
+			formData.append("status", status);
+			testFormData(formData);
 
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.PATCH, `/jobs/${jobId}`, formData);

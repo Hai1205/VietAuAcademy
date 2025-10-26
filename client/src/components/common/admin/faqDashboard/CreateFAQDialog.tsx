@@ -1,12 +1,5 @@
-import { Loader2, Save } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Loader2, Save, HelpCircle } from "lucide-react";
+import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,6 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { EStatus } from "@/utils/types/enum";
 import { FAQCategory, FAQStatus } from "./constant";
+import { Textarea } from "@/components/ui/textarea";
+import { EnhancedDialog } from "../EnhancedDialog";
 
 interface CreateFAQDialogProps {
   isOpen: boolean;
@@ -26,7 +21,6 @@ interface CreateFAQDialogProps {
   onChange: (field: keyof IFAQ, value: string) => void;
   onFAQCreated: () => void;
   data: IFAQ | null;
-  isLoading: boolean;
 }
 
 const CreateFAQDialog = ({
@@ -35,61 +29,97 @@ const CreateFAQDialog = ({
   onChange,
   onFAQCreated,
   data,
-  isLoading,
 }: CreateFAQDialogProps) => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleCreate = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.resolve(onFAQCreated());
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const footer = (
+    <>
+      <Button
+        variant="outline"
+        onClick={() => onOpenChange(false)}
+        className="border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+      >
+        Hủy
+      </Button>
+      <Button
+        type="submit"
+        disabled={isLoading}
+        onClick={handleCreate}
+        className="bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 text-white font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300"
+      >
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Đang tạo...
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            <Save className="h-4 w-4" />
+            Tạo
+          </span>
+        )}
+      </Button>
+    </>
+  );
+
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[525px] bg-white dark:bg-gray-800">
-        <DialogHeader>
-          <DialogTitle className="text-primary">Tạo mới</DialogTitle>
+    <EnhancedDialog
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      title="Tạo câu hỏi thường gặp"
+      description="Thêm một câu hỏi thường gặp mới vào hệ thống"
+      icon={HelpCircle}
+      footer={footer}
+      className="max-w-2xl"
+    >
+      <div className="space-y-4 py-4">
+        <div className="space-y-2">
+          <Label htmlFor="create-question" className="text-sm font-medium">
+            Câu hỏi
+          </Label>
+          <Input
+            id="create-question"
+            value={data?.question || ""}
+            onChange={(e) => onChange("question", e.target.value)}
+            className="h-10"
+            placeholder="Nhập câu hỏi"
+          />
+        </div>
 
-          <DialogDescription className="text-primary-200">
-            Tạo một câu hỏi thường gặp mới.
-          </DialogDescription>
-        </DialogHeader>
+        <div className="space-y-2">
+          <Label htmlFor="create-answer" className="text-sm font-medium">
+            Câu trả lời
+          </Label>
+          <Textarea
+            id="create-answer"
+            value={data?.answer || ""}
+            onChange={(e) => onChange("answer", e.target.value)}
+            className="min-h-[120px]"
+            placeholder="Nhập câu trả lời"
+          />
+        </div>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="create-question" className="text-primary">
-                Câu hỏi
-              </Label>
-
-              <Input
-                id="create-question"
-                value={data?.question || ""}
-                onChange={(e) => onChange("question", e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="create-answer" className="text-primary">
-                Câu trả lời
-              </Label>
-
-              <Input
-                id="create-answer"
-                value={data?.answer || ""}
-                onChange={(e) => onChange("answer", e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="grid gap-2 mt-3">
-            <Label htmlFor="create-category" className="text-primary">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="create-category" className="text-sm font-medium">
               Danh mục
             </Label>
-
             <Select
               value={data?.category || FAQCategory[0].value}
               onValueChange={(value: string) => onChange("category", value)}
             >
-              <SelectTrigger id="create-category">
-                <SelectValue placeholder="Select category" />
+              <SelectTrigger id="create-category" className="h-10">
+                <SelectValue placeholder="Chọn danh mục" />
               </SelectTrigger>
-
               <SelectContent>
                 {FAQCategory.map((item: { value: string; label: string }) => (
                   <SelectItem key={item.value} value={item.value}>
@@ -100,19 +130,17 @@ const CreateFAQDialog = ({
             </Select>
           </div>
 
-          <div className="grid gap-2 mt-3">
-            <Label htmlFor="create-status" className="text-primary">
+          <div className="space-y-2">
+            <Label htmlFor="create-status" className="text-sm font-medium">
               Trạng thái
             </Label>
-
             <Select
               value={data?.status || EStatus.ACTIVE}
               onValueChange={(value: string) => onChange("status", value)}
             >
-              <SelectTrigger id="create-status">
-                <SelectValue placeholder="Select status" />
+              <SelectTrigger id="create-status" className="h-10">
+                <SelectValue placeholder="Chọn trạng thái" />
               </SelectTrigger>
-
               <SelectContent>
                 {FAQStatus.map((item: { value: string; label: string }) => (
                   <SelectItem key={item.value} value={item.value}>
@@ -123,34 +151,8 @@ const CreateFAQDialog = ({
             </Select>
           </div>
         </div>
-
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => {
-              onOpenChange(false);
-            }}
-            className="bg-gray-200 border-gray-300 text-gray-700 hover:bg-red-200 hover:text-red-600 hover:border-red-200 dark:bg-transparent dark:border-gray-700 dark:text-white dark:hover:bg-red-900 dark:hover:text-white"
-          >
-            Hủy
-          </Button>
-
-          <Button type="submit" disabled={isLoading} onClick={onFAQCreated}>
-            {isLoading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Đang tạo...
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                Tạo
-              </>
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </EnhancedDialog>
   );
 };
 

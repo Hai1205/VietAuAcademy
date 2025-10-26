@@ -10,8 +10,8 @@ interface IJobDocument extends Document {
   salary?: string;
   applicationDeadline?: string;
   estimatedDeparture?: string;
-  requirements?: string;
-  benefits?: string;
+  requirements?: string[];
+  benefits?: string[];
   description?: string;
   company?: string;
   workType?: string;
@@ -34,8 +34,8 @@ const schema: Schema<IJobDocument> = new Schema(
     salary: String,
     applicationDeadline: String,
     estimatedDeparture: String,
-    requirements: String,
-    benefits: String,
+    requirements: [String],
+    benefits: [String],
     description: String,
     company: String,
     workType: String,

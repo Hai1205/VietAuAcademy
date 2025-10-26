@@ -71,7 +71,22 @@ export const parseRequestData = (req: any) => {
     const contentType = req.headers['content-type'] || '';
 
     if (contentType.includes('multipart/form-data')) {
-        return formDataToObject(req);
+        const obj = formDataToObject(req);
+        // parse requirements/benefits if they were sent as JSON strings
+        ['requirements', 'benefits'].forEach((key) => {
+            if (obj[key] && typeof obj[key] === 'string') {
+                try {
+                    const parsed = JSON.parse(obj[key]);
+                    if (Array.isArray(parsed)) {
+                        obj[key] = parsed.map((s: any) => String(s).trim()).filter(Boolean);
+                    }
+                } catch {
+                    // not JSON -> leave as-is (string) so callers can handle
+                }
+            }
+        });
+
+        return obj;
     } else if (contentType.includes('application/json')) {
         return req.body;
     } else if (contentType.includes('application/x-www-form-urlencoded')) {

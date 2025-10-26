@@ -1,5 +1,4 @@
 import express from 'express';
-import blogRoute from './blog.route.js';
 import contactRoute from './contact.route.js';
 import faqRoute from './faq.route.js';
 import programRoute from './program.route.js';
@@ -11,7 +10,6 @@ const router = express.Router();
 
 const routes = [
     { path: '/users', router: userRoute },
-    { path: '/blogs', router: blogRoute },
     { path: '/contacts', router: contactRoute },
     { path: '/faqs', router: faqRoute },
     { path: '/programs', router: programRoute },

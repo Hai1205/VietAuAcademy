@@ -1,7 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,8 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Save } from "lucide-react";
+import { Save, UserCog } from "lucide-react";
 import { EUserStatus } from "@/utils/types/enum";
+import { EnhancedDialog } from "../EnhancedDialog";
 
 interface UpdateUserDialogProps {
   isOpen: boolean;
@@ -22,7 +22,6 @@ interface UpdateUserDialogProps {
   onChange: (field: keyof IUser, value: string | boolean) => void;
   data: IUser | null;
   onUserUpdated: () => void;
-  isLoading: boolean;
 }
 
 const UpdateUserDialog = ({
@@ -31,130 +30,122 @@ const UpdateUserDialog = ({
   onChange,
   data,
   onUserUpdated,
-  isLoading,
 }: UpdateUserDialogProps) => {
-  const handleClose = () => {
-    onOpenChange(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const handleUpdate = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.resolve(onUserUpdated());
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  const footer = (
+    <>
+      <Button
+        variant="outline"
+        onClick={() => onOpenChange(false)}
+        className="border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+      >
+        Hủy
+      </Button>
+      <Button
+        onClick={handleUpdate}
+        disabled={isLoading}
+        className="bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 text-white font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300"
+      >
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+            Đang lưu...
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            <Save className="h-4 w-4" />
+            Lưu
+          </span>
+        )}
+      </Button>
+    </>
+  );
+
   return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={handleClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-25" />
-        </Transition.Child>
+    <EnhancedDialog
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      title="Chỉnh sửa quản trị viên"
+      description="Cập nhật thông tin quản trị viên"
+      icon={UserCog}
+      footer={footer}
+      className="max-w-md"
+    >
+      <ScrollArea className="h-[50vh] pr-4">
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="update-name" className="text-sm font-medium">
+              Tên quản trị viên
+            </Label>
+            <Input
+              id="update-name"
+              value={data?.name || ""}
+              onChange={(e) => onChange("name", e.target.value)}
+              className="h-10"
+              placeholder="Nhập tên quản trị viên"
+            />
+          </div>
 
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
+          <div className="space-y-2">
+            <Label htmlFor="update-email" className="text-sm font-medium">
+              Email
+            </Label>
+            <Input
+              id="update-email"
+              type="email"
+              value={data?.email || ""}
+              onChange={(e) => onChange("email", e.target.value)}
+              className="h-10"
+              placeholder="example@vietau.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="update-phone" className="text-sm font-medium">
+              Số điện thoại
+            </Label>
+            <Input
+              id="update-phone"
+              value={data?.phone || ""}
+              onChange={(e) => onChange("phone", e.target.value)}
+              className="h-10"
+              placeholder="Nhập số điện thoại"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="update-status" className="text-sm font-medium">
+              Trạng thái
+            </Label>
+            <Select
+              value={data?.status || EUserStatus.PENDING}
+              onValueChange={(value) =>
+                onChange("status", value as EUserStatus)
+              }
             >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900 dark:text-white"
-                >
-                  Chỉnh sửa quản trị viên
-                </Dialog.Title>
-
-                <ScrollArea className="h-[42vh] pr-4 mt-4">
-                  <div className="grid gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="update-name">Tên quản trị viên</Label>
-                      <Input
-                        id="update-name"
-                        value={data?.name || ""}
-                        onChange={(e) => onChange("name", e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="update-email">Email</Label>
-                      <Input
-                        id="update-email"
-                        type="email"
-                        value={data?.email || ""}
-                        onChange={(e) => onChange("email", e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="update-phone">Số điện thoại</Label>
-                      <Input
-                        id="update-phone"
-                        value={data?.phone || ""}
-                        onChange={(e) => onChange("phone", e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid gap-2 mt-3">
-                    <Label htmlFor="update-status">Trạng thái</Label>
-                    <Select
-                      value={data?.status || EUserStatus.PENDING}
-                      onValueChange={(value) =>
-                        onChange("status", value as EUserStatus)
-                      }
-                    >
-                      <SelectTrigger id="update-status">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Hoạt động</SelectItem>
-                        <SelectItem value="banned">Ngừng hoạt động</SelectItem>
-                        <SelectItem value={EUserStatus.PENDING}>
-                          Đang chờ
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </ScrollArea>
-
-                {/* Footer */}
-                <div className="mt-4 flex justify-end gap-2 pt-4 border-t border-gray-800">
-                  <Button
-                    variant="outline"
-                    onClick={handleClose}
-                    className="bg-gray-200 border-gray-300 text-gray-700 hover:bg-red-200 hover:text-red-600 hover:border-red-200 dark:bg-transparent dark:border-gray-700 dark:text-white dark:hover:bg-red-900 dark:hover:text-white"
-                  >
-                    Hủy
-                  </Button>
-
-                  <Button onClick={onUserUpdated} disabled={isLoading}>
-                    {isLoading ? (
-                      <>Đang lưu...</>
-                    ) : (
-                      <>
-                        <Save className="h-4 w-4" />
-                        Lưu
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              <SelectTrigger id="update-status" className="h-10">
+                <SelectValue placeholder="Chọn trạng thái" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Hoạt động</SelectItem>
+                <SelectItem value="banned">Ngừng hoạt động</SelectItem>
+                <SelectItem value={EUserStatus.PENDING}>Đang chờ</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
-      </Dialog>
-    </Transition>
+      </ScrollArea>
+    </EnhancedDialog>
   );
 };
 

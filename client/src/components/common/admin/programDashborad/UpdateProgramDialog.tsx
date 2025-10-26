@@ -1,7 +1,6 @@
 "use client";
 
-import { Fragment, useState, useRef, ChangeEvent, useEffect } from "react";
-import { Dialog, Transition } from "@headlessui/react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,8 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Save, Image as ImageIcon } from "lucide-react";
+import { Save, Image as ImageIcon, BookOpen, X, Plus } from "lucide-react";
 import Image from "next/image";
+import { EnhancedDialog } from "../EnhancedDialog";
+import { Badge } from "@/components/ui/badge";
 
 interface UpdateProgramDialogProps {
   isOpen: boolean;
@@ -26,7 +27,6 @@ interface UpdateProgramDialogProps {
   ) => void;
   data: IProgram | null;
   onProgramUpdated: () => void;
-  isLoading: boolean;
 }
 
 const UpdateProgramDialog = ({
@@ -35,10 +35,14 @@ const UpdateProgramDialog = ({
   onChange,
   data,
   onProgramUpdated,
-  isLoading,
 }: UpdateProgramDialogProps) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [requirementInput, setRequirementInput] = useState<string>("");
+  const [benefitInput, setBenefitInput] = useState<string>("");
+  const [requirements, setRequirements] = useState<string[]>([]);
+  const [benefits, setBenefits] = useState<string[]>([]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -62,270 +66,386 @@ const UpdateProgramDialog = ({
     }
   }, [data?.imageUrl]);
 
-  const handleClose = () => {
-    onOpenChange(false);
+  const handleUpdate = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.resolve(onProgramUpdated());
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  const addRequirement = () => {
+    const v = requirementInput.trim();
+    if (!v) return;
+    const next = [...requirements, v];
+    setRequirements(next);
+    onChange("requirements", next);
+    setRequirementInput("");
+  };
+
+  const removeRequirement = (index: number) => {
+    const next = requirements.filter((_, i) => i !== index);
+    setRequirements(next);
+    onChange("requirements", next);
+  };
+
+  const handleReqKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addRequirement();
+    }
+  };
+
+  // Benefits handlers
+  const addBenefit = () => {
+    const v = benefitInput.trim();
+    if (!v) return;
+    const next = [...benefits, v];
+    setBenefits(next);
+    onChange("benefits", next);
+    setBenefitInput("");
+  };
+
+  const removeBenefit = (index: number) => {
+    const next = benefits.filter((_, i) => i !== index);
+    setBenefits(next);
+    onChange("benefits", next);
+  };
+
+  const handleBenKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addBenefit();
+    }
+  };
+
+  const footer = (
+    <>
+      <Button
+        variant="outline"
+        onClick={() => onOpenChange(false)}
+        className="border-gray-300 text-gray-700 hover:bg-red-50 hover:text-red-600 hover:border-red-200 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+      >
+        Hủy
+      </Button>
+      <Button
+        onClick={handleUpdate}
+        disabled={isLoading}
+        className="bg-gradient-to-r from-primary to-secondary hover:from-primary-600 hover:to-secondary-600 text-white font-medium shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40 transition-all duration-300"
+      >
+        {isLoading ? (
+          <span className="flex items-center gap-2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+            Đang lưu...
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            <Save className="h-4 w-4" />
+            Lưu
+          </span>
+        )}
+      </Button>
+    </>
+  );
+
   return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50" onClose={handleClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-black bg-opacity-25" />
-        </Transition.Child>
+    <EnhancedDialog
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      title="Chỉnh sửa chương trình"
+      description="Cập nhật thông tin chương trình học"
+      icon={BookOpen}
+      footer={footer}
+      className="max-w-2xl"
+    >
+      <ScrollArea className="h-[60vh] pr-4">
+        {data && (
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="update-title" className="text-sm font-medium">
+                Chương trình
+              </Label>
+              <Input
+                id="update-title"
+                value={data.title || ""}
+                onChange={(e) => onChange("title", e.target.value)}
+                className="h-10"
+                placeholder="Nhập tên chương trình"
+              />
+            </div>
 
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title
-                  as="h3"
-                  className="text-lg font-medium leading-6 text-gray-900 dark:text-white"
+            <div className="space-y-2">
+              <Label
+                htmlFor="update-description"
+                className="text-sm font-medium"
+              >
+                Mô tả
+              </Label>
+              <Textarea
+                id="update-description"
+                value={data.description || ""}
+                onChange={(e) => onChange("description", e.target.value)}
+                className="min-h-[80px]"
+                placeholder="Nhập mô tả chương trình"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="update-country" className="text-sm font-medium">
+                  Quốc gia
+                </Label>
+                <Input
+                  id="update-country"
+                  value={data.country || ""}
+                  onChange={(e) => onChange("country", e.target.value)}
+                  className="h-10"
+                  placeholder="Nhập quốc gia"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  htmlFor="update-duration"
+                  className="text-sm font-medium"
                 >
-                  Chỉnh sửa chương trình
-                </Dialog.Title>
+                  Thời gian
+                </Label>
+                <Input
+                  id="update-duration"
+                  value={data.duration || ""}
+                  onChange={(e) => onChange("duration", e.target.value)}
+                  className="h-10"
+                  placeholder="Nhập thời gian học"
+                />
+              </div>
+            </div>
 
-                <ScrollArea className="h-[42vh] pr-4 mt-4">
-                  {data && (
-                    <>
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="update-title">Chương trình</Label>
-                          <Input
-                            id="update-title"
-                            value={data.title || ""}
-                            onChange={(e) => onChange("title", e.target.value)}
-                          />
-                        </div>
-                      </div>
+            <div className="space-y-2">
+              <Label htmlFor="update-tuition" className="text-sm font-medium">
+                Học phí
+              </Label>
+              <Input
+                id="update-tuition"
+                value={data.tuition || ""}
+                onChange={(e) => onChange("tuition", e.target.value)}
+                className="h-10"
+                placeholder="Nhập học phí"
+              />
+            </div>
 
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="update-description">Mô tả</Label>
-                          <Textarea
-                            id="update-description"
-                            value={data.description || ""}
-                            onChange={(e) =>
-                              onChange("description", e.target.value)
-                            }
-                          />
-                        </div>
-                      </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="create-opportunities"
+                className="text-sm font-medium"
+              >
+                Cơ hội
+              </Label>
+              <Textarea
+                id="create-opportunities"
+                value={data?.opportunities || ""}
+                onChange={(e) => onChange("opportunities", e.target.value)}
+                className="min-h-[80px]"
+                placeholder="Nhập cơ hội sau khi hoàn thành"
+              />
+            </div>
 
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="update-country">Quốc gia</Label>
-                          <Input
-                            id="update-country"
-                            value={data.country || ""}
-                            onChange={(e) =>
-                              onChange("country", e.target.value)
-                            }
-                          />
-                        </div>
-                      </div>
+            <div className="space-y-2">
+              <Label htmlFor="create-about" className="text-sm font-medium">
+                Giới thiệu
+              </Label>
+              <Textarea
+                id="create-about"
+                value={data?.about || ""}
+                onChange={(e) => onChange("about", e.target.value)}
+                className="min-h-[80px]"
+                placeholder="Nhập giới thiệu về chương trình"
+              />
+            </div>
 
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="update-duration">Thời gian</Label>
-                          <Input
-                            id="update-duration"
-                            value={data.duration || ""}
-                            onChange={(e) =>
-                              onChange("duration", e.target.value)
-                            }
-                          />
-                        </div>
-                      </div>
+            <div className="space-y-2">
+              <Label htmlFor="update-image" className="text-sm font-medium">
+                Hình ảnh
+              </Label>
+              <div className="flex flex-col gap-2">
+                <input
+                  type="file"
+                  id="update-image"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleButtonClick}
+                  className="flex items-center gap-2 h-10"
+                >
+                  <ImageIcon className="h-4 w-4" />
+                  {data.imageUrl ? "Thay đổi hình ảnh" : "Tải lên hình ảnh"}
+                </Button>
+                {previewImage && (
+                  <div className="relative mt-2 h-40 w-full overflow-hidden rounded-md border border-gray-200 dark:border-gray-700">
+                    <Image
+                      src={previewImage}
+                      alt="Preview"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 300px"
+                      style={{ objectFit: "cover" }}
+                      className="rounded-md"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
 
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="update-tuition">Học phí</Label>
-                          <Input
-                            id="update-tuition"
-                            value={data.tuition || ""}
-                            onChange={(e) =>
-                              onChange("tuition", e.target.value)
-                            }
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="create-opportunities">Cơ hội</Label>
-                          <Textarea
-                            id="create-opportunities"
-                            value={data?.opportunities || ""}
-                            onChange={(e) =>
-                              onChange("opportunities", e.target.value)
-                            }
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="create-about">Giới thiệu</Label>
-                          <Textarea
-                            id="create-about"
-                            value={data?.about || ""}
-                            onChange={(e) => onChange("about", e.target.value)}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="update-image">Hình ảnh</Label>
-                          <div className="flex flex-col gap-2">
-                            <input
-                              type="file"
-                              id="update-image"
-                              ref={fileInputRef}
-                              onChange={handleFileChange}
-                              accept="image/*"
-                              className="hidden"
-                            />
-
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={handleButtonClick}
-                              className="flex items-center gap-2"
-                            >
-                              <ImageIcon className="h-4 w-4" />
-                              {data.imageUrl ? "Change Image" : "Upload Image"}
-                            </Button>
-
-                            {previewImage && (
-                              <div className="relative mt-2 h-40 w-full overflow-hidden rounded-md border">
-                                <Image
-                                  src={previewImage}
-                                  alt="Preview"
-                                  fill
-                                  sizes="(max-width: 768px) 100vw, 300px"
-                                  style={{ objectFit: "cover" }}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="update-requirements">
-                            Yêu cầu (cách nhau bằng dấu phẩy)
-                          </Label>
-                          <Input
-                            id="update-requirements"
-                            value={data?.requirements}
-                            onChange={(e) =>
-                              onChange("requirements", e.target.value)
-                            }
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid gap-4">
-                        <div className="grid gap-2">
-                          <Label htmlFor="update-benefits">
-                            Lợi ích (cách nhau bằng dấu phẩy)
-                          </Label>
-                          <Input
-                            id="update-benefits"
-                            value={data?.benefits}
-                            onChange={(e) =>
-                              onChange("benefits", e.target.value)
-                            }
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid gap-2 mt-3">
-                        <Label htmlFor="update-featured">Nổi bật</Label>
-                        <Select
-                          value={data.featured ? "true" : "false"}
-                          onValueChange={(value) =>
-                            onChange("featured", value === "true")
-                          }
-                        >
-                          <SelectTrigger id="update-featured">
-                            <SelectValue placeholder="Select featured status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="true">Có</SelectItem>
-                            <SelectItem value="false">Không</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div className="grid gap-2 mt-3">
-                        <Label htmlFor="update-status">Trạng thái</Label>
-                        <Select
-                          value={data.status || "deleted"}
-                          onValueChange={(value: string) =>
-                            onChange("status", value as "active" | "deleted")
-                          }
-                        >
-                          <SelectTrigger id="update-status">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="active">Hoạt động</SelectItem>
-                            <SelectItem value="deleted">
-                              Không hoạt động
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </>
-                  )}
-                </ScrollArea>
-
-                {/* Footer */}
-                <div className="mt-4 flex justify-end gap-2 pt-4 border-t border-gray-800">
-                  <Button
-                    variant="outline"
-                    onClick={handleClose}
-                    className="bg-gray-200 border-gray-300 text-gray-700 hover:bg-red-200 hover:text-red-600 hover:border-red-200 dark:bg-transparent dark:border-gray-700 dark:text-white dark:hover:bg-red-900 dark:hover:text-white"
-                  >
-                    Hủy
-                  </Button>
-
-                  <Button onClick={onProgramUpdated} disabled={isLoading}>
-                    {isLoading ? (
-                      <>Đang lưu...</>
-                    ) : (
-                      <>
-                        <Save className="h-4 w-4" />
-                        Lưu
-                      </>
-                    )}
-                  </Button>
+            <div className="space-y-2">
+              <Label
+                htmlFor="create-requirements"
+                className="text-sm font-medium"
+              >
+                Yêu cầu
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  id="create-requirements"
+                  value={requirementInput}
+                  onChange={(e) => setRequirementInput(e.target.value)}
+                  onKeyDown={handleReqKey}
+                  placeholder="Nhập yêu cầu và nhấn Enter hoặc nhấn Thêm"
+                  className="h-10"
+                />
+                <Button
+                  onClick={addRequirement}
+                  size="sm"
+                  className="bg-primary text-primary-foreground shadow-md hover:shadow-lg transform hover:-translate-y-[1px] transition-all"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              {requirements.length > 0 ? (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {requirements.map((req, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="gap-2 px-3 py-1.5 text-sm"
+                    >
+                      {req}
+                      <button
+                        onClick={() => removeRequirement(index)}
+                        className="ml-2 hover:text-destructive"
+                        aria-label={`Remove requirement ${req}`}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              ) : (
+                <div className="text-muted-foreground text-sm mt-2">
+                  Chưa có yêu cầu nào được thêm.
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="create-benefits" className="text-sm font-medium">
+                Lợi ích
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  id="create-benefits"
+                  value={benefitInput}
+                  onChange={(e) => setBenefitInput(e.target.value)}
+                  onKeyDown={handleBenKey}
+                  placeholder="Nhập lợi ích và nhấn Enter hoặc nhấn Thêm"
+                  className="h-10"
+                />
+                <Button
+                  onClick={addBenefit}
+                  size="sm"
+                  className="bg-primary text-primary-foreground shadow-md hover:shadow-lg transform hover:-translate-y-[1px] transition-all"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+              {benefits.length > 0 ? (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {benefits.map((ben, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="gap-2 px-3 py-1.5 text-sm"
+                    >
+                      {ben}
+                      <button
+                        onClick={() => removeBenefit(index)}
+                        className="ml-2 hover:text-destructive"
+                        aria-label={`Remove benefit ${ben}`}
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-muted-foreground text-sm mt-2">
+                  Chưa có lợi ích nào được thêm.
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label
+                  htmlFor="update-featured"
+                  className="text-sm font-medium"
+                >
+                  Nổi bật
+                </Label>
+                <Select
+                  value={data.featured ? "true" : "false"}
+                  onValueChange={(value) =>
+                    onChange("featured", value === "true")
+                  }
+                >
+                  <SelectTrigger id="update-featured" className="h-10">
+                    <SelectValue placeholder="Chọn trạng thái nổi bật" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">Có</SelectItem>
+                    <SelectItem value="false">Không</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="update-status" className="text-sm font-medium">
+                  Trạng thái
+                </Label>
+                <Select
+                  value={data.status || "deleted"}
+                  onValueChange={(value: string) =>
+                    onChange("status", value as "active" | "deleted")
+                  }
+                >
+                  <SelectTrigger id="update-status" className="h-10">
+                    <SelectValue placeholder="Chọn trạng thái" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Hoạt động</SelectItem>
+                    <SelectItem value="deleted">Không hoạt động</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
-        </div>
-      </Dialog>
-    </Transition>
+        )}
+      </ScrollArea>
+    </EnhancedDialog>
   );
 };
 

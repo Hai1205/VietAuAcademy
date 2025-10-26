@@ -32,8 +32,8 @@ export const handleCreateProgram = HandlerCustom(async (data: ICreateProgramData
         country: data.country,
         duration: data.duration,
         tuition: data.tuition,
-        requirements: data.requirements,
-        benefits: data.benefits,
+        requirements: Array.isArray(data.requirements) ? data.requirements : (data.requirements ? String(data.requirements).split(',').map(s => s.trim()).filter(Boolean) : []),
+        benefits: Array.isArray(data.benefits) ? data.benefits : (data.benefits ? String(data.benefits).split(',').map(s => s.trim()).filter(Boolean) : []),
         imageUrl: data.imageUrl || "/images/placeholder-program.jpg", // Sử dụng ảnh mặc định nếu không có
         featured: data.featured,
         about: data.about,
@@ -58,8 +58,8 @@ export const handleUpdateProgram = HandlerCustom(async (data: { id: string } & P
     if (data.duration !== undefined) program.duration = data.duration;
     if (data.tuition !== undefined) program.tuition = data.tuition;
     if (data.imageUrl !== undefined) program.imageUrl = data.imageUrl;
-    if (data.requirements !== undefined) program.requirements = data.requirements;
-    if (data.benefits !== undefined) program.benefits = data.benefits;
+    if (data.requirements !== undefined) program.requirements = Array.isArray(data.requirements) ? data.requirements : (data.requirements ? String(data.requirements).split(',').map(s => s.trim()).filter(Boolean) : []);
+    if (data.benefits !== undefined) program.benefits = Array.isArray(data.benefits) ? data.benefits : (data.benefits ? String(data.benefits).split(',').map(s => s.trim()).filter(Boolean) : []);
     if (data.featured !== undefined) program.featured = data.featured;
     if (data.status !== undefined) program.status = data.status;
 

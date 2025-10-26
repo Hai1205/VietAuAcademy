@@ -2,18 +2,21 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuthStore } from "@/utils/stores/authStore";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import Link from "next/link";
+import { Loader2, ArrowLeft, Shield, Clock } from "lucide-react";
+import { useAuthStore } from "@/utils/stores/authStore";
 
 const VerificationPage: React.FC = () => {
   const { isLoading, verifyOTP } = useAuthStore();
 
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [isPasswordReset, setIsPasswordReset] = useState(false);
+  const [isActivation, setIsActivation] = useState(false);
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
 
   const [isExpired, setIsExpired] = useState(false);
@@ -25,7 +28,7 @@ const VerificationPage: React.FC = () => {
   useEffect(() => {
     setIsClient(true);
     const urlParams = new URLSearchParams(window.location.search);
-    const isPasswordResetParam = urlParams.get("isPasswordReset") === "true";
+    const isActivationParam = urlParams.get("isActivation") === "true";
     const emailParam = urlParams.get("email");
 
     if (emailParam) {
@@ -33,7 +36,7 @@ const VerificationPage: React.FC = () => {
     }
 
     if (emailParam) {
-      setIsPasswordReset(isPasswordResetParam);
+      setIsActivation(isActivationParam);
     }
   }, []);
 
@@ -99,7 +102,7 @@ const VerificationPage: React.FC = () => {
       return;
     }
 
-    const res = await verifyOTP(email, otp.join(""));
+    const res = await verifyOTP(email, otp.join(""), isActivation);
 
     if (!res) {
       setOtp(Array(6).fill(""));
@@ -115,7 +118,7 @@ const VerificationPage: React.FC = () => {
       return;
     }
 
-    if (isPasswordReset) {
+    if (!isActivation) {
       router.push(`/auth/reset-password/?email=${encodeURIComponent(email)}`);
     } else {
       toast.success("Xác thực tài khoản thành công");
@@ -128,20 +131,12 @@ const VerificationPage: React.FC = () => {
     const result = await sendOTP(email);
 
     if (result) {
-      toast.done("Mã OTP đã được gửi");
+      toast.success("Mã OTP đã được gửi lại");
+      setOtp(Array(6).fill(""));
+      setTimeLeft(300);
+      setIsExpired(false);
     }
   };
-
-  // Timer logic
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-
-    const timer = setTimeout(() => {
-      setTimeLeft(timeLeft - 1);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [timeLeft]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -155,25 +150,42 @@ const VerificationPage: React.FC = () => {
   }
 
   return (
-    <div className="rounded-lg p-8">
-      <h1 className="text-primary text-2xl font-bold text-center mb-6">
-        Nhập mã xác thực
-      </h1>
-
-      <p className="text-gray-400 text-sm mb-2">
-        Chúng tôi đã gửi mã OTP về email của bạn, hãy nhập mã đó vào các ô bên
-        dưới để
-        {isPasswordReset ? "đặt lại mật khẩu" : "xác thực tài khoản"}.
-      </p>
-
-      <div className="text-center mb-6">
-        <p className="text-primary-400 text-sm">
-          Mã hết hạn trong: {formatTime(timeLeft)}
+    <div className="space-y-6">
+      <div className="space-y-2 text-center">
+        <div className="flex justify-center mb-4">
+          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <Shield className="h-6 w-6 text-primary" />
+          </div>
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight">Nhập mã xác thực</h1>
+        <p className="text-muted-foreground">
+          Chúng tôi đã gửi mã OTP gồm 6 chữ số về email <strong>{email}</strong>
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Vui lòng nhập mã để{" "}
+          {isActivation ? "đặt lại mật khẩu" : "xác thực tài khoản"}
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="mb-6 space-y-6">
-        <div className="flex justify-between mb-6">
+      {!isExpired && (
+        <div className="flex items-center justify-center gap-2 p-3 bg-primary/5 rounded-lg border">
+          <Clock className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium">
+            Mã hết hạn trong: {formatTime(timeLeft)}
+          </span>
+        </div>
+      )}
+
+      {isExpired && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            Mã OTP đã hết hạn. Vui lòng yêu cầu gửi lại mã mới.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="flex justify-center gap-2">
           {[0, 1, 2, 3, 4, 5].map((index) => (
             <Input
               key={index}
@@ -185,9 +197,9 @@ const VerificationPage: React.FC = () => {
               onChange={(e) => handleChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={index === 0 ? handlePaste : undefined}
-              className={`w-12 h-12 text-center text-xl font-bold bg-[#282828] text-white border ${
-                isExpired ? "border-red-500" : "border-[#3E3E3E]"
-              } rounded-md focus:outline-none focus:ring-1 focus:ring-[#1877F2] focus:border-[#1877F2]`}
+              className={`w-12 h-12 text-center text-xl font-bold ${
+                isExpired ? "opacity-50" : ""
+              }`}
               maxLength={1}
               disabled={isExpired}
             />
@@ -196,23 +208,39 @@ const VerificationPage: React.FC = () => {
 
         <Button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200"
-          disabled={isLoading}
+          className="w-full"
+          disabled={isLoading || isExpired || !validate()}
         >
-          {isLoading ? "Đang xác thực..." : "Xác thực"}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Đang xác thực...
+            </>
+          ) : (
+            "Xác thực"
+          )}
         </Button>
       </form>
 
-      <div className="text-center">
-        <p className="text-gray-400 text-sm">
+      <div className="space-y-4 text-center">
+        <p className="text-sm text-muted-foreground">
           Không nhận được mã?{" "}
           <button
             onClick={handleResend}
-            className="text-primary-500 hover:text-primary-700 underline cursor-pointer"
+            className="text-primary hover:underline font-medium"
+            disabled={isLoading}
           >
             Gửi lại mã
           </button>
         </p>
+
+        <Link
+          href="/auth/login"
+          className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+        >
+          <ArrowLeft className="h-3 w-3" />
+          Quay lại trang đăng nhập
+        </Link>
       </div>
     </div>
   );

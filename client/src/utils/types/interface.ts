@@ -19,26 +19,13 @@ declare global {
         tuition: string;
         opportunities: string;
         about: string;
-        requirements: string;
-        benefits: string;
+        requirements: string[];
+        benefits: string[];
         imageUrl: string;
         image?: File | null;
         featured: boolean;
         createdAt?: string;
         updatedAt?: string;
-        status: EStatus;
-    }
-
-    interface IBlog {
-        _id: string;
-        title: string;
-        excerpt: string;
-        content: string;
-        author: string;
-        publishedAt: string;
-        imageUrl: string;
-        category: string;
-        slug: string;
         status: EStatus;
     }
 
@@ -53,8 +40,8 @@ declare global {
         salary: string;
         applicationDeadline: string;
         estimatedDeparture: string;
-        requirements: string;
-        benefits: string;
+        requirements: string[];
+        benefits: string[];
         description: string;
         company: string;
         workType: string;

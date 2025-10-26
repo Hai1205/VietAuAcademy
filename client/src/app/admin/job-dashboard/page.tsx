@@ -110,43 +110,39 @@ export default function JobDashboardPage() {
   const [openMenuFilters, setOpenMenuFilters] = useState(false);
   const closeMenuMenuFilters = () => setOpenMenuFilters(false);
 
-  // Use extended type for job data
   type ExtendedJobData = IJob & { image?: File | null };
   const [data, setData] = useState<ExtendedJobData | null>(null);
+  const initial: ExtendedJobData = {
+    _id: "",
+    title: "",
+    country: "",
+    imageUrl: "",
+    image: null,
+    positions: 0,
+    location: "",
+    salary: "",
+    applicationDeadline: "",
+    estimatedDeparture: "",
+    requirements: [],
+    benefits: [],
+    description: "",
+    company: "",
+    workType: "",
+    featured: true,
+    workingHours: "",
+    overtime: "",
+    accommodation: "",
+    workEnvironment: "",
+    trainingPeriod: "",
+    status: EStatus.ACTIVE,
+  };
 
   const handleChange = (
     field: keyof ExtendedJobData,
-    value: string | number | boolean | File | null
+    value: string | string[] | number | boolean | File | null
   ) => {
-    // If data is null (we're in Create flow), initialize a minimal object
-    // so controlled inputs can update their values.
     setData((prev) => {
       if (!prev) {
-        const initial: ExtendedJobData = {
-          _id: "",
-          title: "",
-          country: "",
-          imageUrl: "",
-          image: null,
-          positions: 0,
-          location: "",
-          salary: "",
-          applicationDeadline: "",
-          estimatedDeparture: "",
-          requirements: "",
-          benefits: "",
-          description: "",
-          company: "",
-          workType: "",
-          featured: false,
-          workingHours: "",
-          overtime: "",
-          accommodation: "",
-          workEnvironment: "",
-          trainingPeriod: "",
-          status: EStatus.ACTIVE,
-        } as ExtendedJobData;
-
         return { ...initial, [field]: value };
       }
 
@@ -184,7 +180,7 @@ export default function JobDashboardPage() {
           data.estimatedDeparture || "",
           data.requirements,
           data.benefits,
-          data.description || "Job description",
+          data.description || "",
           data.company || "",
           data.workType || "",
           featured,
@@ -284,7 +280,6 @@ export default function JobDashboardPage() {
         onChange={handleChange}
         onJobCreated={handleCreate}
         data={data}
-        isLoading={isLoading}
       />
 
       <UpdateJobDialog
@@ -293,7 +288,6 @@ export default function JobDashboardPage() {
         onChange={handleChange}
         data={data}
         onJobUpdated={handleUpdate}
-        isLoading={isLoading}
       />
 
       <div className="space-y-4">

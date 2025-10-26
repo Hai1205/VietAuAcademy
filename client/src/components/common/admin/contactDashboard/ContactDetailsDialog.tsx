@@ -1,5 +1,3 @@
-import { Fragment } from "react";
-import { Dialog, Transition } from "@headlessui/react";
 import { Button } from "@/components/ui/button";
 import {
   CheckCircle,
@@ -9,11 +7,13 @@ import {
   MessageSquare,
   Calendar,
   Tag,
+  Eye,
 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import { formatDateAgo } from "@/lib/utils";
 import { EContactStatus } from "@/utils/types/enum";
+import { EnhancedDialog } from "../EnhancedDialog";
 
 interface IContactDetailsDialogProps {
   isOpen: boolean;
@@ -41,190 +41,176 @@ const ContactDetailsDialog = ({
     }
   };
 
-  return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog
-        as="div"
-        className="relative z-50"
-        onClose={() => onOpenChange(false)}
+  const footer = (
+    <div className="flex justify-between items-center w-full">
+      <Button
+        variant="outline"
+        onClick={() => onOpenChange(false)}
+        className="border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
       >
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div
-            className="fixed inset-0 bg-black bg-opacity-30"
-            aria-hidden="true"
-          />
-        </Transition.Child>
+        Đóng
+      </Button>
 
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Contact Details
-                </Dialog.Title>
-                <Dialog.Description className="text-gray-700 dark:text-gray-300 mb-6">
-                  Review the contact information from {selectedContact.name}
-                </Dialog.Description>
+      <Button
+        variant="default"
+        onClick={handleResolveContact}
+        className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all"
+        disabled={
+          isResolving || selectedContact.status === EContactStatus.RESOLVED
+        }
+      >
+        {isResolving ? (
+          <span className="flex items-center gap-2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+            Đang xử lý...
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4" />
+            Đánh dấu đã xử lý
+          </span>
+        )}
+      </Button>
+    </div>
+  );
 
-                <ScrollArea className="h-[calc(85vh-12rem)] overflow-auto">
-                  <div className="grid gap-6 py-4 px-1">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <div className="flex items-center space-x-3">
-                          <User className="h-5 w-5 text-blue-500" />
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Tên người gửi
-                            </Label>
-                            <p className="text-gray-900 dark:text-white">
-                              {selectedContact.name}
-                            </p>
-                          </div>
-                        </div>
+  return (
+    <EnhancedDialog
+      isOpen={isOpen}
+      onOpenChange={onOpenChange}
+      title="Chi tiết liên hệ"
+      description={`Thông tin liên hệ từ ${selectedContact.name}`}
+      icon={Eye}
+      footer={footer}
+      className="max-w-3xl"
+      showCloseButton={false}
+    >
+      <ScrollArea className="h-[calc(70vh-8rem)] pr-4">
+        <div className="grid gap-6 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <User className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Tên người gửi
+                  </Label>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {selectedContact.name}
+                  </p>
+                </div>
+              </div>
 
-                        <div className="flex items-center space-x-3">
-                          <Mail className="h-5 w-5 text-green-500" />
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Email
-                            </Label>
-                            <p className="text-gray-900 dark:text-white">
-                              {selectedContact.email}
-                            </p>
-                          </div>
-                        </div>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                  <Mail className="h-5 w-5 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Email
+                  </Label>
+                  <p className="text-gray-900 dark:text-white">
+                    {selectedContact.email}
+                  </p>
+                </div>
+              </div>
 
-                        <div className="flex items-center space-x-3">
-                          <Phone className="h-5 w-5 text-purple-500" />
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Số điện thoại
-                            </Label>
-                            <p className="text-gray-900 dark:text-white">
-                              {selectedContact.phone}
-                            </p>
-                          </div>
-                        </div>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                  <Phone className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Số điện thoại
+                  </Label>
+                  <p className="text-gray-900 dark:text-white">
+                    {selectedContact.phone}
+                  </p>
+                </div>
+              </div>
 
-                        <div className="flex items-center space-x-3">
-                          <Tag className="h-5 w-5 text-orange-500" />
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Chương trình
-                            </Label>
-                            <p className="text-gray-900 dark:text-white">
-                              {selectedContact.program || "N/A"}
-                            </p>
-                          </div>
-                        </div>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                  <Tag className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Chương trình
+                  </Label>
+                  <p className="text-gray-900 dark:text-white">
+                    {selectedContact.program || "N/A"}
+                  </p>
+                </div>
+              </div>
 
-                        <div className="flex items-center space-x-3">
-                          <Calendar className="h-5 w-5 text-indigo-500" />
-                          <div>
-                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Ngày gửi
-                            </Label>
-                            <p className="text-gray-900 dark:text-white">
-                              {formatDateAgo(selectedContact?.createdAt || "")}
-                            </p>
-                          </div>
-                        </div>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                  <Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Ngày gửi
+                  </Label>
+                  <p className="text-gray-900 dark:text-white">
+                    {formatDateAgo(selectedContact?.createdAt || "")}
+                  </p>
+                </div>
+              </div>
 
-                        <div className="flex items-center space-x-3">
-                          <div>
-                            <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                                selectedContact.status
-                              )}`}
-                            >
-                              {selectedContact.status || "pending"}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="flex items-start space-x-3">
-                          <MessageSquare className="h-5 w-5 text-teal-500 mt-1" />
-                          <div className="flex-1">
-                            <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Message
-                            </Label>
-                            <div className="mt-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                              <p className="text-gray-900 dark:text-white whitespace-pre-wrap">
-                                {selectedContact.message}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {selectedContact.resolvedAt && (
-                          <div className="flex items-center space-x-3">
-                            <CheckCircle className="h-5 w-5 text-green-500" />
-                            <div>
-                              <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                Resolved At
-                              </Label>
-                              <p className="text-gray-900 dark:text-white">
-                                {formatDateAgo(selectedContact.resolvedAt || "")}
-                              </p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </ScrollArea>
-
-                <div className="flex justify-between items-center p-4 border-t border-gray-200 dark:border-gray-700">
-                  <Button
-                    variant="outline"
-                    onClick={() => onOpenChange(false)}
-                    className="bg-gray-200 border-gray-300 text-gray-700 hover:bg-gray-300 dark:bg-transparent dark:border-gray-700 dark:text-white dark:hover:bg-gray-700"
+              <div className="flex items-center space-x-3">
+                <div>
+                  <span
+                    className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      selectedContact.status
+                    )}`}
                   >
-                    Close
-                  </Button>
+                    {selectedContact.status === EContactStatus.RESOLVED
+                      ? "Đã xử lý"
+                      : "Chưa xử lý"}
+                  </span>
+                </div>
+              </div>
+            </div>
 
-                  <div className="flex space-x-3">
-                    <Button
-                      variant="default"
-                      onClick={handleResolveContact}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                      disabled={isResolving || selectedContact.status === EContactStatus.RESOLVED}
-                    >
-                      {isResolving ? (
-                        <>Resolving...</>
-                      ) : (
-                        <>
-                          <CheckCircle className="h-4 w-4 mr-2" />
-                          Resolve
-                        </>
-                      )}
-                    </Button>
+            <div className="space-y-4">
+              <div className="flex items-start space-x-3">
+                <div className="p-2 bg-teal-100 dark:bg-teal-900/30 rounded-lg mt-1">
+                  <MessageSquare className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                </div>
+                <div className="flex-1">
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Nội dung
+                  </Label>
+                  <div className="mt-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
+                    <p className="text-gray-900 dark:text-white whitespace-pre-wrap">
+                      {selectedContact.message}
+                    </p>
                   </div>
                 </div>
-              </Dialog.Panel>
-            </Transition.Child>
+              </div>
+
+              {selectedContact.resolvedAt && (
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                    <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Ngày xử lý
+                    </Label>
+                    <p className="text-gray-900 dark:text-white">
+                      {formatDateAgo(selectedContact.resolvedAt || "")}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </Dialog>
-    </Transition>
+      </ScrollArea>
+    </EnhancedDialog>
   );
 };
 
