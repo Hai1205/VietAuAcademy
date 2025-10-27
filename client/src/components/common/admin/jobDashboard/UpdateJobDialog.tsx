@@ -44,7 +44,13 @@ const UpdateJobDialog = ({
   const [benefits, setBenefits] = useState<string[]>([]);
 
   useEffect(() => {
-    // Hiển thị hình ảnh hiện có khi dialog mở
+    if (data) {
+      setRequirements(data.requirements || []);
+      setBenefits(data.benefits || []);
+    }
+  }, [data]);
+
+  useEffect(() => {
     if (data?.imageUrl) {
       setPreviewImage(data.imageUrl);
     } else {
@@ -69,7 +75,7 @@ const UpdateJobDialog = ({
 
   const handleUpdate = async () => {
     setIsLoading(true);
-    onJobUpdated();
+    await Promise.resolve(onJobUpdated());
     setIsLoading(false);
   };
 

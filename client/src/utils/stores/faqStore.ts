@@ -2,32 +2,33 @@ import { EHttpType, handleRequest, IApiResponse } from "../../lib/axiosInstance"
 import { IBaseStore, createStore } from "../../lib/initialStore";
 import { EStatus } from "../types/enum";
 
-interface IFAQDataResponse {
+interface IFaqDataResponse {
 	faqs?: IFaq[];
+	faq?: IFaq;
 }
 
 export interface IFAQStore extends IBaseStore {
 	faqsTable: IFaq[];
 
-	getAllFAQs: () => Promise<IApiResponse<IFAQDataResponse>>;
+	getAllFAQs: () => Promise<IApiResponse<IFaqDataResponse>>;
 	getFAQsByCategory: (
 		category: string
-	) => Promise<IApiResponse<IFAQDataResponse>>;
-	createFAQ: (
+	) => Promise<IApiResponse<IFaqDataResponse>>;
+	createFaq: (
 		question: string,
 		answer: string,
 		category: string,
 		status: EStatus,
-	) => Promise<IApiResponse<IFAQDataResponse>>;
-	updateFAQ: (
+	) => Promise<IApiResponse<IFaqDataResponse>>;
+	updateFaq: (
 		FAQId: string,
 		question: string,
 		answer: string,
 		category: string,
 		status: EStatus,
-	) => Promise<IApiResponse<IFAQDataResponse>>;
-	deleteFAQ: (FAQId: string) => Promise<IApiResponse<IFAQDataResponse>>;
-	getPublicFAQs: () => Promise<IApiResponse<IFAQDataResponse>>;
+	) => Promise<IApiResponse<IFaqDataResponse>>;
+	deleteFAQ: (FAQId: string) => Promise<IApiResponse<IFaqDataResponse>>;
+	getPublicFAQs: () => Promise<IApiResponse<IFaqDataResponse>>;
 
 	handleRemoveFaqFromTable: (faqId: string) => Promise<void>;
 	handleAddFaqToTable: (faq: IFaq) => Promise<void>;
@@ -43,30 +44,30 @@ export const useFAQStore = createStore<IFAQStore>(
 	storeName,
 	initialState,
 	(set, get) => ({
-		getAllFAQs: async (): Promise<IApiResponse<IFAQDataResponse>> => {
+		getAllFAQs: async (): Promise<IApiResponse<IFaqDataResponse>> => {
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.GET, `/faqs`);
 			});
 		},
 
-		getFAQsByStatus: async (status: string): Promise<IApiResponse<IFAQDataResponse>> => {
+		getFAQsByStatus: async (status: string): Promise<IApiResponse<IFaqDataResponse>> => {
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.GET, `/faqs?status=${status}`);
 			});
 		},
 
-		getFAQsByCategory: async (category: string): Promise<IApiResponse<IFAQDataResponse>> => {
+		getFAQsByCategory: async (category: string): Promise<IApiResponse<IFaqDataResponse>> => {
 			return await get().handleRequest(async () => {
 				return await handleRequest(EHttpType.GET, `/faqs?category=${category}`);
 			});
 		},
 
-		createFAQ: async (
+		createFaq: async (
 			question: string,
 			answer: string,
 			category: string,
 			status: EStatus,
-		): Promise<IApiResponse<IFAQDataResponse>> => {
+		): Promise<IApiResponse<IFaqDataResponse>> => {
 			const formData = new FormData();
 			formData.append("question", question);
 			formData.append("answer", answer);
@@ -74,17 +75,23 @@ export const useFAQStore = createStore<IFAQStore>(
 			formData.append("status", status);
 
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.POST, `/faqs`, formData);
+				const res = await handleRequest<IFaqDataResponse>(EHttpType.POST, `/faqs`, formData);
+
+				if (res.status === 200 && res.data && res.data.faq) {
+					get().handleAddFaqToTable(res.data.faq);
+				}
+
+				return res;
 			});
 		},
 
-		updateFAQ: async (
+		updateFaq: async (
 			FAQId: string,
 			question: string,
 			answer: string,
 			category: string,
 			status: EStatus,
-		): Promise<IApiResponse<IFAQDataResponse>> => {
+		): Promise<IApiResponse<IFaqDataResponse>> => {
 			const formData = new FormData();
 			formData.append("question", question);
 			formData.append("answer", answer);
@@ -92,33 +99,45 @@ export const useFAQStore = createStore<IFAQStore>(
 			formData.append("status", status);
 
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.PATCH, `/faqs/${FAQId}`, formData);
+				const res = await handleRequest<IFaqDataResponse>(EHttpType.PATCH, `/faqs/${FAQId}`, formData);
+
+				if (res.status === 200 && res.data && res.data.faq) {
+					get().handleUpdateFaqInTable(res.data.faq);
+				}
+
+				return res;
 			});
 		},
 
-		deleteFAQ: async (FAQId: string): Promise<IApiResponse<IFAQDataResponse>> => {
+		deleteFAQ: async (FAQId: string): Promise<IApiResponse<IFaqDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.DELETE, `/faqs/${FAQId}`);
+				const res = await handleRequest<IFaqDataResponse>(EHttpType.DELETE, `/faqs/${FAQId}`);
+
+				if (res.status === 200) {
+					get().handleRemoveFaqFromTable(FAQId);
+				}
+
+				return res;
 			});
 		},
 
-		getPublicFAQs: async (): Promise<IApiResponse<IFAQDataResponse>> => {
+		getPublicFAQs: async (): Promise<IApiResponse<IFaqDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/public/faqs?status=public`);
+				return await handleRequest(EHttpType.GET, `/faqs?status=public`);
 			});
 		},
 
-		handleRemoveFaqFromTable: async (faqId: string) => {
+		handleRemoveFaqFromTable: (faqId: string): void => {
 			set({
 				faqsTable: get().faqsTable.filter((faq) => faq._id !== faqId),
 			});
 		},
 
-		handleAddFaqToTable: async (faq: IFaq) => {
+		handleAddFaqToTable: (faq: IFaq): void => {
 			set({ faqsTable: [faq, ...get().faqsTable] });
 		},
 
-		handleUpdateFaqInTable: async (faq: IFaq) => {
+		handleUpdateFaqInTable: (faq: IFaq): void => {
 			set({
 				faqsTable: get().faqsTable.map((f) =>
 					f._id === faq._id ? faq : f

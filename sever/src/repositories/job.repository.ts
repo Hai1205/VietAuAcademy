@@ -83,3 +83,15 @@ export const handleUpdateJob = HandlerCustom(async (data: { id: string } & Parti
   const updatedJob = await job.save();
   return updatedJob;
 });
+
+export const handleDeleteJob = HandlerCustom(async (data: { id: string }) => {
+  const job = await Job.findById(data.id);
+
+  if (!job) {
+    throw new ErrorCustom(404, "Job not found");
+  }
+
+  await job.deleteOne();
+
+  return true;
+});

@@ -29,7 +29,6 @@ export interface IContactStore extends IBaseStore {
 	) => Promise<IApiResponse<IContactDataResponse>>;
 
 	handleRemoveContactFromTable: (contactId: string) => Promise<void>;
-	handleAddContactToTable: (contact: IContact) => Promise<void>;
 	handleUpdateContactInTable: (contact: IContact) => Promise<void>;
 }
 
@@ -81,13 +80,7 @@ export const useContactStore = createStore<IContactStore>(
 			formData.append("message", message);
 
 			return await get().handleRequest(async () => {
-				const res = await handleRequest<IContactDataResponse>(EHttpType.POST, `/contacts`, formData);
-
-				if (res.status === 201 && res.data && res.data.contact) {
-					get().handleAddContactToTable(res.data.contact);
-				}
-
-				return res;
+				return await handleRequest<IContactDataResponse>(EHttpType.POST, `/contacts`, formData);
 			});
 		},
 
@@ -106,17 +99,13 @@ export const useContactStore = createStore<IContactStore>(
 			});
 		},
 
-		handleRemoveContactFromTable: async (contactId: string) => {
+		handleRemoveContactFromTable: (contactId: string): void => {
 			set({
 				contactTable: get().contactTable.filter((contact) => contact._id !== contactId),
 			});
 		},
 
-		handleAddContactToTable: async (contact: IContact) => {
-			set({ contactTable: [contact, ...get().contactTable] });
-		},
-
-		handleUpdateContactInTable: async (contact: IContact) => {
+		handleUpdateContactInTable: (contact: IContact): void => {
 			set({
 				contactTable: get().contactTable.map((c) =>
 					c._id === contact._id ? contact : c

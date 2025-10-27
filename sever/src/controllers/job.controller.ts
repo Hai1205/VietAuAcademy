@@ -1,4 +1,4 @@
-import { handleCreateJob, handleGetAllJobs, handleGetJobById, handleUpdateJob } from "../repositories/job.repository.js";
+import { handleCreateJob, handleDeleteJob, handleGetAllJobs, handleGetJobById, handleUpdateJob } from "../repositories/job.repository.js";
 import { ErrorCustom, RequestHandlerCustom } from "../utils/configs/custom.js";
 import { parseRequestData } from "../utils/configs/helper.js";
 import { uploadFiles } from "../utils/libs/cloudinary.js";
@@ -6,7 +6,7 @@ import { uploadFiles } from "../utils/libs/cloudinary.js";
 export const getAllJobs = RequestHandlerCustom(
   async (req, res) => {
     const status = req.query.status as string | undefined;
-    const jobs = await handleGetAllJobs({status});
+    const jobs = await handleGetAllJobs({ status });
 
     res.status(200).json({
       success: true,
@@ -137,3 +137,20 @@ export const updateJob = RequestHandlerCustom(
     });
   }
 );
+
+export const deleteJob = RequestHandlerCustom(
+  async (req, res, next) => {
+    const id = req.params.id;
+
+    if (!id) {
+      return next(new ErrorCustom(400, "ID việc làm là bắt buộc"));
+    }
+
+    await handleDeleteJob({ id });
+
+    res.status(204).json({
+      success: true,
+      message: "Xóa việc làm thành công"
+    });
+  }
+);  

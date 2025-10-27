@@ -34,7 +34,7 @@ const CreateFAQDialog = ({
 
   const handleCreate = async () => {
     setIsLoading(true);
-    onFAQCreated();
+    await Promise.resolve(onFAQCreated());
     setIsLoading(false);
   };
 

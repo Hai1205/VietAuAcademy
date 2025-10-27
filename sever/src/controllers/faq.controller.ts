@@ -1,8 +1,8 @@
-import { handleCreateFAQ, handleGetFAQById, handleGetFAQs, handleUpdateFAQ } from "../repositories/faq.repository.js";
+import { handleCreateFAQ, handleDeleteFAQ, handleGetFAQById, handleGetFAQs, handleUpdateFAQ } from "../repositories/faq.repository.js";
 import { ErrorCustom, RequestHandlerCustom } from "../utils/configs/custom.js";
 import { parseRequestData } from "../utils/configs/helper.js";
 
-export const getFAQs = RequestHandlerCustom(
+export const getFaqs = RequestHandlerCustom(
   async (req, res) => {
     const category = req.query.category as string | undefined;
     const status = req.query.status as string | undefined;
@@ -31,7 +31,7 @@ export interface IUpdateFAQData {
   status?: string,
 }
 
-export const createFAQ = RequestHandlerCustom(
+export const createFaq = RequestHandlerCustom(
   async (req, res) => {
     const data: ICreateFAQData = parseRequestData(req);
 
@@ -45,7 +45,7 @@ export const createFAQ = RequestHandlerCustom(
   }
 );
 
-export const updateFAQ = RequestHandlerCustom(
+export const updateFaq = RequestHandlerCustom(
   async (req, res, next) => {
     const id = req.params.id;
 
@@ -70,7 +70,7 @@ export const updateFAQ = RequestHandlerCustom(
   }
 );
 
-export const getFAQById = RequestHandlerCustom(
+export const getFaqById = RequestHandlerCustom(
   async (req, res, next) => {
     const id = req.params.id;
 
@@ -84,6 +84,23 @@ export const getFAQById = RequestHandlerCustom(
       success: true,
       message: "Lấy FAQ thành công",
       faq: faq
+    });
+  }
+);
+
+export const deleteFaq = RequestHandlerCustom(
+  async (req, res, next) => {
+    const id = req.params.id;
+
+    if (!id) {
+      return next(new ErrorCustom(400, "ID FAQ là bắt buộc"));
+    }
+
+    await handleDeleteFAQ({ id });
+
+    res.status(204).json({
+      success: true,
+      message: "Xóa FAQ thành công"
     });
   }
 );

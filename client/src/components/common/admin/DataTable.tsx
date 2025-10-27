@@ -1,4 +1,4 @@
-import { TableSkeleton } from "@/components/layout/feedback/TableSkeleton";
+import { TableSkeleton } from "@/components/common/admin/TableSkeleton";
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
 import {
@@ -59,7 +59,9 @@ export function DataTable<T>({
                 </TableHead>
               ))}
               {actions && actions.length > 0 && (
-                <TableHead className="text-right font-bold">Hành động</TableHead>
+                <TableHead className="text-right font-bold">
+                  Hành động
+                </TableHead>
               )}
             </TableRow>
           </TableHeader>
@@ -109,7 +111,7 @@ export function DataTable<T>({
                           className="bg-white dark:bg-[#1e2735] border border-gray-200 dark:border-gray-700"
                         >
                           <DropdownMenuLabel className="text-gray-900 dark:text-gray-100">
-                            Actions
+                            Hành động
                           </DropdownMenuLabel>
 
                           <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-600" />

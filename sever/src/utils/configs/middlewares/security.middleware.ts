@@ -2,12 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import cors from 'cors';
 import { CLIENT_URL } from "../constants.js";
 
-interface IAuthenticatedRequest extends Request {
-    isAuth?: boolean;
-    userId?: string;
-    cookies: { [key: string]: string };
-}
-
 /**
  * Kiểm tra injection trong NoSQL query
  */

@@ -4,6 +4,7 @@ import {
   getContact,
   submitContact,
   resolveContact,
+  deleteContact,
 } from "../controllers/contact.controller.js";
 import { isAuth } from "../utils/configs/middlewares/auth.middleware.js";
 
@@ -20,5 +21,8 @@ contactRoute.post("/", submitContact);
 
 // POST /api/v1/contacts/:id/resolve/:userId - resolve contact
 contactRoute.post("/:id/resolve/:userId", isAuth, resolveContact);
+
+// DELETE /api/v1/contacts/:id - delete contact
+contactRoute.delete("/:id", isAuth, deleteContact);
 
 export default contactRoute;

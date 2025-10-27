@@ -16,7 +16,7 @@ const axiosInstance = axios.create({
     accept: "application/json",
     "Content-Type": "application/json",
   },
-  timeout: 10000, // Add a timeout to prevent hanging requests
+  timeout: 30000, // Add a timeout to prevent hanging requests
 });
 
 const getAccessToken = (item: string): string | null => {

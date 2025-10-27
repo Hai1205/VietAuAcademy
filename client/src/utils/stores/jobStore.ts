@@ -141,7 +141,13 @@ export const useJobStore = createStore<IJobStore>(
 			testFormData(formData);
 
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.POST, `/jobs`, formData);
+				const res =  await handleRequest<IJobDataResponse>(EHttpType.POST, `/jobs`, formData);
+
+if (res.status === 200 && res.data && res.data.job) {
+					get().handleAddJobToTable(res.data.job);
+				}
+
+				return res;
 			});
 		},
 
@@ -198,33 +204,45 @@ export const useJobStore = createStore<IJobStore>(
 			testFormData(formData);
 
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.PATCH, `/jobs/${jobId}`, formData);
+				const res = await handleRequest<IJobDataResponse>(EHttpType.PATCH, `/jobs/${jobId}`, formData);
+
+				if (res.status === 200 && res.data && res.data.job) {
+					get().handleUpdateJobInTable(res.data.job);
+				}
+
+				return res;
 			});
 		},
 
-		deleteJob: async (jobId: string): Promise<IApiResponse<IJobDataResponse>> => {
+		deleteJob: async (jobId: string): Promise<IApiResponse> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.DELETE, `/jobs/${jobId}`);
+				const res = await handleRequest(EHttpType.DELETE, `/jobs/${jobId}`);
+
+				if (res.status === 200) {
+					get().handleRemoveJobFromTable(jobId);
+				}
+
+				return res;
 			});
 		},
 
 		getPublicJobs: async (): Promise<IApiResponse<IJobDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/public/jobs?status=public`);
+				return await handleRequest(EHttpType.GET, `/jobs?status=public`);
 			});
 		},
 
-		handleRemoveJobFromTable: async (jobId: string) => {
+		handleRemoveJobFromTable: (jobId: string): void => {
 			set({
 				jobsTable: get().jobsTable.filter((job) => job._id !== jobId),
 			});
 		},
 
-		handleAddJobToTable: async (job: IJob) => {
+		handleAddJobToTable: (job: IJob): void => {
 			set({ jobsTable: [job, ...get().jobsTable] });
 		},
 
-		handleUpdateJobInTable: async (job: IJob) => {
+		handleUpdateJobInTable: (job: IJob): void => {
 			set({
 				jobsTable: get().jobsTable.map((j) =>
 					j._id === job._id ? job : j

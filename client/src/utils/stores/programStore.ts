@@ -1,4 +1,3 @@
-import { testFormData } from "@/lib/utils";
 import { EHttpType, handleRequest, IApiResponse } from "../../lib/axiosInstance";
 import { IBaseStore, createStore } from "../../lib/initialStore";
 import { EStatus } from "../types/enum";
@@ -96,28 +95,30 @@ export const useProgramStore = createStore<IProgramStore>(
 			featured: boolean,
 			status: EStatus
 		): Promise<IApiResponse<IProgramDataResponse>> => {
-			return await get().handleRequest(async () => {
-				const formData = new FormData();
-				formData.append("title", title);
-				formData.append("description", description);
-				formData.append("country", country);
-				formData.append("duration", duration);
-				formData.append("tuition", tuition);
-				formData.append("opportunities", opportunities);
-				formData.append("about", about);
+			const formData = new FormData();
+			formData.append("title", title);
+			formData.append("description", description);
+			formData.append("country", country);
+			formData.append("duration", duration);
+			formData.append("tuition", tuition);
+			formData.append("opportunities", opportunities);
+			formData.append("about", about);
+			if (image instanceof File && image.size > 0) {
+				formData.append("image", image);
+			}
+			formData.append("requirements", JSON.stringify(requirements || []));
+			formData.append("benefits", JSON.stringify(benefits || []));
+			formData.append("featured", featured.toString());
+			formData.append("status", status);
 
-				if (image instanceof File && image.size > 0) {
-					formData.append("image", image);
+			return await get().handleRequest(async () => {
+				const res = await handleRequest<IProgramDataResponse>(EHttpType.POST, `/programs`, formData);
+
+				if (res.data && res.data.program) {
+					get().handleAddProgramToTable(res.data.program);
 				}
 
-				// send arrays as JSON strings
-				formData.append("requirements", JSON.stringify(requirements || []));
-				formData.append("benefits", JSON.stringify(benefits || []));
-				formData.append("featured", featured.toString());
-				formData.append("status", status);
-				testFormData(formData);
-
-				return await handleRequest(EHttpType.POST, `/programs`, formData);
+				return res
 			});
 		},
 
@@ -136,52 +137,62 @@ export const useProgramStore = createStore<IProgramStore>(
 			featured: boolean,
 			status: EStatus
 		): Promise<IApiResponse<IProgramDataResponse>> => {
-			return await get().handleRequest(async () => {
-				const formData = new FormData();
-				formData.append("title", title);
-				formData.append("description", description);
-				formData.append("country", country);
-				formData.append("duration", duration);
-				formData.append("tuition", tuition);
-				formData.append("opportunities", opportunities);
-				formData.append("about", about);
-				if (image instanceof File && image.size > 0) {
-					formData.append("image", image);
-				}
-				console.log(programId)
-				formData.append("requirements", JSON.stringify(requirements || []));
-				formData.append("benefits", JSON.stringify(benefits || []));
-				formData.append("featured", featured.toString());
-				formData.append("status", status);
-				testFormData(formData);
+			const formData = new FormData();
+			formData.append("title", title);
+			formData.append("description", description);
+			formData.append("country", country);
+			formData.append("duration", duration);
+			formData.append("tuition", tuition);
+			formData.append("opportunities", opportunities);
+			formData.append("about", about);
+			if (image instanceof File && image.size > 0) {
+				formData.append("image", image);
+			}
+			formData.append("requirements", JSON.stringify(requirements || []));
+			formData.append("benefits", JSON.stringify(benefits || []));
+			formData.append("featured", featured.toString());
+			formData.append("status", status);
 
-				return await handleRequest(EHttpType.PATCH, `/programs/${programId}`, formData);
+			return await get().handleRequest(async () => {
+				const res = await handleRequest<IProgramDataResponse>(EHttpType.PATCH, `/programs/${programId}`, formData);
+
+				if (res.data && res.data.program) {
+					get().handleUpdateProgramInTable(res.data.program);
+				}
+
+				return res
 			});
 		},
 
-		deleteProgram: async (programId: string): Promise<IApiResponse<IProgramDataResponse>> => {
+		deleteProgram: async (programId: string): Promise<IApiResponse> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.DELETE, `/programs/${programId}`);
+				const res = await handleRequest(EHttpType.DELETE, `/programs/${programId}`);
+
+				if (res.status === 200) {
+					get().handleRemoveProgramFromTable(programId);
+				}
+
+				return res
 			});
 		},
 
 		getPublicPrograms: async (): Promise<IApiResponse<IProgramDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/public/programs?status=public`);
+				return await handleRequest(EHttpType.GET, `/programs?status=public`);
 			});
 		},
 
-		handleRemoveProgramFromTable: async (programId: string) => {
+		handleRemoveProgramFromTable: (programId: string): void => {
 			set({
 				programsTable: get().programsTable.filter((program) => program._id !== programId),
 			});
 		},
 
-		handleAddProgramToTable: async (program: IProgram) => {
+		handleAddProgramToTable: (program: IProgram): void => {
 			set({ programsTable: [program, ...get().programsTable] });
 		},
 
-		handleUpdateProgramInTable: async (program: IProgram) => {
+		handleUpdateProgramInTable: (program: IProgram): void => {
 			set({
 				programsTable: get().programsTable.map((p) =>
 					p._id === program._id ? program : p

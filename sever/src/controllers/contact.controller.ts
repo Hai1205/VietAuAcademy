@@ -1,4 +1,4 @@
-import { handleGetContactById, handleGetContacts, handleSubmitContact, handleResolveContact } from "../repositories/contact.repository.js";
+import { handleGetContactById, handleGetContacts, handleSubmitContact, handleResolveContact, handleDeleteContact } from "../repositories/contact.repository.js";
 import { RequestHandlerCustom } from "../utils/configs/custom.js";
 import { parseRequestData } from "../utils/configs/helper.js";
 
@@ -60,6 +60,19 @@ export const resolveContact = RequestHandlerCustom(
       success: true,
       message: "Giải quyết liên hệ thành công",
       contact: contact
+    });
+  }
+);
+
+export const deleteContact = RequestHandlerCustom(
+  async (req, res) => {
+    const id = req.params.id;
+
+    const result = await handleDeleteContact({ id });
+
+    res.status(200).json({
+      success: true,
+      message: result.message
     });
   }
 );

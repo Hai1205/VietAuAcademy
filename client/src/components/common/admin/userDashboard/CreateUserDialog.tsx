@@ -35,11 +35,8 @@ const CreateUserDialog = ({
 
   const handleCreate = async () => {
     setIsLoading(true);
-    try {
-      await Promise.resolve(onUserCreated());
-    } finally {
-      setIsLoading(false);
-    }
+    await Promise.resolve(onUserCreated());
+    setIsLoading(false);
   };
 
   const footer = (

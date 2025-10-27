@@ -1,5 +1,5 @@
 import { Image as ImageIcon, Save, Briefcase, X, Plus } from "lucide-react";
-import { useState, useRef, ChangeEvent } from "react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {
@@ -56,9 +56,40 @@ const CreateJobDialog = ({
 
   const handleCreate = async () => {
     setIsLoading(true);
-    onJobCreated();
+    await Promise.resolve(onJobCreated());
     setIsLoading(false);
   };
+
+  // Reset local inputs when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      setRequirementInput("");
+      setBenefitInput("");
+      setRequirements([]);
+      setBenefits([]);
+
+      // reset preview image to original data image (if any) or null
+      // avoid using `any` — access imageUrl defensively
+      const imageUrl =
+        data && (data as unknown as { imageUrl?: string }).imageUrl;
+      if (imageUrl) {
+        setPreviewImage(imageUrl);
+      } else {
+        setPreviewImage(null);
+      }
+
+      if (!data) {
+        try {
+          onChange("requirements", []);
+          onChange("benefits", []);
+          onChange("image", null);
+        } catch {
+          // silent - parent may not accept these resets
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();

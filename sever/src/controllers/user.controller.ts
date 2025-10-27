@@ -1,4 +1,4 @@
-import { handleCreateUser, handleGetAllUsers, handleGetUserById, handleUpdateUser } from "../repositories/user.repository.js";
+import { handleCreateUser, handleDeleteUser, handleGetAllUsers, handleGetUserById, handleUpdateUser } from "../repositories/user.repository.js";
 import { ErrorCustom, RequestHandlerCustom } from "../utils/configs/custom.js";
 import { parseRequestData } from "../utils/configs/helper.js";
 
@@ -83,6 +83,24 @@ export const getUserById = RequestHandlerCustom(
       success: true,
       message: "Lấy người dùng thành công",
       user: user
+    });
+  }
+);
+
+
+export const deleteUser = RequestHandlerCustom(
+  async (req, res, next) => {
+    const id = req.params.id;
+
+    if (!id) {
+      return next(new ErrorCustom(400, "ID người dùng là bắt buộc"));
+    }
+
+    await handleDeleteUser({ id });
+
+    res.status(200).json({
+      success: true,
+      message: "Xóa người dùng thành công"
     });
   }
 );

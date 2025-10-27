@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
+import AdminGuard from "@/components/common/admin/AdminGuard";
 
 const AdminSidebar = dynamic(
   () => import("@/components/common/admin/AdminSidebar"),
@@ -79,29 +80,31 @@ export default function AdminLayout({
   }, []);
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
-      <div className="flex relative">
-        {mounted && (
-          <div className="sticky top-0 h-screen">
-            <AdminSidebar
-              collapsed={sidebarCollapsed}
-              width={sidebarWidth}
-              onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-              onStartResizing={startResizing}
-            />
+    <AdminGuard>
+      <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+        <div className="flex relative">
+          {mounted && (
+            <div className="sticky top-0 h-screen">
+              <AdminSidebar
+                collapsed={sidebarCollapsed}
+                width={sidebarWidth}
+                onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+                onStartResizing={startResizing}
+              />
+            </div>
+          )}
+          <div
+            className="flex-1 transition-all duration-300"
+            style={{
+              marginLeft: mounted ? "8px" : "0px", // Adjust margin based on sidebar presence
+            }}
+          >
+            <main className="p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
+              {children}
+            </main>
           </div>
-        )}
-        <div
-          className="flex-1 transition-all duration-300"
-          style={{
-            marginLeft: mounted ? "8px" : "0px", // Adjust margin based on sidebar presence
-          }}
-        >
-          <main className="p-4 md:p-6 bg-gray-50 dark:bg-gray-900">
-            {children}
-          </main>
         </div>
       </div>
-    </div>
+    </AdminGuard>
   );
 }

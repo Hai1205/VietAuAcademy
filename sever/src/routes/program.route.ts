@@ -3,7 +3,8 @@ import {
   getPrograms,
   getProgram,
   createProgram,
-  updateProgram
+  updateProgram,
+  deleteProgram,
 } from "../controllers/program.controller.js";
 import { isAuth } from "../utils/configs/middlewares/auth.middleware.js";
 
@@ -20,5 +21,8 @@ programRoute.post("/", isAuth, createProgram);
 
 // PATCH /api/v1/programs/:id - update existing program
 programRoute.patch("/:id", isAuth, updateProgram);
+
+// DELETE /api/v1/programs/:id - delete program
+programRoute.delete("/:id", isAuth, deleteProgram);
 
 export default programRoute;

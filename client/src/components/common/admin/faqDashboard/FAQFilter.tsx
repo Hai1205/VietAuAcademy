@@ -21,8 +21,8 @@ export const FAQFilter = ({
 }: FAQFilterProps) => {
   const filterOptions = {
     status: [
-      { label: "Hoạt động", value: "active" },
-      { label: "Đã xóa", value: "deleted" },
+      { label: "Công khai", value: "public" },
+      { label: "Riêng tư", value: "private" },
     ],
     contentType: [
       { label: "Hồ sơ du học", value: "Hồ sơ du học" },

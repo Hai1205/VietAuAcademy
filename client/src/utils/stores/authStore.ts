@@ -5,7 +5,6 @@ import { useContactStore } from "./contactStore";
 import { useFAQStore } from "./faqStore";
 import { useJobStore } from "./jobStore";
 import { useProgramStore } from "./programStore";
-import { useSystemStore } from "./systemStore";
 
 interface IAuthDataResponse {
 	user: IUser;
@@ -130,7 +129,6 @@ export const useAuthStore = createStore<IAuthStore>(
 
 		reset: () => {
 			set({ ...initialState });
-			useSystemStore.getState().reset();
 			useContactStore.getState().reset();
 			useFAQStore.getState().reset();
 			useJobStore.getState().reset();

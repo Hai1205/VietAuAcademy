@@ -34,7 +34,7 @@ const UpdateFAQDialog = ({
 
   const handleUpdate = async () => {
     setIsLoading(true);
-    onFAQUpdated();
+    await Promise.resolve(onFAQUpdated());
     setIsLoading(false);
   };
 

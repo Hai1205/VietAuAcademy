@@ -35,11 +35,8 @@ const UpdateUserDialog = ({
 
   const handleUpdate = async () => {
     setIsLoading(true);
-    try {
-      await Promise.resolve(onUserUpdated());
-    } finally {
-      setIsLoading(false);
-    }
+    await Promise.resolve(onUserUpdated());
+    setIsLoading(false);
   };
 
   const footer = (

@@ -18,7 +18,8 @@ import { FAQCategory } from "@/components/common/admin/faqDashboard/constant";
 const initialFilters = { status: [] as string[], contentType: [] as string[] };
 
 export default function FAQDashboardPage() {
-  const { faqsTable, getAllFAQs, updateFAQ, createFAQ, deleteFAQ } = useFAQStore();
+  const { faqsTable, getAllFAQs, updateFaq, createFaq, deleteFAQ } =
+    useFAQStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -136,7 +137,7 @@ export default function FAQDashboardPage() {
 
   const handleUpdate = async () => {
     if (data) {
-      await updateFAQ(
+      await updateFaq(
         data._id,
         data.question,
         data.answer,
@@ -150,7 +151,7 @@ export default function FAQDashboardPage() {
 
   const handleCreate = async () => {
     if (data) {
-      await createFAQ(data.question, data.answer, data.category, data.status);
+      await createFaq(data.question, data.answer, data.category, data.status);
 
       // Refresh the faqs list after create
       const res = await getAllFAQs();

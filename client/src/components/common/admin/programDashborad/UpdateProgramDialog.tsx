@@ -45,6 +45,13 @@ const UpdateProgramDialog = ({
   const [requirements, setRequirements] = useState<string[]>([]);
   const [benefits, setBenefits] = useState<string[]>([]);
 
+  useEffect(() => {
+    if (data) {
+      setRequirements(data.requirements || []);
+      setBenefits(data.benefits || []);
+    }
+  }, [data]);
+
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
     if (file) {
@@ -69,11 +76,8 @@ const UpdateProgramDialog = ({
 
   const handleUpdate = async () => {
     setIsLoading(true);
-    try {
-      await Promise.resolve(onProgramUpdated());
-    } finally {
-      setIsLoading(false);
-    }
+    await Promise.resolve(onProgramUpdated());
+    setIsLoading(false);
   };
 
   const addRequirement = () => {
@@ -225,7 +229,7 @@ const UpdateProgramDialog = ({
 
             <div className="space-y-2">
               <Label htmlFor="update-tuition" className="text-sm font-medium">
-                Học phí
+                Học phí / khóa
               </Label>
               <Input
                 id="update-tuition"

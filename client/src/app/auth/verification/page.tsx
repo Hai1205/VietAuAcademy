@@ -104,25 +104,16 @@ const VerificationPage: React.FC = () => {
 
     const res = await verifyOTP(email, otp.join(""), isActivation);
 
-    if (!res) {
+    if (!res || isExpired) {
       setOtp(Array(6).fill(""));
       return;
     }
 
-    if (isExpired) {
-      setOtp(Array(6).fill(""));
-      return;
-    }
-
-    if (res?.status && res.status !== 200) {
-      return;
-    }
-
-    if (!isActivation) {
-      router.push(`/auth/reset-password/?email=${encodeURIComponent(email)}`);
-    } else {
+    if (isActivation) {
       toast.success("Xác thực tài khoản thành công");
-      router.push("/auth/login");
+      router.push("/admin");
+    } else {
+      router.push(`/auth/reset-password/?email=${encodeURIComponent(email)}`);
     }
   };
 

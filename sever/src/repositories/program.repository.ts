@@ -70,3 +70,15 @@ export const handleUpdateProgram = HandlerCustom(async (data: { id: string } & P
     const updatedProgram = await program.save();
     return updatedProgram;
 });
+
+export const handleDeleteProgram = HandlerCustom(async (data: { id: string }) => {
+    const program = await Program.findById(data.id);
+
+    if (!program) {
+        throw new ErrorCustom(404, "Program not found");
+    }
+
+    await program.deleteOne();
+
+    return true;
+});

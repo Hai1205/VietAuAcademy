@@ -1,7 +1,7 @@
 "use client";
 
 import { SharedFilter } from "@/components/common/admin/SharedFilter";
-import { EStatus } from "@/utils/types/enum";
+import { programStatus } from "./constant";
 
 interface ProgramFilterProps {
   openMenuFilters: boolean;
@@ -29,10 +29,7 @@ export const ProgramFilter = ({
   };
 
   const filterOptions = {
-    status: [
-      { label: "Hoạt động", value: EStatus.ACTIVE },
-      { label: "Đã xóa", value: EStatus.DELETED },
-    ],
+    status: programStatus,
   };
 
   return (

@@ -17,10 +17,11 @@ const LoginPage: React.FC = () => {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
+  const initialData = {
     email: "",
     password: "",
-  });
+  };
+  const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +64,20 @@ const LoginPage: React.FC = () => {
 
     console.log("📥 Login response:", response);
 
+    if (response?.status === 401) {
+      console.log("❌ Invalid credentials provided.");
+      setFormData(initialData);
+      return;
+    }
+
     if (response?.status === 403) {
+      console.log("🚫 Account is banned, redirecting to banned page.");
+      router.push(`/auth/banned`);
+
+      return;
+    }
+
+    if (response?.status === 423) {
       router.push(
         `/auth/verification?email=${encodeURIComponent(
           formData.email
@@ -75,17 +89,7 @@ const LoginPage: React.FC = () => {
       return;
     }
 
-    if (response?.status && response?.status > 403 && response?.status < 500) {
-      router.push(`/auth/banned`);
-
-      return;
-    }
-
-    if (response?.status && response?.status === 200) {
-      router.push(`/`);
-
-      return;
-    }
+    router.push(`/admin`);
   };
 
   return (

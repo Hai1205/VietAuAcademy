@@ -9,9 +9,9 @@ interface IJobTableProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case "active":
+    case "public":
       return "bg-green-500";
-    case "deleted":
+    case "private":
       return "bg-red-500";
     default:
       return "bg-gray-500";

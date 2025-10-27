@@ -1,4 +1,4 @@
-import { handleCreateProgram, handleGetProgramById, handleGetPrograms, handleUpdateProgram } from "../repositories/program.repository.js";
+import { handleCreateProgram, handleGetProgramById, handleGetPrograms, handleUpdateProgram, handleDeleteProgram } from "../repositories/program.repository.js";
 import { ErrorCustom, RequestHandlerCustom } from "../utils/configs/custom.js";
 import { parseRequestData } from "../utils/configs/helper.js";
 import { uploadFiles } from "../utils/libs/cloudinary.js";
@@ -121,6 +121,23 @@ export const updateProgram = RequestHandlerCustom(
       success: true,
       message: "Cập nhật chương trình thành công",
       program: updatedProgram
+    });
+  }
+);
+
+export const deleteProgram = RequestHandlerCustom(
+  async (req, res, next) => {
+    const id = req.params.id;
+
+    if (!id) {
+      return next(new ErrorCustom(400, "ID chương trình là bắt buộc"));
+    }
+
+    await handleDeleteProgram({ id });
+
+    res.status(200).json({
+      success: true,
+      message: "Xóa chương trình thành công"
     });
   }
 );

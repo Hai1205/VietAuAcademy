@@ -18,7 +18,7 @@ export const isAuth = async (
 ) => {
     try {
         // Accept token from cookie OR from Authorization header (Bearer)
-        let token = req.cookies?.token as string | undefined;
+        let token = req.cookies?.["access-token"] as string | undefined;
         const authHeader = (req.headers?.authorization || req.headers?.Authorization) as
             | string
             | undefined;
@@ -55,29 +55,32 @@ export const isAuth = async (
     }
 };
 
-/**
- * Danh sách các route công khai không cần xác thực
- */
-const PUBLIC_ROUTES = [
-    '/api/v1/auth/login',
-    '/api/v1/auth/register',
-    '/api/v1/auth/send-otp',
-    '/api/v1/auth/verify-otp',
-    '/api/v1/blogs',
-    '/api/v1/programs',
-    '/api/v1/jobs',
-    '/api/v1/faqs',
-];
+// /**
+//  * Danh sách các route công khai không cần xác thực
+//  */
+// const PUBLIC_ROUTES = [
+//     '/auth/login',
+//     '/auth/register',
+//     '/auth/send-otp',
+//     '/auth/verify-otp',
+//     '/programs',
+//     '/jobs',
+//     '/faqs',
+// ];
 
-/**
- * Middleware kiểm tra xem route hiện tại có cần xác thực không
- */
-export const checkPublicRoute = (req: Request, res: Response, next: NextFunction) => {
-    // Kiểm tra xem đường dẫn hiện tại có nằm trong danh sách công khai không
-    const reqPath = (req.path || '').toLowerCase();
-    if (PUBLIC_ROUTES.some(route => reqPath.startsWith(route.toLowerCase()))) {
-        return next();
-    }
+// /**
+//  * Middleware kiểm tra xem route hiện tại có cần xác thực không
+//  */
+// export const checkPublicRoute = (req: Request, res: Response, next: NextFunction) => {
+//     let reqPath = (req.path || req.originalUrl || '').toLowerCase();
 
-    isAuth(req, res, next);
-}
+//     // Loại bỏ prefix dạng /api/v{number} (ví dụ /api/v1, /api/v2) nếu có
+//     reqPath = reqPath.replace(/^\/api\/v\d+/i, '');
+
+//     if (PUBLIC_ROUTES.some(route => reqPath.startsWith(route.toLowerCase()))) {
+//         return next();
+//     }
+
+//     // Nếu không phải route công khai thì chuyển tiếp tới middleware xác thực
+//     isAuth(req, res, next);
+// }

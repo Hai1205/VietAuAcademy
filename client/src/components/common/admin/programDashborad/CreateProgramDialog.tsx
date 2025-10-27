@@ -28,7 +28,6 @@ interface CreateProgramDialogProps {
   ) => void;
   data: IProgram | null;
   onProgramCreated: () => void;
-  isLoading?: boolean;
 }
 
 const CreateProgramDialog = ({
@@ -87,15 +86,48 @@ const CreateProgramDialog = ({
 
     const reqs = parseField(data?.requirements);
     const bens = parseField(data?.benefits);
+
     setRequirements(reqs);
     setBenefits(bens);
   }, [data?.imageUrl, data?.requirements, data?.benefits]);
 
   const handleCreate = async () => {
     setIsLoading(true);
-    onProgramCreated();
+    await Promise.resolve(onProgramCreated());
     setIsLoading(false);
   };
+
+  // Reset local inputs when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      // clear local inputs
+      setRequirementInput("");
+      setBenefitInput("");
+      setRequirements([]);
+      setBenefits([]);
+
+      // reset preview image to original data image (if any) or null
+      if (data?.imageUrl) {
+        setPreviewImage(data.imageUrl);
+      } else {
+        setPreviewImage(null);
+      }
+
+      // If creating a new program (data is null), also reset parent fields that
+      // may have been updated while dialog was open so they don't persist.
+      // We only reset the fields we locally manage here.
+      if (!data) {
+        try {
+          onChange("requirements", []);
+          onChange("benefits", []);
+          onChange("image", null);
+        } catch {
+          // silent - in case parent onChange can't handle these resets
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   // Requirements handlers
   const addRequirement = () => {
@@ -240,7 +272,7 @@ const CreateProgramDialog = ({
 
           <div className="space-y-2">
             <Label htmlFor="create-tuition" className="text-sm font-medium">
-              Học phí
+              Học phí / khóa
             </Label>
             <Input
               id="create-tuition"

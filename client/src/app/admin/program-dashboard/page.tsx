@@ -26,15 +26,19 @@ export default function ProgramDashboardPage() {
   } = useProgramStore();
 
   const [searchQuery, setSearchQuery] = useState("");
-const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCreateProgramOpen, setIsCreateProgramOpen] = useState(false);
   const [isUpdateProgramOpen, setIsUpdateProgramOpen] = useState(false);
 
   const [activeFilters, setActiveFilters] = useState<{
     status: string[];
   }>(initialFilters);
-  const [allPrograms, setAllPrograms] = useState<IProgram[] | []>(programsTable);
-  const [filteredPrograms, setFilteredPrograms] = useState<IProgram[] | []>(programsTable);
+  const [allPrograms, setAllPrograms] = useState<IProgram[] | []>(
+    programsTable
+  );
+  const [filteredPrograms, setFilteredPrograms] = useState<IProgram[] | []>(
+    programsTable
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,6 +91,22 @@ const [isLoading, setIsLoading] = useState<boolean>(false);
     },
     [searchQuery, activeFilters, filterData]
   );
+
+  const defaultProgram: ExtendedProgramData = {
+    _id: "",
+    title: "",
+    description: "",
+    country: "",
+    duration: "",
+    tuition: "",
+    opportunities: "",
+    about: "",
+    requirements: [],
+    benefits: [],
+    imageUrl: "",
+    featured: true,
+    status: EStatus.PUBLIC,
+  };
 
   // Toggle filter without auto-filtering
   const toggleFilter = (value: string, type: "status") => {
@@ -143,7 +163,7 @@ const [isLoading, setIsLoading] = useState<boolean>(false);
   };
 
   // Use useState with consistent initialization for client and server
-  const [data, setData] = useState<ExtendedProgramData | null>(null);
+  const [data, setData] = useState<ExtendedProgramData | null>(defaultData);
 
   const handleChange = (
     field: keyof ExtendedProgramData,
@@ -234,27 +254,23 @@ const [isLoading, setIsLoading] = useState<boolean>(false);
     setIsUpdateProgramOpen(true);
   };
 
+  const onRefresh = async () => {
+    // Reset filters
+    setActiveFilters(initialFilters);
+    setSearchQuery("");
+
+    // Refresh data from API
+    const res = await getAllPrograms();
+    const data = res?.data?.programs || [];
+    setAllPrograms(data);
+    setFilteredPrograms(data);
+  };
+
   return (
     <div className="space-y-4">
       <DashboardHeader
         title="Program Dashboard"
         onCreateClick={() => {
-          // Initialize an empty object instead of null when creating new
-          const defaultProgram: ExtendedProgramData = {
-            _id: "",
-            title: "",
-            description: "",
-            country: "",
-            duration: "",
-            tuition: "",
-            opportunities: "",
-            about: "",
-            requirements: [],
-            benefits: [],
-            imageUrl: "",
-            featured: true,
-            status: EStatus.PUBLIC,
-          };
           setData(defaultProgram);
           setIsCreateProgramOpen(true);
         }}
@@ -268,7 +284,6 @@ const [isLoading, setIsLoading] = useState<boolean>(false);
         onChange={handleChange}
         onProgramCreated={handleCreate}
         data={data}
-        isLoading={isLoading}
       />
 
       <UpdateProgramDialog
@@ -297,17 +312,7 @@ const [isLoading, setIsLoading] = useState<boolean>(false);
                   variant="secondary"
                   size="sm"
                   className="h-8 gap-1"
-                  onClick={async () => {
-                    // Reset filters
-                    setActiveFilters(initialFilters);
-                    setSearchQuery("");
-
-                    // Refresh data from API
-                    const res = await getAllPrograms();
-                    const data = res?.data?.programs || [];
-                    setAllPrograms(data);
-                    setFilteredPrograms(data);
-                  }}
+                  onClick={onRefresh}
                 >
                   <RefreshCw className="h-4 w-4" />
                   Refresh

@@ -1,6 +1,6 @@
 import { ISubmitContactData } from "../controllers/contact.controller.js";
 import { Contact } from "../models/contact.model.js";
-import { HandlerCustom } from "../utils/configs/custom.js";
+import { ErrorCustom, HandlerCustom } from "../utils/configs/custom.js";
 import { EContactStatus } from "../utils/types/enum.js";
 
 export const handleGetContacts = HandlerCustom(async () => {
@@ -48,4 +48,14 @@ export const handleResolveContact = HandlerCustom(async (data: { id: string; use
         .exec();
 
     return contact;
+});
+
+export const handleDeleteContact = HandlerCustom(async (data: { id: string }) => {
+    const contact = await Contact.findByIdAndDelete(data.id).exec();
+
+    if (!contact) {
+        throw new ErrorCustom(404, "Contact not found");
+    }
+
+    return { message: "Contact deleted successfully" };
 });

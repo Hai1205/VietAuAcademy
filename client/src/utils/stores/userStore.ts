@@ -122,17 +122,17 @@ export const useUserStore = createStore<IUserStore>(
 			});
 		},
 
-		handleRemoveUserFromTable: async (userId: string) => {
+		handleRemoveUserFromTable: (userId: string): void => {
 			set({
 				usersTable: get().usersTable.filter((user) => user._id !== userId),
 			});
 		},
 
-		handleAddUserToTable: async (user: IUser) => {
+		handleAddUserToTable: (user: IUser): void => {
 			set({ usersTable: [user, ...get().usersTable] });
 		},
 
-		handleUpdateUserInTable: async (user: IUser) => {
+		handleUpdateUserInTable: (user: IUser): void => {
 			set({
 				usersTable: get().usersTable.map((u) =>
 					u._id === user._id ? user : u

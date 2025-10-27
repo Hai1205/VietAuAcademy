@@ -87,31 +87,30 @@ export const login = RequestHandlerCustom(async (req, res, next) => {
     const { email, password } = data;
 
     if (!email || !password) {
-        return next(new ErrorCustom(400, "Vui lòng nhập đầy đủ thông tin"));
+        return next(new ErrorCustom(401, "Thông tin đăng nhập không hợp lệ"));
     }
-
+    
     const user = await handleGetUserByEmail({ email });
-
     if (!user) {
-        return next(new ErrorCustom(404, "Người dùng không tồn tại"));
+        return next(new ErrorCustom(401, "Thông tin đăng nhập không hợp lệ"));
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-        return next(new ErrorCustom(403, "Thông tin đăng nhập không hợp lệ"));
+        return next(new ErrorCustom(401, "Thông tin đăng nhập không hợp lệ"));
     }
 
     const isInactive = await user.status === EUserStatus.BANNED;
     if (isInactive) {
-        return next(new ErrorCustom(402, "Người dùng bị vô hiệu hóa"));
+        return next(new ErrorCustom(403, "Người dùng bị vô hiệu hóa"));
     }
 
     const isPending = await user.status === EUserStatus.PENDING;
     if (isPending) {
-        return next(new ErrorCustom(401, "Người dùng đang chờ xác thức"));
+        return next(new ErrorCustom(423, "Người dùng đang chờ xác thức"));
     }
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
         {
             id: user._id,
         },
@@ -122,7 +121,7 @@ export const login = RequestHandlerCustom(async (req, res, next) => {
         }
     );
 
-    res.cookie("token", token as string, {
+    res.cookie("access-token", accessToken as string, {
         httpOnly: true,
         secure: NODE_ENV === "production",
         sameSite: "strict",
