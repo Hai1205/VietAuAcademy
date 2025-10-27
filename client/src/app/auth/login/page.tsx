@@ -70,13 +70,6 @@ const LoginPage: React.FC = () => {
       return;
     }
 
-    if (response?.status === 403) {
-      console.log("🚫 Account is banned, redirecting to banned page.");
-      router.push(`/auth/banned`);
-
-      return;
-    }
-
     if (response?.status === 423) {
       router.push(
         `/auth/verification?email=${encodeURIComponent(
@@ -85,6 +78,12 @@ const LoginPage: React.FC = () => {
       );
 
       await sendOTP(formData.email);
+
+      return;
+    }
+
+    if (response?.status === 403) {
+      router.push(`/auth/banned`);
 
       return;
     }

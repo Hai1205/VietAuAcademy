@@ -49,7 +49,11 @@ export const useUserStore = createStore<IUserStore>(
 	(set, get) => ({
 		getAllUsers: async (): Promise<IApiResponse<IUserDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/users`);
+				const res = await handleRequest<IUserDataResponse>(EHttpType.GET, `/users`);
+				if (res.data && res.data.users) {
+					set({ usersTable: res.data.users });
+				}
+				return res;
 			});
 		},
 
@@ -72,14 +76,14 @@ export const useUserStore = createStore<IUserStore>(
 			formData.append("name", name);
 			formData.append("phone", phone);
 			formData.append("status", status);
-			
+
 			return await get().handleRequest(async () => {
 				const res = await handleRequest<IUserDataResponse>(EHttpType.POST, `/users`, formData);
-				
-				if (res.status === 201 && res.data && res.data.user) {
+
+				if (res.data && res.data.success && res.data.user) {
 					get().handleAddUserToTable(res.data.user);
 				}
-				
+
 				return res;
 			});
 		},
@@ -101,11 +105,11 @@ export const useUserStore = createStore<IUserStore>(
 
 			return await get().handleRequest(async () => {
 				const res = await handleRequest<IUserDataResponse>(EHttpType.PATCH, `/users/${userId}`, formData);
-			
-				if (res.status === 200 && res.data && res.data.user) {
+
+				if (res.data && res.data.success && res.data.user) {
 					get().handleUpdateUserInTable(res.data.user);
 				}
-				
+
 				return res;
 			});
 		},
@@ -114,7 +118,7 @@ export const useUserStore = createStore<IUserStore>(
 			return await get().handleRequest(async () => {
 				const res = await handleRequest(EHttpType.DELETE, `/users/${userId}`);
 
-				if (res.status === 200) {
+				if (res.data && res.data.success) {
 					get().handleRemoveUserFromTable(userId);
 				}
 

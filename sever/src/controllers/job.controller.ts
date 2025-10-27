@@ -51,6 +51,7 @@ export interface ICreateJobData {
   accommodation: string;
   workEnvironment: string;
   trainingPeriod: string;
+  status: string;
 }
 
 export interface IUpdateJobData {
@@ -76,30 +77,45 @@ export interface IUpdateJobData {
   trainingPeriod?: string;
 }
 
-export const createJob = RequestHandlerCustom(
-  async (req, res) => {
-    const data: ICreateJobData = parseRequestData(req);
-
-    if (req.files && Array.isArray(req.files) && req.files.length > 0) {
-      const imageFile = (req.files as Express.Multer.File[]).find(file => file.fieldname === 'image');
-
-      if (imageFile) {
-        const uploadResult = await uploadFiles(imageFile, 'jobs');
-        if (typeof uploadResult === 'object' && 'url' in uploadResult) {
-          data.imageUrl = uploadResult.url;
-        }
-      }
-    }
-
+export const createJob = RequestHandlerCustom(async (req, res, next) => {
+  const data: ICreateJobData = parseRequestData(req);
+  
+  if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
     const job = await handleCreateJob(data);
-
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Đã tạo việc làm mới",
-      job: job
+      job,
     });
   }
-);
+
+  const imageFile = (req.files as Express.Multer.File[]).find(
+    (file) => file.fieldname === "image"
+  );
+
+  if (!imageFile) {
+    return next(new ErrorCustom(400, "Thiếu file ảnh 'image'"));
+  }
+
+  try {
+    const uploadResult = await uploadFiles(imageFile, "jobs");
+
+    if (uploadResult && typeof uploadResult === "object" && "url" in uploadResult) {
+      data.imageUrl = uploadResult.url;
+    }
+  } catch (uploadError) {
+    console.error("Create Job - Upload Error:", uploadError);
+    return next(new ErrorCustom(500, "Lỗi tải lên hình ảnh"));
+  }
+
+  const job = await handleCreateJob(data);
+
+  return res.status(201).json({
+    success: true,
+    message: "Đã tạo việc làm mới",
+    job,
+  });
+});
 
 export const updateJob = RequestHandlerCustom(
   async (req, res, next) => {
@@ -119,22 +135,32 @@ export const updateJob = RequestHandlerCustom(
       const imageFile = (req.files as Express.Multer.File[]).find(file => file.fieldname === 'image');
 
       if (imageFile) {
-        const uploadResult = await uploadFiles(imageFile, 'jobs');
-        console.log('Update Job - Upload Result:', uploadResult);
+        try {
+          const uploadResult = await uploadFiles(imageFile, 'jobs');
+          console.log('Update Job - Upload Result:', uploadResult);
 
-        if (typeof uploadResult === 'object' && 'url' in uploadResult) {
-          data.imageUrl = uploadResult.url;
+          if (typeof uploadResult === 'object' && 'url' in uploadResult) {
+            data.imageUrl = uploadResult.url;
+          }
+        } catch (uploadError) {
+          console.error('Update Job - Upload Error:', uploadError);
+          return next(new ErrorCustom(500, "Lỗi tải lên hình ảnh"));
         }
       }
     }
 
-    const updatedJob = await handleUpdateJob({ id, ...data });
+    try {
+      const updatedJob = await handleUpdateJob({ id, ...data });
 
-    res.status(200).json({
-      success: true,
-      message: "Cập nhật việc làm thành công",
-      job: updatedJob
-    });
+      res.status(200).json({
+        success: true,
+        message: "Cập nhật việc làm thành công",
+        job: updatedJob
+      });
+    } catch (updateError) {
+      console.error('Update Job - Update Error:', updateError);
+      return next(new ErrorCustom(500, "Lỗi cập nhật việc làm"));
+    }
   }
 );
 

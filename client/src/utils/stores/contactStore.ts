@@ -43,7 +43,11 @@ export const useContactStore = createStore<IContactStore>(
 	(set, get) => ({
 		getAllContacts: async (): Promise<IApiResponse<IContactDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/contacts`);
+				const res = await handleRequest<IContactDataResponse>(EHttpType.GET, `/contacts`);
+				if (res.data && res.data.contacts) {
+					set({ contactTable: res.data.contacts });
+				}
+				return res;
 			});
 		},
 
@@ -55,9 +59,9 @@ export const useContactStore = createStore<IContactStore>(
 
 		deleteContact: async (contactId: string): Promise<IApiResponse> => {
 			return await get().handleRequest(async () => {
-				const res =  await handleRequest(EHttpType.DELETE, `/contacts/${contactId}`);
+				const res = await handleRequest(EHttpType.DELETE, `/contacts/${contactId}`);
 
-				if (res.status === 200) {
+				if (res.data && res.data.success) {
 					get().handleRemoveContactFromTable(contactId);
 				}
 
@@ -91,7 +95,7 @@ export const useContactStore = createStore<IContactStore>(
 			return await get().handleRequest(async () => {
 				const res = await handleRequest<IContactDataResponse>(EHttpType.POST, `/contacts/${contactId}/resolve/${adminId}`);
 
-				if (res.status === 200 && res.data && res.data.contact) {
+				if (res.data && res.data.success && res.data.contact) {
 					get().handleUpdateContactInTable(res.data.contact);
 				}
 

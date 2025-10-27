@@ -107,7 +107,7 @@ export const login = RequestHandlerCustom(async (req, res, next) => {
 
     const isPending = await user.status === EUserStatus.PENDING;
     if (isPending) {
-        return next(new ErrorCustom(423, "Người dùng đang chờ xác thức"));
+        return next(new ErrorCustom(423, "Vui lòng xác thực tài khoản"));
     }
 
     const accessToken = jwt.sign(

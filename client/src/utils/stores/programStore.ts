@@ -65,7 +65,11 @@ export const useProgramStore = createStore<IProgramStore>(
 	(set, get) => ({
 		getAllPrograms: async (): Promise<IApiResponse<IProgramDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/programs`);
+				const res = await handleRequest<IProgramDataResponse>(EHttpType.GET, `/programs`);
+				if (res.data && res.data.programs) {
+					set({ programsTable: res.data.programs });
+				}
+				return res;
 			});
 		},
 
@@ -114,7 +118,7 @@ export const useProgramStore = createStore<IProgramStore>(
 			return await get().handleRequest(async () => {
 				const res = await handleRequest<IProgramDataResponse>(EHttpType.POST, `/programs`, formData);
 
-				if (res.data && res.data.program) {
+				if (res.data && res.data.success && res.data.program) {
 					get().handleAddProgramToTable(res.data.program);
 				}
 
@@ -156,7 +160,7 @@ export const useProgramStore = createStore<IProgramStore>(
 			return await get().handleRequest(async () => {
 				const res = await handleRequest<IProgramDataResponse>(EHttpType.PATCH, `/programs/${programId}`, formData);
 
-				if (res.data && res.data.program) {
+				if (res.data && res.data.success && res.data.program) {
 					get().handleUpdateProgramInTable(res.data.program);
 				}
 
@@ -168,7 +172,7 @@ export const useProgramStore = createStore<IProgramStore>(
 			return await get().handleRequest(async () => {
 				const res = await handleRequest(EHttpType.DELETE, `/programs/${programId}`);
 
-				if (res.status === 200) {
+				if (res.data && res.data.success) {
 					get().handleRemoveProgramFromTable(programId);
 				}
 

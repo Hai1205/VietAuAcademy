@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, ChangeEvent } from "react";
+import { useEffect, useRef, useState, ChangeEvent, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,28 +13,56 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Save, Image as ImageIcon, Plus, X } from "lucide-react";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Save,
+  Image as ImageIcon,
+  Plus,
+  X,
+  ChevronDown,
+  Check,
+} from "lucide-react";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { programFeatured, programStatus, countries } from "./constant";
+import {
+  jobFeatured,
+  jobStatus,
+  countries,
+  workTypes,
+  overtimeOptions,
+  accommodationOptions,
+} from "./constant";
 import { EStatus } from "@/utils/types/enum";
+import { State } from "country-state-city";
 
-export type ExtendedProgramData = Omit<IProgram, "status"> & {
+export type ExtendedJobData = Omit<IJob, "status"> & {
   status: EStatus;
   image?: File | null;
 };
 
-interface ProgramFormProps {
-  data: ExtendedProgramData | null;
+interface JobFormProps {
+  data: ExtendedJobData | null;
   onChange: (
-    field: keyof ExtendedProgramData,
-    value: string | string[] | boolean | File | null
+    field: keyof ExtendedJobData,
+    value: string | string[] | boolean | File | null | number
   ) => void;
   onSubmit: () => Promise<void> | void;
   onCancel: () => void;
 }
 
-const ProgramForm: React.FC<ProgramFormProps> = ({
+const JobForm: React.FC<JobFormProps> = ({
   data,
   onChange,
   onSubmit,
@@ -42,8 +70,10 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
 }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [locationOpen, setLocationOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [provinces, setProvinces] = useState<string[]>([]);
 
   const [requirementInput, setRequirementInput] = useState<string>("");
   const [benefitInput, setBenefitInput] = useState<string>("");
@@ -61,14 +91,56 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
       const parsed = JSON.parse(field);
       if (Array.isArray(parsed))
         return parsed.map((s) => String(s).trim()).filter(Boolean);
-    } catch {
-      /* fallback */
-    }
+    } catch {}
     return field
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
   };
+
+  // Map tên quốc gia tiếng Việt sang ISO code
+  const countryNameToISOCode = useMemo(
+    (): Record<string, string> => ({
+      "Hàn Quốc": "KR",
+      "Nhật Bản": "JP",
+      "Đài Loan": "TW",
+      Úc: "AU",
+      Mỹ: "US",
+      Đức: "DE",
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (!data?.country) return;
+
+    try {
+      const isoCode = countryNameToISOCode[data.country];
+
+      if (!isoCode) {
+        console.warn(`Không tìm thấy ISO code cho quốc gia: ${data.country}`);
+        setProvinces([]);
+        return;
+      }
+
+      // Lấy danh sách tỉnh/thành từ country-state-city
+      const states = State.getStatesOfCountry(isoCode);
+
+      const stateNames = states
+        .map((state) => state.name)
+        .sort((a, b) => a.localeCompare(b, "en"));
+
+      setProvinces(stateNames);
+
+      // Set location mặc định là phần tử đầu tiên nếu chưa có location
+      if (!data.location && stateNames.length > 0) {
+        onChange("location", stateNames[0]);
+      }
+    } catch (err) {
+      console.error("❌ Lỗi tải tỉnh/thành:", err);
+      setProvinces([]);
+    }
+  }, [countryNameToISOCode, data?.country, data?.location, onChange]);
 
   /** Chỉ cập nhật requirements/benefits khi data thay đổi, không reset preview */
   useEffect(() => {
@@ -159,32 +231,32 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
         {/* Title */}
         <div className="space-y-2">
           <Label htmlFor="form-title" className="text-sm font-medium">
-            Chương trình
+            Công việc
           </Label>
           <Input
             id="form-title"
             value={data?.title || ""}
             onChange={(e) => onChange("title", e.target.value)}
             className="h-10"
-            placeholder="Nhập tên chương trình"
+            placeholder="Nhập tên công việc"
           />
         </div>
 
         {/* Description */}
         <div className="space-y-2">
           <Label htmlFor="form-description" className="text-sm font-medium">
-            Mô tả
+            Mô tả công việc
           </Label>
           <Textarea
             id="form-description"
             value={data?.description || ""}
             onChange={(e) => onChange("description", e.target.value)}
             className="min-h-[80px]"
-            placeholder="Nhập mô tả chương trình"
+            placeholder="Nhập mô tả công việc"
           />
         </div>
 
-        {/* Country + Duration */}
+        {/* Country + Positions */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="form-country" className="text-sm font-medium">
@@ -208,58 +280,252 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="form-duration" className="text-sm font-medium">
-              Thời gian
+            <Label htmlFor="form-positions" className="text-sm font-medium">
+              Số vị trí ứng tuyển
             </Label>
             <Input
-              id="form-duration"
-              value={data?.duration || ""}
-              onChange={(e) => onChange("duration", e.target.value)}
+              id="form-positions"
+              type="number"
+              value={data?.positions?.toString() || ""}
+              onChange={(e) =>
+                onChange("positions", parseInt(e?.target?.value || "0"))
+              }
               className="h-10"
-              placeholder="Nhập thời gian học"
+              placeholder="Nhập số vị trí"
             />
           </div>
         </div>
 
-        {/* Tuition */}
+        {/* Location + Salary */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="form-location" className="text-sm font-medium">
+              Địa điểm
+            </Label>
+            <Popover open={locationOpen} onOpenChange={setLocationOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={locationOpen}
+                  className="w-full justify-between h-10 font-normal"
+                >
+                  <span className={data?.location ? "text-foreground" : "text-muted-foreground"}>
+                    {data?.location || "Chọn tỉnh/thành"}
+                  </span>
+                  <ChevronDown className={`ml-2 h-4 w-4 shrink-0 transition-transform duration-200 ${locationOpen ? "rotate-180" : ""}`} />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 shadow-xl border-2" align="start">
+                <Command className="rounded-lg">
+                  <CommandInput 
+                    placeholder="Tìm kiếm tỉnh/thành..." 
+                    className="h-11 border-b"
+                  />
+                  <CommandList className="max-h-[300px]">
+                    <CommandEmpty className="py-6 text-center text-sm text-muted-foreground">
+                      Không tìm thấy kết quả phù hợp.
+                    </CommandEmpty>
+                    <CommandGroup className="p-2">
+                      {provinces.map((province) => (
+                        <CommandItem
+                          key={province}
+                          value={province}
+                          onSelect={(currentValue: string) => {
+                            onChange("location", currentValue === data?.location ? "" : currentValue);
+                            setLocationOpen(false);
+                          }}
+                          className="flex items-center gap-2 px-3 py-2.5 cursor-pointer rounded-md aria-selected:bg-accent aria-selected:text-accent-foreground hover:bg-accent/50"
+                        >
+                          <Check
+                            className={`h-4 w-4 shrink-0 transition-opacity ${
+                              data?.location === province ? "opacity-100" : "opacity-0"
+                            }`}
+                          />
+                          <span className="flex-1">{province}</span>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="form-salary" className="text-sm font-medium">
+              Lương / tháng
+            </Label>
+            <Input
+              id="form-salary"
+              value={data?.salary || ""}
+              onChange={(e) => onChange("salary", e.target.value)}
+              className="h-10"
+              placeholder="Nhập lương"
+            />
+          </div>
+        </div>
+
+        {/* Application Deadline + Estimated Departure */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label
+              htmlFor="form-applicationDeadline"
+              className="text-sm font-medium"
+            >
+              Hạn nộp hồ sơ
+            </Label>
+            <Input
+              id="form-applicationDeadline"
+              type="date"
+              value={data?.applicationDeadline || ""}
+              onChange={(e) => onChange("applicationDeadline", e.target.value)}
+              className="h-10"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="form-estimatedDeparture"
+              className="text-sm font-medium"
+            >
+              Dự kiến khởi hành
+            </Label>
+            <Input
+              id="form-estimatedDeparture"
+              type="date"
+              value={data?.estimatedDeparture || ""}
+              onChange={(e) => onChange("estimatedDeparture", e.target.value)}
+              className="h-10"
+            />
+          </div>
+        </div>
+
+        {/* Company + Work Type */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="form-company" className="text-sm font-medium">
+              Công ty
+            </Label>
+            <Input
+              id="form-company"
+              value={data?.company || ""}
+              onChange={(e) => onChange("company", e.target.value)}
+              className="h-10"
+              placeholder="Nhập tên công ty"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="form-workType" className="text-sm font-medium">
+              Loại công việc
+            </Label>
+            <Select
+              value={data?.workType || "Full-time"}
+              onValueChange={(value) => onChange("workType", value)}
+            >
+              <SelectTrigger id="form-workType" className="h-10">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {workTypes.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Working Hours + Overtime */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="form-workingHours" className="text-sm font-medium">
+              Giờ làm việc
+            </Label>
+            <Input
+              id="form-workingHours"
+              value={data?.workingHours || ""}
+              onChange={(e) => onChange("workingHours", e.target.value)}
+              className="h-10"
+              placeholder="Nhập giờ làm việc"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="form-overtime" className="text-sm font-medium">
+              Làm thêm giờ
+            </Label>
+            <Select
+              value={data?.overtime || "no"}
+              onValueChange={(value) => onChange("overtime", value)}
+            >
+              <SelectTrigger id="form-overtime" className="h-10">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {overtimeOptions.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Accommodation + Work Environment */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="form-accommodation" className="text-sm font-medium">
+              Hỗ trợ chỗ ở
+            </Label>
+            <Select
+              value={data?.accommodation || "no"}
+              onValueChange={(value) => onChange("accommodation", value)}
+            >
+              <SelectTrigger id="form-accommodation" className="h-10">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {accommodationOptions.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label
+              htmlFor="form-workEnvironment"
+              className="text-sm font-medium"
+            >
+              Môi trường làm việc
+            </Label>
+            <Input
+              id="form-workEnvironment"
+              value={data?.workEnvironment || ""}
+              onChange={(e) => onChange("workEnvironment", e.target.value)}
+              className="h-10"
+              placeholder="Nhập môi trường làm việc"
+            />
+          </div>
+        </div>
+
+        {/* Training Period */}
         <div className="space-y-2">
-          <Label htmlFor="form-tuition" className="text-sm font-medium">
-            Học phí / khóa
+          <Label htmlFor="form-trainingPeriod" className="text-sm font-medium">
+            Thời gian đào tạo
           </Label>
           <Input
-            id="form-tuition"
-            value={data?.tuition || ""}
-            onChange={(e) => onChange("tuition", e.target.value)}
+            id="form-trainingPeriod"
+            value={data?.trainingPeriod || ""}
+            onChange={(e) => onChange("trainingPeriod", e.target.value)}
             className="h-10"
-            placeholder="Nhập học phí"
-          />
-        </div>
-
-        {/* Opportunities */}
-        <div className="space-y-2">
-          <Label htmlFor="form-opportunities" className="text-sm font-medium">
-            Cơ hội
-          </Label>
-          <Textarea
-            id="form-opportunities"
-            value={data?.opportunities || ""}
-            onChange={(e) => onChange("opportunities", e.target.value)}
-            className="min-h-[80px]"
-            placeholder="Nhập cơ hội sau khi hoàn thành"
-          />
-        </div>
-
-        {/* About */}
-        <div className="space-y-2">
-          <Label htmlFor="form-about" className="text-sm font-medium">
-            Giới thiệu
-          </Label>
-          <Textarea
-            id="form-about"
-            value={data?.about || ""}
-            onChange={(e) => onChange("about", e.target.value)}
-            className="min-h-[80px]"
-            placeholder="Nhập giới thiệu về chương trình"
+            placeholder="Nhập thời gian đào tạo"
           />
         </div>
 
@@ -415,7 +681,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {programFeatured.map((item) => (
+                {jobFeatured.map((item) => (
                   <SelectItem key={item.label} value={`${item.value}`}>
                     {item.label}
                   </SelectItem>
@@ -436,7 +702,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {programStatus.map((item) => (
+                {jobStatus.map((item) => (
                   <SelectItem key={item.value} value={item.value}>
                     {item.label}
                   </SelectItem>
@@ -479,4 +745,4 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
   );
 };
 
-export default ProgramForm;
+export default JobForm;

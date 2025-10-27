@@ -19,7 +19,8 @@ import { useAuthStore } from "@/utils/stores/authStore";
 const initialFilters = { status: [] as string[] };
 
 function UserDashboardPage() {
-  const { usersTable, getAllUsers, createUser, updateUser, deleteUser } = useUserStore();
+  const { usersTable, getAllUsers, createUser, updateUser, deleteUser } =
+    useUserStore();
   const { resetPassword } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,16 +32,12 @@ function UserDashboardPage() {
   const [activeFilters, setActiveFilters] = useState<{
     status: string[];
   }>(initialFilters);
-  const [allUsers, setAllUsers] = useState<IUser[] | []>(usersTable);
   const [filteredUsers, setFilteredUsers] = useState<IUser[] | []>(usersTable);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const res = await getAllUsers();
-      const data = res?.data?.users || [];
-      setAllUsers(data);
-      setFilteredUsers(data);
+      await getAllUsers();
       setIsLoading(false);
     };
 
@@ -51,7 +48,7 @@ function UserDashboardPage() {
   // Function to filter data based on query and activeFilters
   const filterData = useCallback(
     (query: string, filters: { status: string[] }) => {
-      let results = [...allUsers];
+      let results = [...usersTable];
 
       // Filter by search query
       if (query.trim()) {
@@ -73,8 +70,13 @@ function UserDashboardPage() {
 
       setFilteredUsers(results);
     },
-    [allUsers]
+    [usersTable]
   );
+
+  // filter when usersTable changes
+  useEffect(() => {
+    filterData(searchQuery, activeFilters);
+  }, [usersTable, searchQuery, activeFilters, filterData]);
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
@@ -107,7 +109,7 @@ function UserDashboardPage() {
   const clearFilters = () => {
     setActiveFilters(initialFilters);
     setSearchQuery("");
-    setFilteredUsers(allUsers); // Reset filtered data
+    setFilteredUsers(usersTable); // Reset filtered data
     closeMenuMenuFilters();
   };
 
@@ -198,7 +200,7 @@ function UserDashboardPage() {
     if (!user) {
       return;
     }
-    
+
     await resetPassword(user?.email);
   };
 
@@ -278,10 +280,7 @@ function UserDashboardPage() {
                     setSearchQuery("");
 
                     // Refresh data from API
-                    const res = await getAllUsers();
-                    const data = res?.data?.users || [];
-                    setAllUsers(data);
-                    setFilteredUsers(data);
+                    await getAllUsers();
                   }}
                 >
                   <RefreshCw className="h-4 w-4" />

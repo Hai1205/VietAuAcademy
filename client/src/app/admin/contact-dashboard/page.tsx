@@ -17,7 +17,8 @@ const initialFilters = { status: [] as string[] };
 
 export default function ContactDashboardPage() {
   const { userAuth } = useAuthStore();
-  const { contactTable, getAllContacts, resolveContact, deleteContact } = useContactStore();
+  const { contactTable, getAllContacts, resolveContact, deleteContact } =
+    useContactStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -27,16 +28,14 @@ export default function ContactDashboardPage() {
   const [activeFilters, setActiveFilters] = useState<{ status: string[] }>(
     initialFilters
   );
-  const [allContacts, setAllContacts] = useState<IContact[] | []>(contactTable);
-  const [filteredContacts, setFilteredContacts] = useState<IContact[] | []>(contactTable);
+  const [filteredContacts, setFilteredContacts] = useState<IContact[] | []>(
+    contactTable
+  );
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const res = await getAllContacts();
-      const data = res?.data?.contacts || [];
-      setAllContacts(data);
-      setFilteredContacts(data);
+      await getAllContacts();
       setIsLoading(false);
     };
 
@@ -46,7 +45,7 @@ export default function ContactDashboardPage() {
   // Function to filter data based on query and activeFilters
   const filterData = useCallback(
     (query: string, filters: { status: string[] }) => {
-      let results = [...allContacts];
+      let results = [...contactTable];
 
       // Filter by search query
       if (query.trim()) {
@@ -69,8 +68,13 @@ export default function ContactDashboardPage() {
 
       setFilteredContacts(results);
     },
-    [allContacts]
+    [contactTable]
   );
+
+  // filter when contactTable changes
+  useEffect(() => {
+    filterData(searchQuery, activeFilters);
+  }, [contactTable, searchQuery, activeFilters, filterData]);
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
@@ -90,7 +94,7 @@ export default function ContactDashboardPage() {
     if (!selectedContact) {
       return;
     }
-    
+
     if (!userAuth) {
       return;
     }
@@ -102,7 +106,7 @@ export default function ContactDashboardPage() {
     }
     setIsResolving(false);
   };
-  
+
   const onDelete = async (contact: IContact) => {
     await deleteContact(contact._id);
   };
@@ -123,7 +127,7 @@ export default function ContactDashboardPage() {
   const clearFilters = () => {
     setActiveFilters(initialFilters);
     setSearchQuery("");
-    setFilteredContacts(allContacts); // Reset filtered data
+    setFilteredContacts(contactTable); // Reset filtered data
     closeMenuMenuFilters();
   };
 
@@ -173,10 +177,7 @@ export default function ContactDashboardPage() {
                     setSearchQuery("");
 
                     // Refresh data from API
-                    const res = await getAllContacts();
-                    const data = res?.data?.contacts || [];
-                    setAllContacts(data);
-                    setFilteredContacts(data);
+                    await getAllContacts();
                   }}
                 >
                   <RefreshCw className="h-4 w-4" />

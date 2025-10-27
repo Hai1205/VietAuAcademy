@@ -12,9 +12,9 @@ export const RequestHandlerCustom = (handler: RequestHandler): RequestHandler =>
 };
 
 export const HandlerCustom = <T extends (...args: any[]) => any>(handler: T) => {
-  return (...args: Parameters<T>): ReturnType<T> => {
+  return async (...args: Parameters<T>): Promise<ReturnType<T>> => {
     try {
-      return handler(...args);
+      return await handler(...args);
     } catch (error) {
       console.error(">>> ", error);
       throw error;

@@ -41,6 +41,7 @@ export const uploadFiles = HandlerCustom(async (
       const result = await cloudinary.uploader.upload(fileBase64, {
         folder: folder || "default",
         resource_type: mimetype.startsWith("video/") ? "video" : "image",
+        timeout: 60000, // 60 seconds timeout
       });
 
       console.log(`Upload successful, URL: ${result.secure_url}`);

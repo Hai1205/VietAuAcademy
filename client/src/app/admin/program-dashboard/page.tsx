@@ -13,7 +13,11 @@ import { ProgramFilter } from "@/components/common/admin/programDashborad/Progra
 import { ProgramTable } from "@/components/common/admin/programDashborad/ProgramTable";
 import { DashboardHeader } from "@/components/common/admin/DashboardHeader";
 
-// Initialize empty filters
+type ExtendedProgramData = Omit<IProgram, "status"> & {
+  status: EStatus;
+  image?: File | null;
+};
+
 const initialFilters = { status: [] as string[] };
 
 export default function ProgramDashboardPage() {
@@ -30,67 +34,11 @@ export default function ProgramDashboardPage() {
   const [isCreateProgramOpen, setIsCreateProgramOpen] = useState(false);
   const [isUpdateProgramOpen, setIsUpdateProgramOpen] = useState(false);
 
-  const [activeFilters, setActiveFilters] = useState<{
-    status: string[];
-  }>(initialFilters);
-  const [allPrograms, setAllPrograms] = useState<IProgram[] | []>(
-    programsTable
+  const [activeFilters, setActiveFilters] = useState<{ status: string[] }>(
+    initialFilters
   );
-  const [filteredPrograms, setFilteredPrograms] = useState<IProgram[] | []>(
-    programsTable
-  );
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      const res = await getAllPrograms();
-      const data = res?.data?.programs || [];
-      setAllPrograms(data);
-      setFilteredPrograms(data);
-      setIsLoading(false);
-    };
-
-    fetchData();
-  }, [getAllPrograms]);
-
-  // Function to filter data based on query and activeFilters
-  const filterData = useCallback(
-    (query: string, filters: { status: string[] }) => {
-      let results = [...allPrograms];
-
-      // Filter by search query
-      if (query.trim()) {
-        const searchTerms = query.toLowerCase().trim();
-        results = results.filter(
-          (program) =>
-            program.title.toLowerCase().includes(searchTerms) ||
-            program.description.toLowerCase().includes(searchTerms) ||
-            program.country.toLowerCase().includes(searchTerms)
-        );
-      }
-
-      // Filter by status
-      if (filters.status.length > 0) {
-        results = results.filter((program) =>
-          filters.status.includes(program.status || "")
-        );
-      }
-
-      setFilteredPrograms(results);
-    },
-    [allPrograms]
-  );
-
-  const handleSearch = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-
-      // Filter data based on current searchQuery and activeFilters
-      // Only filter when Search button is clicked
-      filterData(searchQuery, activeFilters);
-    },
-    [searchQuery, activeFilters, filterData]
-  );
+  const [filteredPrograms, setFilteredPrograms] =
+    useState<IProgram[]>(programsTable);
 
   const defaultProgram: ExtendedProgramData = {
     _id: "",
@@ -104,12 +52,60 @@ export default function ProgramDashboardPage() {
     requirements: [],
     benefits: [],
     imageUrl: "",
-    featured: true,
+    featured: false,
     status: EStatus.PUBLIC,
+    image: null,
   };
 
-  // Toggle filter without auto-filtering
-  const toggleFilter = (value: string, type: "status") => {
+  const [data, setData] = useState<ExtendedProgramData>(defaultProgram);
+
+  // initial load
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      await getAllPrograms();
+      setIsLoading(false);
+    };
+    fetchData();
+  }, [getAllPrograms]);
+
+  // filter logic
+  const filterData = useCallback(
+    (query: string, filters: { status: string[] }) => {
+      let results = [...programsTable];
+      if (query.trim()) {
+        const q = query.toLowerCase().trim();
+        results = results.filter(
+          (program) =>
+            program.title.toLowerCase().includes(q) ||
+            program.description.toLowerCase().includes(q) ||
+            program.country.toLowerCase().includes(q)
+        );
+      }
+      if (filters.status.length > 0) {
+        results = results.filter((program) =>
+          filters.status.includes(program.status || "")
+        );
+      }
+      setFilteredPrograms(results);
+    },
+    [programsTable]
+  );
+
+  // filter when programsTable changes
+  useEffect(() => {
+    filterData(searchQuery, activeFilters);
+  }, [programsTable, searchQuery, activeFilters, filterData]);
+
+  const handleSearch = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      filterData(searchQuery, activeFilters);
+    },
+    [searchQuery, activeFilters, filterData]
+  );
+
+  const toggleFilter = (value: string, type: "status" = "status") => {
     setActiveFilters((prev) => {
       const updated = { ...prev };
       if (updated[type]?.includes(value)) {
@@ -119,151 +115,96 @@ export default function ProgramDashboardPage() {
       }
       return updated;
     });
-    // Removed auto-filtering when filter changes
   };
-
-  // Removed useEffect that auto-filtered when activeFilters changed
-  // to only filter when Apply button is clicked
 
   const clearFilters = () => {
     setActiveFilters(initialFilters);
     setSearchQuery("");
-    setFilteredPrograms(allPrograms); // Reset filtered data
-    closeMenuMenuFilters();
+    setFilteredPrograms(programsTable);
+    setOpenMenuFilters(false);
   };
 
   const applyFilters = () => {
-    // Filter data based on current activeFilters and searchQuery
-    // Only filter when Apply button is clicked
     filterData(searchQuery, activeFilters);
-    closeMenuMenuFilters();
+    setOpenMenuFilters(false);
   };
 
   const [openMenuFilters, setOpenMenuFilters] = useState(false);
+
   const closeMenuMenuFilters = () => setOpenMenuFilters(false);
 
-  type ExtendedProgramData = Omit<IProgram, "status"> & {
-    status: EStatus;
-    image?: File | null;
-  };
-  const defaultData: ExtendedProgramData = {
-    _id: "",
-    title: "",
-    description: "",
-    country: "",
-    duration: "",
-    tuition: "",
-    opportunities: "",
-    about: "",
-    requirements: [],
-    benefits: [],
-    imageUrl: "",
-    featured: false,
-    status: EStatus.PUBLIC,
-  };
-
-  // Use useState with consistent initialization for client and server
-  const [data, setData] = useState<ExtendedProgramData | null>(defaultData);
-
+  // central onChange handler for form fields
   const handleChange = (
     field: keyof ExtendedProgramData,
     value: string | string[] | boolean | File | null
   ) => {
-    setData((prev) => {
-      // If prev is null, create a new object with default values
-      if (!prev) {
-        return { ...defaultData, [field]: value };
-      }
-      // If prev is not null, update the current value
-      return { ...prev, [field]: value };
-    });
+    setData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleUpdate = async () => {
-    if (data) {
-      await updateProgram(
-        data._id,
-        data.title,
-        data.description,
-        data.country,
-        data.duration,
-        data.tuition,
-        data.opportunities,
-        data.about,
-        data.image as File,
-        data.requirements,
-        data.benefits,
-        data.featured,
-        data.status
-      );
-
-      // Refresh the data after update
-      const res = await getAllPrograms();
-      const updatedData = res?.data?.programs || [];
-
-      // Update both original and filtered data
-      setAllPrograms(updatedData);
-
-      // Re-apply current filters
-      filterData(searchQuery, activeFilters);
-
-      setIsUpdateProgramOpen(false);
-    }
-  };
-
+  // create
   const handleCreate = async () => {
-    if (data) {
-      // Use image file if available
-      const imageFile = data.image instanceof File ? data.image : null;
+    // Use image file if available
+    const imageFile = data.image instanceof File ? data.image : null;
 
-      await createProgram(
-        data.title,
-        data.description,
-        data.country,
-        data.duration,
-        data.tuition,
-        data.opportunities,
-        data.about,
-        imageFile,
-        data.requirements,
-        data.benefits,
-        data.featured,
-        data.status
-      );
+    await createProgram(
+      data.title,
+      data.description,
+      data.country,
+      data.duration,
+      data.tuition,
+      data.opportunities,
+      data.about,
+      imageFile,
+      data.requirements,
+      data.benefits,
+      data.featured,
+      data.status
+    );
 
-      // Refresh the data after creation
-      const res = await getAllPrograms();
-      const updatedData = res?.data?.programs || [];
+    setIsCreateProgramOpen(false);
+  };
 
-      // Update both original and filtered data
-      setAllPrograms(updatedData);
+  // update
+  const handleUpdate = async () => {
+    await updateProgram(
+      data._id,
+      data.title,
+      data.description,
+      data.country,
+      data.duration,
+      data.tuition,
+      data.opportunities,
+      data.about,
+      data.image as File,
+      data.requirements,
+      data.benefits,
+      data.featured,
+      data.status
+    );
 
-      // Re-apply current filters
-      filterData(searchQuery, activeFilters);
-
-      setIsCreateProgramOpen(false);
-    }
+    setIsUpdateProgramOpen(false);
   };
 
   const onDelete = async (program: IProgram) => {
     await deleteProgram(program._id);
   };
 
-  const onUpdate = async (program: IProgram) => {
-    setData(program);
+  const onUpdate = (program: IProgram) => {
+    // ensure ExtendedProgramData shape
+    setData({
+      ...program,
+      status: program.status as unknown as EStatus,
+      image: null,
+    });
     setIsUpdateProgramOpen(true);
   };
 
   const onRefresh = async () => {
-    // Reset filters
     setActiveFilters(initialFilters);
     setSearchQuery("");
-
-    // Refresh data from API
-    const res = await getAllPrograms();
-    const data = res?.data?.programs || [];
-    setAllPrograms(data);
-    setFilteredPrograms(data);
+    setIsLoading(true);
+    await getAllPrograms();
+    setIsLoading(false);
   };
 
   return (
@@ -277,19 +218,22 @@ export default function ProgramDashboardPage() {
         createButtonText="Create Program"
       />
 
-      {/* Use consistent key to avoid hydration issues */}
       <CreateProgramDialog
         isOpen={isCreateProgramOpen}
         onOpenChange={setIsCreateProgramOpen}
-        onChange={handleChange}
-        onProgramCreated={handleCreate}
+        onChange={(field, value) =>
+          handleChange(field as keyof ExtendedProgramData, value)
+        }
         data={data}
+        onProgramCreated={handleCreate}
       />
 
       <UpdateProgramDialog
         isOpen={isUpdateProgramOpen}
         onOpenChange={setIsUpdateProgramOpen}
-        onChange={handleChange}
+        onChange={(field, value) =>
+          handleChange(field as keyof ExtendedProgramData, value)
+        }
         data={data}
         onProgramUpdated={handleUpdate}
       />

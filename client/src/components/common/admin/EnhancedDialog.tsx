@@ -44,7 +44,7 @@ const EnhancedDialog = React.forwardRef<
               <DialogPrimitive.Content
                 ref={ref}
                 className={cn(
-                  "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-xl",
+                  "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 shadow-lg duration-200 sm:rounded-xl",
                   className
                 )}
                 asChild
@@ -54,9 +54,10 @@ const EnhancedDialog = React.forwardRef<
                   animate={{ opacity: 1, scale: 1, y: "-50%", x: "-50%" }}
                   exit={{ opacity: 0, scale: 0.95, y: "-50%", x: "-50%" }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="rounded-xl bg-white dark:bg-gray-900"
                 >
                   {showCloseButton && (
-                    <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+                    <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                       <X className="h-4 w-4" />
                       <span className="sr-only">Close</span>
                     </DialogPrimitive.Close>
@@ -70,11 +71,11 @@ const EnhancedDialog = React.forwardRef<
                         </div>
                       )}
                       <div>
-                        <DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-tight">
+                        <DialogPrimitive.Title className="text-lg font-semibold leading-none tracking-tight text-gray-900 dark:text-white">
                           {title}
                         </DialogPrimitive.Title>
                         {description && (
-                          <DialogPrimitive.Description className="text-sm text-muted-foreground">
+                          <DialogPrimitive.Description className="text-sm text-gray-600 dark:text-gray-400">
                             {description}
                           </DialogPrimitive.Description>
                         )}

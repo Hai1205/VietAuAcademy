@@ -26,16 +26,12 @@ export default function FAQDashboardPage() {
   const [isCreateFAQOpen, setIsCreateFAQOpen] = useState(false);
   const [isUpdateFAQOpen, setIsUpdateFAQOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(initialFilters);
-  const [allFAQs, setAllFAQs] = useState<IFaq[] | []>(faqsTable);
   const [filteredFAQs, setFilteredFAQs] = useState<IFaq[] | []>(faqsTable);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const res = await getAllFAQs();
-      const data = res?.data?.faqs || [];
-      setAllFAQs(data);
-      setFilteredFAQs(data);
+      await getAllFAQs();
       setIsLoading(false);
     };
 
@@ -45,7 +41,7 @@ export default function FAQDashboardPage() {
   // Function to filter data based on query and activeFilters
   const filterData = useCallback(
     (query: string, filters: { status: string[]; contentType: string[] }) => {
-      let results = [...allFAQs];
+      let results = [...faqsTable];
 
       // Filter by search query
       if (query.trim()) {
@@ -74,8 +70,13 @@ export default function FAQDashboardPage() {
 
       setFilteredFAQs(results);
     },
-    [allFAQs]
+    [faqsTable]
   );
+
+  // filter when faqsTable changes
+  useEffect(() => {
+    filterData(searchQuery, activeFilters);
+  }, [faqsTable, searchQuery, activeFilters, filterData]);
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
@@ -102,7 +103,7 @@ export default function FAQDashboardPage() {
   const clearFilters = () => {
     setActiveFilters(initialFilters);
     setSearchQuery("");
-    setFilteredFAQs(allFAQs); // Reset filtered data
+    setFilteredFAQs(faqsTable); // Reset filtered data
     closeMenuMenuFilters();
   };
 
@@ -154,9 +155,7 @@ export default function FAQDashboardPage() {
       await createFaq(data.question, data.answer, data.category, data.status);
 
       // Refresh the faqs list after create
-      const res = await getAllFAQs();
-      const updatedData = res?.data?.faqs || [];
-      setAllFAQs(updatedData);
+      await getAllFAQs();
 
       // Apply current filters
       filterData(searchQuery, activeFilters);
@@ -223,10 +222,7 @@ export default function FAQDashboardPage() {
                     setSearchQuery("");
 
                     // Refresh data from API
-                    const res = await getAllFAQs();
-                    const data = res?.data?.faqs || [];
-                    setAllFAQs(data);
-                    setFilteredFAQs(data);
+                    await getAllFAQs();
                   }}
                 >
                   <RefreshCw className="h-4 w-4" />

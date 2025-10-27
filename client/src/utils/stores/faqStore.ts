@@ -46,7 +46,11 @@ export const useFAQStore = createStore<IFAQStore>(
 	(set, get) => ({
 		getAllFAQs: async (): Promise<IApiResponse<IFaqDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/faqs`);
+				const res = await handleRequest<IFaqDataResponse>(EHttpType.GET, `/faqs`);
+				if (res.data && res.data.faqs) {
+					set({ faqsTable: res.data.faqs });
+				}
+				return res;
 			});
 		},
 
@@ -77,7 +81,7 @@ export const useFAQStore = createStore<IFAQStore>(
 			return await get().handleRequest(async () => {
 				const res = await handleRequest<IFaqDataResponse>(EHttpType.POST, `/faqs`, formData);
 
-				if (res.status === 200 && res.data && res.data.faq) {
+				if (res.data && res.data.success && res.data.faq) {
 					get().handleAddFaqToTable(res.data.faq);
 				}
 
@@ -101,7 +105,7 @@ export const useFAQStore = createStore<IFAQStore>(
 			return await get().handleRequest(async () => {
 				const res = await handleRequest<IFaqDataResponse>(EHttpType.PATCH, `/faqs/${FAQId}`, formData);
 
-				if (res.status === 200 && res.data && res.data.faq) {
+				if (res.data && res.data.success && res.data.faq) {
 					get().handleUpdateFaqInTable(res.data.faq);
 				}
 
@@ -113,7 +117,7 @@ export const useFAQStore = createStore<IFAQStore>(
 			return await get().handleRequest(async () => {
 				const res = await handleRequest<IFaqDataResponse>(EHttpType.DELETE, `/faqs/${FAQId}`);
 
-				if (res.status === 200) {
+				if (res.data && res.data.success) {
 					get().handleRemoveFaqFromTable(FAQId);
 				}
 

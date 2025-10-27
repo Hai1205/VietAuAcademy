@@ -17,24 +17,20 @@ import { DashboardHeader } from "@/components/common/admin/DashboardHeader";
 const initialFilters = { status: [] as string[], contentType: [] as string[] };
 
 export default function JobDashboardPage() {
-  const { jobsTable, getAllJobs, updateJob, createJob, deleteJob } = useJobStore();
+  const { jobsTable, getAllJobs, updateJob, createJob, deleteJob } =
+    useJobStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateJobOpen, setIsCreateJobOpen] = useState(false);
   const [isUpdateJobOpen, setIsUpdateJobOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(initialFilters);
-  const [allJobs, setAllJobs] = useState<IJob[] | []>(jobsTable);
   const [filteredJobs, setFilteredJobs] = useState<IJob[] | []>(jobsTable);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const res = await getAllJobs();
-      const data = res?.data?.jobs || [];
-
-      setAllJobs(data);
-      setFilteredJobs(data);
+      await getAllJobs();
       setIsLoading(false);
     };
 
@@ -44,7 +40,7 @@ export default function JobDashboardPage() {
   // Function to filter data based on query and activeFilters
   const filterData = useCallback(
     (query: string, filters: { status: string[]; contentType: string[] }) => {
-      let results = [...allJobs];
+      let results = [...jobsTable];
 
       // Filter by search query
       if (query.trim()) {
@@ -73,8 +69,13 @@ export default function JobDashboardPage() {
 
       setFilteredJobs(results);
     },
-    [allJobs]
+    [jobsTable]
   );
+
+  // filter when jobsTable changes
+  useEffect(() => {
+    filterData(searchQuery, activeFilters);
+  }, [jobsTable, searchQuery, activeFilters, filterData]);
 
   const handleSearch = useCallback(
     (e: React.FormEvent) => {
@@ -101,7 +102,7 @@ export default function JobDashboardPage() {
   const clearFilters = () => {
     setActiveFilters(initialFilters);
     setSearchQuery("");
-    setFilteredJobs(allJobs); // Reset filtered data
+    setFilteredJobs(jobsTable); // Reset filtered data
     closeMenuMenuFilters();
   };
 
@@ -115,11 +116,10 @@ export default function JobDashboardPage() {
   const closeMenuMenuFilters = () => setOpenMenuFilters(false);
 
   type ExtendedJobData = IJob & { image?: File | null };
-  const [data, setData] = useState<ExtendedJobData | null>(null);
   const initial: ExtendedJobData = {
     _id: "",
     title: "",
-    country: "",
+    country: "Hàn Quốc",
     imageUrl: "",
     image: null,
     positions: 0,
@@ -131,27 +131,23 @@ export default function JobDashboardPage() {
     benefits: [],
     description: "",
     company: "",
-    workType: "",
+    workType: "Full-time",
     featured: true,
     workingHours: "",
-    overtime: "",
-    accommodation: "",
+    overtime: "no",
+    accommodation: "no",
     workEnvironment: "",
     trainingPeriod: "",
     status: EStatus.PUBLIC,
   };
 
+  const [data, setData] = useState<ExtendedJobData>(initial);
+
   const handleChange = (
     field: keyof ExtendedJobData,
     value: string | string[] | number | boolean | File | null
   ) => {
-    setData((prev) => {
-      if (!prev) {
-        return { ...initial, [field]: value };
-      }
-
-      return { ...prev, [field]: value };
-    });
+    setData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleUpdate = async () => {
@@ -197,14 +193,6 @@ export default function JobDashboardPage() {
           data.description || "" // Optional question parameter
         );
 
-        // Refresh the jobs list after update
-        const res = await getAllJobs();
-        const updatedData = res?.data?.jobs || [];
-        setAllJobs(updatedData);
-
-        // Apply current filters
-        filterData(searchQuery, activeFilters);
-
         // Close the dialog
         setIsUpdateJobOpen(false);
       } catch (error) {
@@ -230,7 +218,6 @@ export default function JobDashboardPage() {
         const imageFile = data.image instanceof File ? data.image : null;
 
         await createJob(
-          data.description || "Job description", // question parameter
           data.title || "",
           data.country || "",
           imageFile, // Pass image file if available
@@ -253,17 +240,9 @@ export default function JobDashboardPage() {
           data.status || EStatus.PUBLIC
         );
 
-        // Refresh the jobs list after create
-        const res = await getAllJobs();
-        const updatedData = res?.data?.jobs || [];
-        setAllJobs(updatedData);
-
-        // Apply current filters
-        filterData(searchQuery, activeFilters);
-
         // Close the dialog and reset the form
         setIsCreateJobOpen(false);
-        setData(null);
+        setData(initial);
       } catch (error) {
         console.error("Error creating job:", error);
       }
@@ -283,7 +262,10 @@ export default function JobDashboardPage() {
     <div className="space-y-4">
       <DashboardHeader
         title="Job Dashboard"
-        onCreateClick={() => setIsCreateJobOpen(true)}
+        onCreateClick={() => {
+          setData(initial);
+          setIsCreateJobOpen(true);
+        }}
         createButtonText="Create Job"
       />
 
@@ -327,10 +309,9 @@ export default function JobDashboardPage() {
                     setSearchQuery("");
 
                     // Refresh data from API
-                    const res = await getAllJobs();
-                    const data = res?.data?.jobs || [];
-                    setAllJobs(data);
-                    setFilteredJobs(data);
+                    setIsLoading(true);
+                    await getAllJobs();
+                    setIsLoading(false);
                   }}
                 >
                   <RefreshCw className="h-4 w-4" />

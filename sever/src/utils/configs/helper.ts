@@ -7,11 +7,24 @@ const storage = multer.memoryStorage();
 
 // Lọc file upload
 const fileFilter = (req: any, file: any, cb: any) => {
+    console.log('File upload attempt:', {
+        fieldname: file.fieldname,
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size
+    });
+
     // Chấp nhận hình ảnh và các file phổ biến
     const allowedFileTypes = [
         'image/jpeg',
+        'image/jpg',
         'image/png',
         'image/gif',
+        'image/webp',
+        'image/svg+xml',
+        'image/bmp',
+        'image/tiff',
+        'image/avif',
         'application/pdf',
         'application/msword',
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -22,6 +35,7 @@ const fileFilter = (req: any, file: any, cb: any) => {
     if (allowedFileTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
+        console.error('Unsupported file type:', file.mimetype);
         cb(new Error('Định dạng file không được hỗ trợ!'), false);
     }
 };

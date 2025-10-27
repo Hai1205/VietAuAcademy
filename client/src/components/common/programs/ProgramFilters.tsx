@@ -184,7 +184,6 @@ export default function ProgramFilters({
               <p className="text-gray-600 dark:text-gray-300 mb-6">
                 Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm
               </p>
-              <Button onClick={clearFilters}>Xóa tất cả bộ lọc</Button>
             </div>
           )}
         </div>

@@ -16,7 +16,6 @@ export interface IJobStore extends IBaseStore {
 		jobId: string
 	) => Promise<IApiResponse<IJobDataResponse>>;
 	createJob: (
-		question: string,
 		title: string,
 		country: string,
 		image: File | null,
@@ -81,7 +80,11 @@ export const useJobStore = createStore<IJobStore>(
 	(set, get) => ({
 		getAllJobs: async (): Promise<IApiResponse<IJobDataResponse>> => {
 			return await get().handleRequest(async () => {
-				return await handleRequest(EHttpType.GET, `/jobs`);
+				const res = await handleRequest<IJobDataResponse>(EHttpType.GET, `/jobs`);
+				if (res.data && res.data.jobs) {
+					set({ jobsTable: res.data.jobs });
+				}
+				return res;
 			});
 		},
 
@@ -92,7 +95,6 @@ export const useJobStore = createStore<IJobStore>(
 		},
 
 		createJob: async (
-			question: string,
 			title: string,
 			country: string,
 			image: File | null,
@@ -115,7 +117,6 @@ export const useJobStore = createStore<IJobStore>(
 			status: EStatus,
 		): Promise<IApiResponse<IJobDataResponse>> => {
 			const formData = new FormData();
-			formData.append("question", question)
 			formData.append("title", title)
 			formData.append("country", country)
 			if (image instanceof File && image.size > 0) {
@@ -141,9 +142,9 @@ export const useJobStore = createStore<IJobStore>(
 			testFormData(formData);
 
 			return await get().handleRequest(async () => {
-				const res =  await handleRequest<IJobDataResponse>(EHttpType.POST, `/jobs`, formData);
+				const res = await handleRequest<IJobDataResponse>(EHttpType.POST, `/jobs`, formData);
 
-if (res.status === 200 && res.data && res.data.job) {
+				if (res.data && res.data.success && res.data.job) {
 					get().handleAddJobToTable(res.data.job);
 				}
 
@@ -206,7 +207,7 @@ if (res.status === 200 && res.data && res.data.job) {
 			return await get().handleRequest(async () => {
 				const res = await handleRequest<IJobDataResponse>(EHttpType.PATCH, `/jobs/${jobId}`, formData);
 
-				if (res.status === 200 && res.data && res.data.job) {
+				if (res.data && res.data.success && res.data.job) {
 					get().handleUpdateJobInTable(res.data.job);
 				}
 
@@ -218,7 +219,8 @@ if (res.status === 200 && res.data && res.data.job) {
 			return await get().handleRequest(async () => {
 				const res = await handleRequest(EHttpType.DELETE, `/jobs/${jobId}`);
 
-				if (res.status === 200) {
+				if (res.data && res.data.success) {
+					console.log("Removing job from table:", jobId);
 					get().handleRemoveJobFromTable(jobId);
 				}
 

@@ -47,6 +47,7 @@ export const handleCreateJob = HandlerCustom(async (data: ICreateJobData) => {
     accommodation: data.accommodation,
     workEnvironment: data.workEnvironment,
     trainingPeriod: data.trainingPeriod,
+    status: data.status,
   }).save();
 
   return job;
