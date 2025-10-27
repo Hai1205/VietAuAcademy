@@ -1,4 +1,4 @@
-import { handleCreateFAQ, handleDeleteFAQ, handleGetFAQById, handleGetFAQs, handleUpdateFAQ } from "../repositories/faq.repository.js";
+import { handleCreateFAQ, handleDeleteFaq, handleGetFAQById, handleGetFAQs, handleUpdateFAQ } from "../repositories/faq.repository.js";
 import { ErrorCustom, RequestHandlerCustom } from "../utils/configs/custom.js";
 import { parseRequestData } from "../utils/configs/helper.js";
 
@@ -96,7 +96,7 @@ export const deleteFaq = RequestHandlerCustom(
       return next(new ErrorCustom(400, "ID FAQ là bắt buộc"));
     }
 
-    await handleDeleteFAQ({ id });
+    await handleDeleteFaq({ id });
 
     res.status(204).json({
       success: true,

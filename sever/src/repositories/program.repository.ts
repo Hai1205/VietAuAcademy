@@ -72,13 +72,11 @@ export const handleUpdateProgram = HandlerCustom(async (data: { id: string } & P
 });
 
 export const handleDeleteProgram = HandlerCustom(async (data: { id: string }) => {
-    const program = await Program.findById(data.id);
+    const deletedProgram = await Program.findByIdAndDelete(data.id);
 
-    if (!program) {
+    if (!deletedProgram) {
         throw new ErrorCustom(404, "Program not found");
     }
 
-    await program.deleteOne();
-
-    return true;
+    return { message: "Program deleted successfully" };
 });

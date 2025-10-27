@@ -58,13 +58,12 @@ export const handleUpdateFAQ = HandlerCustom(async (data: { id: string } & Parti
     return updatedFAQ;
 });
 
-export const handleDeleteFAQ = HandlerCustom(async (data: { id: string }) => {
-    const faq = await handleGetFAQById({ id: data.id });
+export const handleDeleteFaq = HandlerCustom(async (data: { id: string }) => {
+    const deletedFAQ = await FAQ.findByIdAndDelete(data.id);
 
-    if (!faq) {
+    if (!deletedFAQ) {
         throw new ErrorCustom(404, "FAQ not found");
     }
 
-    await faq.remove();
     return { message: "FAQ deleted successfully" };
 });

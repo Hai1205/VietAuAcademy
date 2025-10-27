@@ -143,12 +143,15 @@ export default function JobDashboardPage() {
 
   const [data, setData] = useState<ExtendedJobData>(initial);
 
-  const handleChange = (
-    field: keyof ExtendedJobData,
-    value: string | string[] | number | boolean | File | null
-  ) => {
-    setData((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleChange = useCallback(
+    (
+      field: keyof ExtendedJobData,
+      value: string | string[] | number | boolean | File | null
+    ) => {
+      setData((prev) => ({ ...prev, [field]: value }));
+    },
+    []
+  );
 
   const handleUpdate = async () => {
     if (data) {

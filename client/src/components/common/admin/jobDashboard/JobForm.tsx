@@ -132,15 +132,15 @@ const JobForm: React.FC<JobFormProps> = ({
 
       setProvinces(stateNames);
 
-      // Set location mặc định là phần tử đầu tiên nếu chưa có location
-      if (!data.location && stateNames.length > 0) {
+      // Set location mặc định là phần tử đầu tiên khi country thay đổi
+      if (stateNames.length > 0) {
         onChange("location", stateNames[0]);
       }
     } catch (err) {
       console.error("❌ Lỗi tải tỉnh/thành:", err);
       setProvinces([]);
     }
-  }, [countryNameToISOCode, data?.country, data?.location, onChange]);
+  }, [countryNameToISOCode, data?.country, onChange]);
 
   /** Chỉ cập nhật requirements/benefits khi data thay đổi, không reset preview */
   useEffect(() => {
@@ -310,16 +310,29 @@ const JobForm: React.FC<JobFormProps> = ({
                   aria-expanded={locationOpen}
                   className="w-full justify-between h-10 font-normal"
                 >
-                  <span className={data?.location ? "text-foreground" : "text-muted-foreground"}>
+                  <span
+                    className={
+                      data?.location
+                        ? "text-foreground"
+                        : "text-muted-foreground"
+                    }
+                  >
                     {data?.location || "Chọn tỉnh/thành"}
                   </span>
-                  <ChevronDown className={`ml-2 h-4 w-4 shrink-0 transition-transform duration-200 ${locationOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`ml-2 h-4 w-4 shrink-0 transition-transform duration-200 ${
+                      locationOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 shadow-xl border-2" align="start">
+              <PopoverContent
+                className="w-[var(--radix-popover-trigger-width)] p-0 shadow-xl border-2"
+                align="start"
+              >
                 <Command className="rounded-lg">
-                  <CommandInput 
-                    placeholder="Tìm kiếm tỉnh/thành..." 
+                  <CommandInput
+                    placeholder="Tìm kiếm tỉnh/thành..."
                     className="h-11 border-b"
                   />
                   <CommandList className="max-h-[300px]">
@@ -332,14 +345,21 @@ const JobForm: React.FC<JobFormProps> = ({
                           key={province}
                           value={province}
                           onSelect={(currentValue: string) => {
-                            onChange("location", currentValue === data?.location ? "" : currentValue);
+                            onChange(
+                              "location",
+                              currentValue === data?.location
+                                ? ""
+                                : currentValue
+                            );
                             setLocationOpen(false);
                           }}
                           className="flex items-center gap-2 px-3 py-2.5 cursor-pointer rounded-md aria-selected:bg-accent aria-selected:text-accent-foreground hover:bg-accent/50"
                         >
                           <Check
                             className={`h-4 w-4 shrink-0 transition-opacity ${
-                              data?.location === province ? "opacity-100" : "opacity-0"
+                              data?.location === province
+                                ? "opacity-100"
+                                : "opacity-0"
                             }`}
                           />
                           <span className="flex-1">{province}</span>

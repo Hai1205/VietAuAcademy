@@ -20,7 +20,7 @@ const getStatusColor = (status: string) => {
 
 const getCategoryColor = (status: string) => {
   switch (status) {
-    case "Hồ sơ du học":
+    case "Du học":
       return "bg-green-500";
     case "Chi phí":
       return "bg-yellow-500";
@@ -30,7 +30,7 @@ const getCategoryColor = (status: string) => {
       return "bg-yellow-500";
     case "Định cư":
       return "bg-green-500";
-    case "Dịch vụ":
+    case "Việc làm":
       return "bg-yellow-500";
     default:
       return "bg-gray-500";

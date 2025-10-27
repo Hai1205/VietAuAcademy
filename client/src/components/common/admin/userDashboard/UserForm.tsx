@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Save } from "lucide-react";
+import { Eye, EyeOff, Lock, Save } from "lucide-react";
 import { userStatus } from "./constant";
 import { EUserStatus } from "@/utils/types/enum";
 
@@ -36,6 +36,7 @@ const UserForm: React.FC<UserFormProps> = ({
   isCreate,
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   /** Submit handler */
   const handleSubmit = async () => {
@@ -85,14 +86,29 @@ const UserForm: React.FC<UserFormProps> = ({
             <Label htmlFor="form-password" className="text-sm font-medium">
               Mật khẩu
             </Label>
-            <Input
-              id="form-password"
-              type="password"
-              value={data?.password || ""}
-              onChange={(e) => onChange("password", e.target.value)}
-              className="h-10"
-              placeholder="Nhập mật khẩu"
-            />
+            <div className="relative">
+              <Lock className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="form-password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                value={data?.password || ""}
+                onChange={(e) => onChange("password", e.target.value)}
+                className="pl-10"
+                placeholder="Nhập mật khẩu"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+              </button>
+            </div>
           </div>
         )}
 

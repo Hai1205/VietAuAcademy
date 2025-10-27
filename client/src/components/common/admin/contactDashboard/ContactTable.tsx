@@ -39,7 +39,7 @@ export function ContactTable({
       accessor: (contact: IContact) => contact?.program || "",
     },
     {
-      header: "Ngày gửi",
+      header: "Thời gian gửi",
       accessor: (contact: IContact) => formatDateAgo(contact?.createdAt || ""),
     },
     {

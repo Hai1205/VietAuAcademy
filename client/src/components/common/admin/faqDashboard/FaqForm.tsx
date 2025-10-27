@@ -84,7 +84,7 @@ const FaqForm: React.FC<FaqFormProps> = ({
               Danh mục
             </Label>
             <Select
-              value={data?.category || FAQCategory[0].value}
+              value={data?.category}
               onValueChange={(value) => onChange("category", value)}
             >
               <SelectTrigger id="form-category" className="h-10">

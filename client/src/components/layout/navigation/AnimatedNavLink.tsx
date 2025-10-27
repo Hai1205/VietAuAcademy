@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActiveLink } from "@/hooks/use-active-link";
+import { useActiveLink } from "@/hooks/useActiveLink";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 import styles from "./navlink.module.css";

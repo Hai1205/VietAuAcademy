@@ -95,13 +95,11 @@ export const handleUpdateUserPasswordByEmail = HandlerCustom(async (data: { emai
 });
 
 export const handleDeleteUser = HandlerCustom(async (data: { id: string }) => {
-    const user = await User.findById(data.id);
+    const deletedUser = await User.findByIdAndDelete(data.id);
 
-    if (!user) {
+    if (!deletedUser) {
         throw new ErrorCustom(404, "User not found");
     }
 
-    await user.deleteOne();
-
-    return true;
+    return { message: "User deleted successfully" };
 });

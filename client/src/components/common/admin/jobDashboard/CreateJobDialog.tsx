@@ -1,4 +1,5 @@
 import { Briefcase } from "lucide-react";
+import { useCallback } from "react";
 import { EnhancedDialog } from "../EnhancedDialog";
 import JobForm, { ExtendedJobData } from "./JobForm";
 
@@ -20,6 +21,20 @@ const CreateJobDialog = ({
   onJobCreated,
   data,
 }: CreateJobDialogProps) => {
+  const handleFormChange = useCallback(
+    (
+      field: keyof ExtendedJobData,
+      value: string | string[] | boolean | File | null | number
+    ) => {
+      if (field === "positions" && typeof value === "string") {
+        onChange(field, parseInt(value) || 0);
+      } else {
+        onChange(field as keyof IJob, value);
+      }
+    },
+    [onChange]
+  );
+
   return (
     <EnhancedDialog
       isOpen={isOpen}
@@ -31,13 +46,7 @@ const CreateJobDialog = ({
     >
       <JobForm
         data={data as ExtendedJobData | null}
-        onChange={(field, value) => {
-          if (field === "positions" && typeof value === "string") {
-            onChange(field, parseInt(value) || 0);
-          } else {
-            onChange(field as keyof IJob, value);
-          }
-        }}
+        onChange={handleFormChange}
         onSubmit={onJobCreated}
         onCancel={() => onOpenChange(false)}
       />

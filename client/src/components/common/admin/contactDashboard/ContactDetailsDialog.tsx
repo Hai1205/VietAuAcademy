@@ -14,22 +14,23 @@ import { Label } from "@/components/ui/label";
 import { formatDateAgo } from "@/lib/utils";
 import { EContactStatus } from "@/utils/types/enum";
 import { EnhancedDialog } from "../EnhancedDialog";
+import { useState } from "react";
 
 interface IContactDetailsDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   selectedContact: IContact | null;
-  handleResolveContact: () => void;
-  isResolving: boolean;
+  onResolveContact: () => void;
 }
 
 const ContactDetailsDialog = ({
   isOpen,
   onOpenChange,
   selectedContact,
-  handleResolveContact,
-  isResolving,
+  onResolveContact,
 }: IContactDetailsDialogProps) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   if (!selectedContact) return null;
 
   const getStatusColor = (status?: string) => {
@@ -38,6 +39,15 @@ const ContactDetailsDialog = ({
         return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
       default:
         return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+    }
+  };
+
+  const handleResolveContact = async () => {
+    setIsLoading(true);
+    try {
+      await Promise.resolve(onResolveContact());
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,10 +66,10 @@ const ContactDetailsDialog = ({
         onClick={handleResolveContact}
         className="bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg transition-all"
         disabled={
-          isResolving || selectedContact.status === EContactStatus.RESOLVED
+          isLoading || selectedContact.status === EContactStatus.RESOLVED
         }
       >
-        {isResolving ? (
+        {isLoading ? (
           <span className="flex items-center gap-2">
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
             Đang xử lý...
@@ -151,7 +161,7 @@ const ContactDetailsDialog = ({
                 </div>
                 <div>
                   <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Ngày gửi
+                    Thời gian gửi
                   </Label>
                   <p className="text-gray-900 dark:text-white">
                     {formatDateAgo(selectedContact?.createdAt || "")}

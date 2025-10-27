@@ -70,7 +70,10 @@ const LoginPage: React.FC = () => {
       return;
     }
 
+    console.log(response)
+
     if (response?.status === 423) {
+      console.log("🔒 Account not activated. Redirecting to verification...");
       router.push(
         `/auth/verification?email=${encodeURIComponent(
           formData.email
@@ -83,11 +86,13 @@ const LoginPage: React.FC = () => {
     }
 
     if (response?.status === 403) {
+      console.log("🚫 Account is banned. Redirecting to banned page...");
       router.push(`/auth/banned`);
 
       return;
     }
 
+    console.log("✅ Login successful! Redirecting to admin dashboard...");
     router.push(`/admin`);
   };
 

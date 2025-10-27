@@ -23,7 +23,6 @@ export default function ContactDashboardPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isViewDetailsOpen, setIsViewDetailsOpen] = useState(false);
-  const [isResolving, setIsResolving] = useState(false);
   const [selectedContact, setSelectedContact] = useState<IContact | null>(null);
   const [activeFilters, setActiveFilters] = useState<{ status: string[] }>(
     initialFilters
@@ -90,21 +89,19 @@ export default function ContactDashboardPage() {
     setIsViewDetailsOpen(true);
   };
 
-  const handleResolveContact = async () => {
+  const onResolveContact = async () => {
     if (!selectedContact) {
       return;
     }
-
+    
     if (!userAuth) {
       return;
     }
 
-    setIsResolving(true);
     const response = await resolveContact(userAuth._id, selectedContact._id);
     if (response.status === 200) {
       setIsViewDetailsOpen(false);
     }
-    setIsResolving(false);
   };
 
   const onDelete = async (contact: IContact) => {
@@ -149,8 +146,7 @@ export default function ContactDashboardPage() {
         isOpen={isViewDetailsOpen}
         onOpenChange={() => setIsViewDetailsOpen(false)}
         selectedContact={selectedContact}
-        handleResolveContact={handleResolveContact}
-        isResolving={isResolving}
+        onResolveContact={onResolveContact}
       />
 
       <div className="space-y-4">
