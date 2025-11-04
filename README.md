@@ -38,7 +38,7 @@ cd VietAuAcademy
 ### 2. Setup and Run Backend
 
 ```bash
-cd sever
+cd server
 
 # Install dependencies
 npm install
@@ -136,7 +136,7 @@ The frontend will run at http://localhost:3000
 ### Directory Structure
 
 ```
-sever/
+server/
 ├── src/
 │   ├── controllers/      # Request handlers
 │   ├── models/           # Mongoose models

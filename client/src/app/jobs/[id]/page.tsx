@@ -33,7 +33,7 @@ export default function JobDetailPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const programId = params._id as string;
+      const programId = params.id as string;
       const response = await getJob(programId);
       const data = response.data?.job;
       setJob(data || null);

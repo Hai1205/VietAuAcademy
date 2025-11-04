@@ -219,7 +219,7 @@ export default function ProgramDetailPageClient({
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
                     Về Chương Trình
                   </h4>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="dark:text-gray-400 text-gray-600 leading-relaxed">
                     {program.about}
                   </p>
                 </div>
@@ -228,7 +228,7 @@ export default function ProgramDetailPageClient({
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
                     Cơ Hội Nghề Nghiệp
                   </h4>
-                  <p className="text-gray-600 leading-relaxed">
+                  <p className="dark:text-gray-400 text-gray-600 leading-relaxed">
                     {program.opportunities}
                   </p>
                 </div>
